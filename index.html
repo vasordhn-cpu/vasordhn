@@ -25,13 +25,26 @@
             font-size: 14px;
         }
 
+        /* CONTENEDOR DE CADA CATEGORÍA / TIPO */
+        .categoria-section {
+            max-width: 1400px;
+            margin: 0 auto 40px auto;
+        }
+        .categoria-titulo {
+            font-size: 20px;
+            color: #1a252f;
+            margin-bottom: 15px;
+            font-weight: bold;
+            border-left: 4px solid #0066cc;
+            padding-left: 10px;
+            text-transform: capitalize;
+        }
+
         /* GRID RESPONSIVO: 4 columnas en PC / 2 columnas en Celular */
         .grid-productos { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 20px; 
-            max-width: 1400px; 
-            margin: 0 auto; 
         }
 
         @media (max-width: 768px) {
@@ -166,8 +179,8 @@
         <p>VASORD Creacioness y Más</p>
     </div>
 
-    <div id="grid-productos" class="grid-productos">
-        <p style="text-align:center; grid-column: 1/-1; color: #666;">Cargando catálogo...</p>
+    <div id="contenedor-principal">
+        <p style="text-align:center; color: #666;">Cargando catálogo...</p>
     </div>
 
     <!-- VENTANA FLOTANTE OCULTA -->
@@ -189,7 +202,7 @@
         }
 
         async function cargarDatos() {
-            const contenedor = document.getElementById('grid-productos');
+            const contenedor = document.getElementById('contenedor-principal');
             try {
                 const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(HOJA_A_CARGAR)}`;
                 const response = await fetch(url);
@@ -201,24 +214,26 @@
                     codigo: r.c[0] ? String(r.c[0].v) : '',
                     descripcion: r.c[1] ? String(r.c[1].v) : '',
                     otros: r.c[2] ? String(r.c[2].v) : '',
-                    tipo: r.c[3] ? String(r.c[3].v) : '',
+                    tipo: r.c[3] ? String(r.c[3].v).trim() : 'General',
                     medida: r.c[4] ? String(r.c[4].v) : '',
                     precio: r.c[5] ? String(r.c[5].v) : '',
                     imagen: r.c[6] ? String(r.c[6].v) : '',
                     video: r.c[7] && r.c[7].v ? String(r.c[7].v).trim() : ''
                 }));
 
-                renderizarAgrupados(productos);
+                renderizarPorCategorias(productos);
             } catch (error) {
-                contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: red;">Error al cargar datos.</p>';
+                contenedor.innerHTML = '<p style="text-align:center; color: red;">Error al cargar datos.</p>';
             }
         }
 
-        function renderizarAgrupados(items) {
-            const contenedor = document.getElementById('grid-productos');
-            contenedor.innerHTML = '';
+        function renderizarPorCategorias(items) {
+            const contenedorPrincipal = document.getElementById('contenedor-principal');
+            contenedorPrincipal.innerHTML = '';
+            
             let productosGlobales = {};
 
+            // 1. Agrupar filas por producto único (Código + Descripción)
             items.forEach(item => {
                 if(!item.codigo && !item.descripcion) return;
                 let key = `${item.codigo}_${item.descripcion}`;
@@ -227,6 +242,7 @@
                         codigo: item.codigo,
                         descripcion: item.descripcion,
                         otros: item.otros,
+                        tipo: item.tipo || 'General',
                         imagen: item.imagen,
                         video: item.video,
                         filas: []
@@ -235,56 +251,85 @@
                 productosGlobales[key].filas.push(item);
             });
 
+            // 2. Agrupar los productos estructurados por su Categoría/Tipo
+            let categoriasMap = {};
             Object.keys(productosGlobales).forEach(key => {
                 let prod = productosGlobales[key];
-                let card = document.createElement('div');
-                card.className = 'card-producto';
+                let cat = prod.tipo !== '' ? prod.tipo : 'General';
+                if (!categoriasMap[cat]) {
+                    categoriasMap[cat] = [];
+                }
+                categoriasMap[cat].push(prod);
+            });
 
-                let videoUrl = prod.video ? String(prod.video).trim() : '';
-                let videoId = obtenerIdDrive(videoUrl);
-                let tieneVideoReal = videoUrl !== '' && videoId !== '';
-                
-                let imagenId = obtenerIdDrive(prod.imagen);
-                let portadaSrc = imagenId ? `https://lh3.googleusercontent.com/d/${imagenId}` : '';
+            // 3. Dibujar las secciones por cada categoría con su título y su grid de 4 columnas
+            Object.keys(categoriasMap).forEach(categoria => {
+                let productosCat = categoriasMap[categoria];
 
-                let textoBoton = tieneVideoReal ? "▶ Ver Video" : "🖼 Ver Imagen";
-                let accionBoton = tieneVideoReal 
-                    ? `abrirModalVideo(${JSON.stringify(videoUrl)})` 
-                    : `abrirModalImagen(${JSON.stringify(portadaSrc)})`;
+                let seccionDiv = document.createElement('div');
+                seccionDiv.className = 'categoria-section';
 
-                let mediaHTML = `
-                    <div class="media-container">
-                        ${portadaSrc ? `<img src="${portadaSrc}" alt="${prod.descripcion}">` : '<div style="color:#aaa;">Sin portada</div>'}
-                        ${portadaSrc || tieneVideoReal ? `<div class="video-btn-play" onclick='${accionBoton}'>${textoBoton}</div>` : ''}
-                    </div>
-                `;
+                let tituloDiv = document.createElement('div');
+                tituloDiv.className = 'categoria-titulo';
+                tituloDiv.innerText = categoria;
+                seccionDiv.appendChild(tituloDiv);
 
-                let outrosHTML = prod.otros ? `<div class="card-otros">${prod.otros}</div>` : '';
-                
-                let variacionesHTML = `<div class="variaciones-container">`;
-                prod.filas.forEach(f => {
-                    let medidaHTML = f.medida ? `<span class="variacion-medida">${f.medida}</span>` : '';
-                    variacionesHTML += `
-                        <div class="variacion-row-final">
-                            ${medidaHTML}
-                            <span class="variacion-precio">Lps. ${f.precio}</span>
+                let gridDiv = document.createElement('div');
+                gridDiv.className = 'grid-productos';
+
+                productosCat.forEach(prod => {
+                    let card = document.createElement('div');
+                    card.className = 'card-producto';
+
+                    let videoUrl = prod.video ? String(prod.video).trim() : '';
+                    let videoId = obtenerIdDrive(videoUrl);
+                    let tieneVideoReal = videoUrl !== '' && videoId !== '';
+                    
+                    let imagenId = obtenerIdDrive(prod.imagen);
+                    let portadaSrc = imagenId ? `https://lh3.googleusercontent.com/d/${imagenId}` : '';
+
+                    let textoBoton = tieneVideoReal ? "▶ Ver Video" : "🖼 Ver Imagen";
+                    let accionBoton = tieneVideoReal 
+                        ? `abrirModalVideo(${JSON.stringify(videoUrl)})` 
+                        : `abrirModalImagen(${JSON.stringify(portadaSrc)})`;
+
+                    let mediaHTML = `
+                        <div class="media-container">
+                            ${portadaSrc ? `<img src="${portadaSrc}" alt="${prod.descripcion}">` : '<div style="color:#aaa;">Sin portada</div>'}
+                            ${portadaSrc || tieneVideoReal ? `<div class="video-btn-play" onclick='${accionBoton}'>${textoBoton}</div>` : ''}
                         </div>
                     `;
-                });
-                variacionesHTML += `</div>`;
 
-                card.innerHTML = `
-                    ${mediaHTML}
-                    <div class="card-info">
-                        <div>
-                            <div class="card-title">${prod.codigo}: ${prod.descripcion}</div>
-                            ${outrosHTML}
+                    let otrosHTML = prod.otros ? `<div class="card-otros">${prod.otros}</div>` : '';
+                    
+                    let variacionesHTML = `<div class="variaciones-container">`;
+                    prod.filas.forEach(f => {
+                        let medidaHTML = f.medida ? `<span class="variacion-medida">${f.medida}</span>` : '';
+                        variacionesHTML += `
+                            <div class="variacion-row-final">
+                                ${medidaHTML}
+                                <span class="variacion-precio">Lps. ${f.precio}</span>
+                            </div>
+                        `;
+                    });
+                    variacionesHTML += `</div>`;
+
+                    card.innerHTML = `
+                        ${mediaHTML}
+                        <div class="card-info">
+                            <div>
+                                <div class="card-title">${prod.codigo}: ${prod.descripcion}</div>
+                                ${otrosHTML}
+                            </div>
+                            ${variacionesHTML}
                         </div>
-                        ${variacionesHTML}
-                    </div>
-                `;
+                    `;
 
-                contenedor.appendChild(card);
+                    gridDiv.appendChild(card);
+                });
+
+                seccionDiv.appendChild(gridDiv);
+                contenedorPrincipal.appendChild(seccionDiv);
             });
         }
 
@@ -327,4 +372,3 @@
     </script>
 </body>
 </html>
-
