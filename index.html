@@ -3,42 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo - Arreglos | VASORD</title>
+    <title>Catálogo - VASORD</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f6f9; margin: 0; padding: 20px; }
 
-        /* MENÚ DE NAVEGACIÓN SUPERIOR */
+        /* MENÚ DE NAVEGACIÓN DINÁMICO */
         .nav-categorias {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 25px;
             flex-wrap: wrap;
             max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
         }
-        .nav-link {
+        .nav-btn {
             background: #ffffff;
             color: #333;
             padding: 10px 20px;
             border-radius: 25px;
-            text-decoration: none;
             font-weight: 600;
             font-size: 14px;
             border: 1px solid #ddd;
             box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+            cursor: pointer;
             transition: all 0.2s ease;
+            outline: none;
         }
-        .nav-link:hover {
+        .nav-btn:hover {
             background: #e2e8f0;
             transform: translateY(-2px);
         }
-        .nav-link.active {
+        .nav-btn.active {
             background: #0066cc;
             color: #ffffff;
             border-color: #0066cc;
+            box-shadow: 0 4px 10px rgba(0,102,204,0.3);
         }
 
         /* ENCABEZADO DE LA PÁGINA */
@@ -85,7 +87,7 @@
                 grid-template-columns: repeat(2, 1fr); 
                 gap: 12px;
             }
-            .nav-link {
+            .nav-btn {
                 padding: 8px 14px;
                 font-size: 13px;
             }
@@ -248,6 +250,14 @@
             background-color: #004b99;
         }
 
+        @media (max-width: 480px) {
+            .footer-fila-info { gap: 15px; }
+            .footer-item-info h3 { font-size: 14px; }
+            .footer-item-info p { font-size: 12px; }
+            .footer-redes a { padding: 7px 8px; font-size: 11px; }
+            .btn-como-llegar { font-size: 13px; padding: 9px 15px; }
+        }
+
         /* VENTANA FLOTANTE (MODAL) PARA CONTENIDO */
         .modal-overlay {
             display: none;
@@ -304,15 +314,13 @@
 </head>
 <body>
 
-    <!-- MENÚ DE NAVEGACIÓN SUPERIOR (Agrega aquí más botones según tus páginas) -->
-    <div class="nav-categorias">
-        <a href="index.html" class="nav-link active">🎁 Arreglos</a>
-        <a href="escolares.html" class="nav-link">🎒 Escolares</a>
-        <!-- Ejemplo para agregar más adelante: <a href="mobiliario.html" class="nav-link">🪑 Mobiliario</a> -->
+    <!-- MENÚ DE NAVEGACIÓN GENERADO DINÁMICAMENTE -->
+    <div id="nav-categorias" class="nav-categorias">
+        <span style="color:#888; font-size:13px;">Cargando menú...</span>
     </div>
 
     <div class="seccion-header">
-        <h1>Catálogo de Arreglos</h1>
+        <h1 id="titulo-seccion">Catálogo de Productos</h1>
         <p>VASORD Creacioness y Más</p>
     </div>
 
@@ -358,7 +366,10 @@
 
     <script>
         const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
-        const HOJA_A_CARGAR = '2'; // Pestaña de Arreglos
+        
+        // Define aquí los nombres de las pestañas de tu Google Sheet y su título deseado
+        // Si agregas o cambias hojas en tu Google Sheet, solo asegúrate de listarlas aquí:
+        const HOJAS_DISPONIBLES = ['2', '3', '4', '5', '11']; 
 
         function obtenerIdDrive(url) {
             if (!url) return '';
@@ -367,10 +378,31 @@
             return match && match[1] ? match[1] : '';
         }
 
-        async function cargarDatos() {
+        function construirMenu(hojaActiva) {
+            const nav = document.getElementById('nav-categorias');
+            nav.innerHTML = '';
+
+            HOJAS_DISPONIBLES.forEach((nombreHoja, index) => {
+                let btn = document.createElement('button');
+                btn.className = `nav-btn ${nombreHoja === hojaActiva ? 'active' : ''}`;
+                btn.innerText = `Pestaña ${nombreHoja}`; // Puedes personalizar el texto del botón si gustas
+                btn.onclick = () => cambiarHoja(nombreHoja);
+                nav.appendChild(btn);
+            });
+        }
+
+        function cambiarHoja(nombreHoja) {
+            construirMenu(nombreHoja);
+            document.getElementById('titulo-seccion').innerText = `Catálogo - Área ${nombreHoja}`;
+            cargarDatos(nombreHoja);
+        }
+
+        async function cargarDatos(nombreHoja) {
             const contenedor = document.getElementById('contenedor-principal');
+            contenedor.innerHTML = '<p style="text-align:center; color: #666;">Cargando catálogo...</p>';
+
             try {
-                const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(HOJA_A_CARGAR)}`;
+                const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nombreHoja)}`;
                 const response = await fetch(url);
                 const text = await response.text();
                 const json = JSON.parse(text.substr(47).slice(0, -2));
@@ -389,7 +421,7 @@
 
                 renderizarPorCategorias(productos);
             } catch (error) {
-                contenedor.innerHTML = '<p style="text-align:center; color: red;">Error al cargar datos.</p>';
+                contenedor.innerHTML = '<p style="text-align:center; color: red;">Error al cargar datos de esta sección.</p>';
             }
         }
 
@@ -425,6 +457,11 @@
                 }
                 categoriasMap[cat].push(prod);
             });
+
+            if (Object.keys(categoriasMap).length === 0) {
+                contenedorPrincipal.innerHTML = '<p style="text-align:center; color: #888;">No hay productos registrados en esta sección.</p>';
+                return;
+            }
 
             Object.keys(categoriasMap).forEach(categoria => {
                 let productosCat = categoriasMap[categoria];
@@ -531,7 +568,8 @@
             modal.style.display = 'none';
         }
 
-        cargarDatos();
+        // Inicia cargando la primera hoja por defecto (por ejemplo la '2')
+        cambiarHoja('2');
     </script>
 </body>
 </html>
