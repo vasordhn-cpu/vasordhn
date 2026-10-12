@@ -314,7 +314,7 @@
 </head>
 <body>
 
-    <!-- MENÚ DE NAVEGACIÓN GENERADO DINÁMICAMENTE -->
+    <!-- MENÚ DE NAVEGACIÓN DINÁMICO POR NOMBRE DE ÁREA -->
     <div id="nav-categorias" class="nav-categorias">
         <span style="color:#888; font-size:13px;">Cargando menú...</span>
     </div>
@@ -367,9 +367,8 @@
     <script>
         const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
         
-        // Define aquí los nombres de las pestañas de tu Google Sheet y su título deseado
-        // Si agregas o cambias hojas en tu Google Sheet, solo asegúrate de listarlas aquí:
-        const HOJAS_DISPONIBLES = ['2', '3', '4', '5', '11']; 
+        // 📌 ESCRIBE AQUÍ LOS NOMBRES EXACTOS DE TUS PESTAÑAS EN GOOGLE SHEET:
+        const HOJAS_DISPONIBLES = ['Arreglos', 'Escolares', 'Mobiliario']; 
 
         function obtenerIdDrive(url) {
             if (!url) return '';
@@ -382,10 +381,10 @@
             const nav = document.getElementById('nav-categorias');
             nav.innerHTML = '';
 
-            HOJAS_DISPONIBLES.forEach((nombreHoja, index) => {
+            HOJAS_DISPONIBLES.forEach((nombreHoja) => {
                 let btn = document.createElement('button');
                 btn.className = `nav-btn ${nombreHoja === hojaActiva ? 'active' : ''}`;
-                btn.innerText = `Pestaña ${nombreHoja}`; // Puedes personalizar el texto del botón si gustas
+                btn.innerText = nombreHoja; // Muestra exactamente el nombre de la hoja en el botón
                 btn.onclick = () => cambiarHoja(nombreHoja);
                 nav.appendChild(btn);
             });
@@ -393,7 +392,7 @@
 
         function cambiarHoja(nombreHoja) {
             construirMenu(nombreHoja);
-            document.getElementById('titulo-seccion').innerText = `Catálogo - Área ${nombreHoja}`;
+            document.getElementById('titulo-seccion').innerText = `Catálogo - ${nombreHoja}`;
             cargarDatos(nombreHoja);
         }
 
@@ -421,7 +420,7 @@
 
                 renderizarPorCategorias(productos);
             } catch (error) {
-                contenedor.innerHTML = '<p style="text-align:center; color: red;">Error al cargar datos de esta sección.</p>';
+                contenedor.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los datos de esta área. Verifica que la pestaña exista en tu Google Sheet.</p>';
             }
         }
 
@@ -568,8 +567,8 @@
             modal.style.display = 'none';
         }
 
-        // Inicia cargando la primera hoja por defecto (por ejemplo la '2')
-        cambiarHoja('2');
+        // Inicia cargando la primera área de la lista por defecto
+        cambiarHoja(HOJAS_DISPONIBLES[0]);
     </script>
 </body>
 </html>
