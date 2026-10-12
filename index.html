@@ -3,10 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo - VASORD</title>
+    <title>Catálogo - Arreglos | VASORD</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f6f9; margin: 0; padding: 20px; }
+
+        /* MENÚ DE NAVEGACIÓN SUPERIOR */
+        .nav-categorias {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .nav-link {
+            background: #ffffff;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        .nav-link.active {
+            background: #0066cc;
+            color: #ffffff;
+            border-color: #0066cc;
+        }
 
         /* ENCABEZADO DE LA PÁGINA */
         .seccion-header {
@@ -51,6 +84,10 @@
             .grid-productos {
                 grid-template-columns: repeat(2, 1fr); 
                 gap: 12px;
+            }
+            .nav-link {
+                padding: 8px 14px;
+                font-size: 13px;
             }
         }
 
@@ -118,7 +155,7 @@
         .variacion-medida { font-weight: 600; color: #444; }
         .variacion-precio { font-weight: bold; color: #27ae60; font-size: 15px; margin-left: auto; }
 
-        /* SECCIÓN DE PIE DE PÁGINA (FOOTER) ADAPTADO A MÓVIL */
+        /* SECCIÓN DE PIE DE PÁGINA (FOOTER) */
         .footer-catalogo {
             max-width: 1400px;
             margin: 60px auto 20px auto;
@@ -211,26 +248,6 @@
             background-color: #004b99;
         }
 
-        @media (max-width: 480px) {
-            .footer-fila-info {
-                gap: 15px;
-            }
-            .footer-item-info h3 {
-                font-size: 14px;
-            }
-            .footer-item-info p {
-                font-size: 12px;
-            }
-            .footer-redes a {
-                padding: 7px 8px;
-                font-size: 11px;
-            }
-            .btn-como-llegar {
-                font-size: 13px;
-                padding: 9px 15px;
-            }
-        }
-
         /* VENTANA FLOTANTE (MODAL) PARA CONTENIDO */
         .modal-overlay {
             display: none;
@@ -287,17 +304,24 @@
 </head>
 <body>
 
+    <!-- MENÚ DE NAVEGACIÓN SUPERIOR (Agrega aquí más botones según tus páginas) -->
+    <div class="nav-categorias">
+        <a href="index.html" class="nav-link active">🎁 Arreglos</a>
+        <a href="escolares.html" class="nav-link">🎒 Escolares</a>
+        <!-- Ejemplo para agregar más adelante: <a href="mobiliario.html" class="nav-link">🪑 Mobiliario</a> -->
+    </div>
+
     <div class="seccion-header">
-        <h1>ARREGLOS</h1>
-            </div>
+        <h1>Catálogo de Arreglos</h1>
+        <p>VASORD Creacioness y Más</p>
+    </div>
 
     <div id="contenedor-principal">
         <p style="text-align:center; color: #666;">Cargando catálogo...</p>
     </div>
 
-    <!-- SECCIÓN DE PIE DE PÁGINA (FOOTER) REORGANIZADO -->
+    <!-- SECCIÓN DE PIE DE PÁGINA (FOOTER) -->
     <div class="footer-catalogo">
-        <!-- Fila 1: Dirección y Horarios lado a lado siempre -->
         <div class="footer-fila-info">
             <div class="footer-item-info">
                 <h3>📍 Dirección</h3>
@@ -309,7 +333,6 @@
             </div>
         </div>
 
-        <!-- Fila 2: Redes Sociales en una sola fila siempre -->
         <div class="footer-redes-wrapper">
             <p class="footer-redes-titulo">Redes Sociales</p>
             <div class="footer-redes">
@@ -319,7 +342,6 @@
             </div>
         </div>
 
-        <!-- Fila 3: Botón de ubicación -->
         <div>
             <a href="https://maps.app.goo.gl/apHYU7cwr8ANuH6X8" target="_blank" class="btn-como-llegar">
                 📍 Cómo llegar a VASORD 🚗
@@ -336,7 +358,7 @@
 
     <script>
         const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
-        const HOJA_A_CARGAR = '2';
+        const HOJA_A_CARGAR = '2'; // Pestaña de Arreglos
 
         function obtenerIdDrive(url) {
             if (!url) return '';
