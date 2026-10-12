@@ -118,6 +118,64 @@
         .variacion-medida { font-weight: 600; color: #444; }
         .variacion-precio { font-weight: bold; color: #27ae60; font-size: 15px; margin-left: auto; }
 
+        /* SECCIÓN DE PIE DE PÁGINA (FOOTER) */
+        .footer-catalogo {
+            max-width: 1400px;
+            margin: 60px auto 20px auto;
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            border: 1px solid #eee;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 768px) {
+            .footer-catalogo {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+        }
+        .footer-info h3 {
+            color: #1a252f;
+            font-size: 18px;
+            margin-bottom: 8px;
+            margin-top: 0;
+        }
+        .footer-info p {
+            color: #555;
+            font-size: 14px;
+            margin: 0 0 15px 0;
+            line-height: 1.5;
+        }
+        .footer-redes {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .footer-redes a {
+            background: #f4f6f9;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #ddd;
+            transition: background 0.2s;
+        }
+        .footer-redes a:hover {
+            background: #e2e8f0;
+        }
+        .footer-mapa iframe {
+            width: 100%;
+            height: 220px;
+            border: 0;
+            border-radius: 8px;
+        }
+
         /* VENTANA FLOTANTE (MODAL) PARA CONTENIDO */
         .modal-overlay {
             display: none;
@@ -183,7 +241,30 @@
         <p style="text-align:center; color: #666;">Cargando catálogo...</p>
     </div>
 
-    <!-- VENTANA FLOTANTE OCULTA -->
+    <!-- SECCIÓN DE DIRECCIÓN, HORARIOS Y MAPA -->
+    <div class="footer-catalogo">
+        <div class="footer-info">
+            <h3>📍 Dirección</h3>
+            <p>Choloma, Cortés</p>
+            
+            <h3>⏰ Horarios</h3>
+            <p>Lun - Sab: 9:00 am - 7:00 pm</p>
+
+            <h3>✨ Que empiece la fiesta</h3>
+            <p style="font-weight: bold; color: #0066cc;">Redes Sociales</p>
+            <div class="footer-redes">
+                <a href="https://www.tiktok.com" target="_blank">🎵 TikTok</a>
+                <a href="https://www.instagram.com" target="_blank">📸 Instagram</a>
+                <a href="https://www.facebook.com" target="_blank">📘 Facebook</a>
+            </div>
+            <p style="margin-top: 15px;"><a href="https://maps.app.goo.gl/apHYU7cwr8ANuH6X8" target="_blank" style="color: #0066cc; text-decoration: none; font-weight: bold;">🗺️ Abrir ubicaciones y direcciones en Google Maps</a></p>
+        </div>
+        <div class="footer-mapa">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3844.757343201479!2d-87.9538!3d15.6231!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTXCsDM3JzIzLjIiTiA4N8KwNTcnMTMuNyJX!5e0!3m2!1ses!2shn!4v1650000000000!5m2!1ses!2shn" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
+
+    <!-- VENTANA FLOTANTE (MODAL) PARA CONTENIDO -->
     <div id="videoModal" class="modal-overlay">
         <div class="modal-content" id="modalContainerBody">
             <button class="modal-close" onclick="cerrarModal()">×</button>
@@ -233,7 +314,6 @@
             
             let productosGlobales = {};
 
-            // 1. Agrupar filas por producto único (Código + Descripción)
             items.forEach(item => {
                 if(!item.codigo && !item.descripcion) return;
                 let key = `${item.codigo}_${item.descripcion}`;
@@ -251,7 +331,6 @@
                 productosGlobales[key].filas.push(item);
             });
 
-            // 2. Agrupar los productos estructurados por su Categoría/Tipo
             let categoriasMap = {};
             Object.keys(productosGlobales).forEach(key => {
                 let prod = productosGlobales[key];
@@ -262,7 +341,6 @@
                 categoriasMap[cat].push(prod);
             });
 
-            // 3. Dibujar las secciones por cada categoría con su título y su grid de 4 columnas
             Object.keys(categoriasMap).forEach(categoria => {
                 let productosCat = categoriasMap[categoria];
 
@@ -300,7 +378,7 @@
                         </div>
                     `;
 
-                    let otrosHTML = prod.otros ? `<div class="card-otros">${prod.otros}</div>` : '';
+                    let outrosHTML = prod.otros ? `<div class="card-otros">${prod.otros}</div>` : '';
                     
                     let variacionesHTML = `<div class="variaciones-container">`;
                     prod.filas.forEach(f => {
@@ -319,7 +397,7 @@
                         <div class="card-info">
                             <div>
                                 <div class="card-title">${prod.codigo}: ${prod.descripcion}</div>
-                                ${otrosHTML}
+                                ${outrosHTML}
                             </div>
                             ${variacionesHTML}
                         </div>
