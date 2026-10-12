@@ -1,3 +1,4 @@
+
     <script>
         const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
         const HOJA_A_CARGAR = '2';
@@ -61,15 +62,14 @@
                 let card = document.createElement('div');
                 card.className = 'card-producto';
 
-                // Verificamos si realmente hay un enlace de video válido con ID de Drive
+                // Verificación estricta: ¿La celda de video tiene texto real?
                 let videoUrl = prod.video ? String(prod.video).trim() : '';
-                let videoId = obtenerIdDrive(videoUrl);
-                let tieneVideoReal = videoId !== '';
+                let tieneVideoReal = videoUrl !== '' && videoUrl !== 'undefined' && videoUrl !== 'null';
                 
                 let imagenId = obtenerIdDrive(prod.imagen);
                 let portadaSrc = imagenId ? `https://lh3.googleusercontent.com/d/${imagenId}` : '';
 
-                // Si tiene un video real, muestra "Ver Video". Si no, muestra "Ver Imagen" (siempre que haya imagen).
+                // Asignación inteligente del botón
                 let textoBoton = tieneVideoReal ? "▶ Ver Video" : "🖼 Ver Imagen";
                 let accionBoton = tieneVideoReal 
                     ? `abrirModalVideo(${JSON.stringify(videoUrl)})` 
@@ -82,7 +82,7 @@
                     </div>
                 `;
 
-                let outrosHTML = prod.otros ? `<div class="card-otros">${prod.otros}</div>` : '';
+                let otrosHTML = prod.otros ? `<div class="card-otros">${prod.otros}</div>` : '';
                 
                 let variacionesHTML = `<div class="variaciones-container">`;
                 prod.filas.forEach(f => {
@@ -101,7 +101,7 @@
                     <div class="card-info">
                         <div>
                             <div class="card-title">${prod.codigo}: ${prod.descripcion}</div>
-                            ${outrosHTML}
+                            ${otrosHTML}
                         </div>
                         ${variacionesHTML}
                     </div>
