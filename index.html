@@ -1,36 +1,59 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo - VASORD</title>
+    <title>Catálogo - VASORD Creacioness y Más</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f6f9; margin: 0; padding: 20px; }
+        body { background-color: #f4f6f9; margin: 0; padding: 0 0 20px 0; }
 
-        /* MENÚ DE NAVEGACIÓN DINÁMICO AUTOMÁTICO */
+        /* FRANJA SUPERIOR ESTILO EMPRESARIAL */
+        .header-franja {
+            background: linear-gradient(135deg, #004b99, #0066cc);
+            color: #ffffff;
+            padding: 22px 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            margin-bottom: 25px;
+        }
+        .header-franja h1 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* MENÚ DE NAVEGACIÓN COMPACTO (4 POR FILA EN MÓVIL) */
         .nav-categorias {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 25px;
+            gap: 8px;
+            margin: 0 auto 30px auto;
             flex-wrap: wrap;
-            max-width: 1400px;
-            margin-left: auto;
-            margin-right: auto;
+            max-width: 1000px;
+            padding: 0 10px;
         }
         .nav-btn {
             background: #ffffff;
             color: #333;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 9px 16px;
+            border-radius: 20px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             border: 1px solid #ddd;
             box-shadow: 0 2px 5px rgba(0,0,0,0.04);
             cursor: pointer;
             transition: all 0.2s ease;
             outline: none;
+            flex: 1 1 calc(25% - 10px); /* Intenta mantener 4 elementos por fila en pantallas medianas/grandes */
+            max-width: 180px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .nav-btn:hover {
             background: #e2e8f0;
@@ -43,30 +66,50 @@
             box-shadow: 0 4px 10px rgba(0,102,204,0.3);
         }
 
-        /* ENCABEZADO DE LA PÁGINA */
+        /* ADAPTACIÓN MÓVIL EXACTA (4 POR FILA) */
+        @media (max-width: 768px) {
+            .nav-categorias {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr); /* Forzar exactamente 4 columnas en móvil */
+                gap: 6px;
+                padding: 0 10px;
+            }
+            .nav-btn {
+                width: 100%;
+                max-width: 100%;
+                padding: 8px 4px;
+                font-size: 11px; /* Letra ajustada para que quepan bien las 4 columnas */
+                border-radius: 15px;
+            }
+            .grid-productos {
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 12px;
+                padding: 0 10px;
+            }
+        }
+
+        /* ENCABEZADO DE LA SECCIÓN ACTIVA */
         .seccion-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            padding: 0 10px;
         }
-        .seccion-header h1 {
+        .seccion-header h2 {
             color: #1a252f;
-            font-size: 28px;
-            margin-bottom: 5px;
+            font-size: 24px;
+            margin-bottom: 3px;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-        .seccion-header p {
-            color: #555;
-            font-size: 14px;
         }
 
         /* CONTENEDOR DE CADA CATEGORÍA / TIPO */
         .categoria-section {
             max-width: 1400px;
             margin: 0 auto 40px auto;
+            padding: 0 15px;
         }
         .categoria-titulo {
-            font-size: 20px;
+            font-size: 19px;
             color: #1a252f;
             margin-bottom: 15px;
             font-weight: bold;
@@ -75,22 +118,13 @@
             text-transform: capitalize;
         }
 
-        /* GRID RESPONSIVO: 4 columnas en PC / 2 columnas en Celular */
+        /* GRID DE PRODUCTOS: 4 columnas en PC */
         .grid-productos { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 20px; 
-        }
-
-        @media (max-width: 768px) {
-            .grid-productos {
-                grid-template-columns: repeat(2, 1fr); 
-                gap: 12px;
-            }
-            .nav-btn {
-                padding: 8px 14px;
-                font-size: 13px;
-            }
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .card-producto { 
@@ -314,14 +348,18 @@
 </head>
 <body>
 
-    <!-- MENÚ DE NAVEGACIÓN AUTOMÁTICO -->
+    <!-- FRANJA SUPERIOR ESTILO EMPRESARIAL -->
+    <div class="header-franja">
+        <h1>VASORD Creacioness y Más</h1>
+    </div>
+
+    <!-- MENÚ DE NAVEGACIÓN DINÁMICO (4 POR FILA EN MÓVIL) -->
     <div id="nav-categorias" class="nav-categorias">
-        <span style="color:#888; font-size:13px;">Cargando áreas de Google Sheet...</span>
+        <span style="color:#888; font-size:13px; grid-column: span 4; text-align: center;">Cargando áreas...</span>
     </div>
 
     <div class="seccion-header">
-        <h1 id="titulo-seccion">Catálogo de Productos</h1>
-        
+        <h2 id="titulo-seccion">Catálogo</h2>
     </div>
 
     <div id="contenedor-principal">
@@ -366,7 +404,9 @@
 
     <script>
         const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
-        let hojasDisponibles = [];
+        
+        // 📌 LAS 5 ÁREAS DE TU GOOGLE SHEET:
+        const HOJAS_DISPONIBLES = ['Arreglos', 'Escolares', 'Flores', 'Mobiliario', 'Eventos']; 
 
         function obtenerIdDrive(url) {
             if (!url) return '';
@@ -374,38 +414,6 @@
             let match = rawUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || rawUrl.match(/id=([a-zA-Z0-9_-]+)/);
             return match && match[1] ? match[1] : '';
         }
-
-        // Función para leer automáticamente los nombres de las pestañas desde Google Sheets
-        async function detectarHojasAutomaticamente() {
-            try {
-                // Solicitamos la lista de tablas/pestañas del documento
-                const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
-                const response = await fetch(url);
-                const text = await response.text();
-                const json = JSON.parse(text.substr(47).slice(0, -2));
-                
-                // Extraemos las pestañas disponibles
-                if (json.table && json.table.cols) {
-                    // Google Sheets a veces expone las hojas en los metadatos o las definimos nosotros,
-                    // pero al no tener API directa de listado de hojas en gviz público, 
-                    // la forma más robusta y 100% autónoma requiere consultar las tablas de metadatos o 
-                    // usar un listado estándar. Sin embargo, podemos consultar las primeras hojas comunes 
-                    // o definir una función inteligente. 
-                }
-            } catch (e) {
-                console.log("Usando respaldo automático");
-            }
-        }
-
-        // Como Google Sheets gviz no expone un listado nativo directo de todas las pestañas 
-        // sin autenticación de Apps Script, la solución perfecta y automática 
-        // es la que ya tienes: definir los nombres en una lista. 
-        // PERO para que no tengas que modificar el código de GitHub cada vez, 
-        // ¡puedes poner la lista completa una vez y olvidarte para siempre!
-        
-        const HOJAS_DISPONIBLES = ['Arreglos', 'Escolares', 'Flores', 'Mobiliario', 'Eventos']; 
-        // Nota: Si agregas una hoja nueva en Google Sheet (ej: "Globos"), solo la agregas a esta lista 
-        // en GitHub una sola vez y listo, el menú se adapta solo.
 
         function construirMenu(hojaActiva) {
             const nav = document.getElementById('nav-categorias');
