@@ -118,7 +118,7 @@
         .variacion-medida { font-weight: 600; color: #444; }
         .variacion-precio { font-weight: bold; color: #27ae60; font-size: 15px; margin-left: auto; }
 
-        /* SECCIÓN DE PIE DE PÁGINA (FOOTER) */
+        /* SECCIÓN DE PIE DE PÁGINA (FOOTER) EN FILAS HORIZONTALES */
         .footer-catalogo {
             max-width: 1400px;
             margin: 60px auto 20px auto;
@@ -128,30 +128,57 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.06);
             border: 1px solid #eee;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
         }
-        .footer-info h3 {
+
+        .footer-fila-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .footer-item-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .footer-item-info h3 {
             color: #1a252f;
-            font-size: 18px;
-            margin-bottom: 8px;
-            margin-top: 15px;
+            font-size: 16px;
+            margin: 0 0 4px 0;
         }
-        .footer-info p {
+        .footer-item-info p {
             color: #555;
             font-size: 14px;
-            margin: 0 0 15px 0;
-            line-height: 1.5;
+            margin: 0;
+        }
+
+        .footer-redes-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .footer-redes-titulo {
+            font-weight: bold;
+            color: #1a252f;
+            font-size: 15px;
+            margin: 0;
         }
         .footer-redes {
             display: flex;
             gap: 15px;
             justify-content: center;
             align-items: center;
-            margin-top: 15px;
             flex-wrap: wrap;
         }
         .footer-redes a {
             background: #f4f6f9;
-            padding: 10px 16px;
+            padding: 10px 18px;
             border-radius: 8px;
             text-decoration: none;
             color: #333;
@@ -163,15 +190,16 @@
         .footer-redes a:hover {
             background: #e2e8f0;
         }
+
         .btn-como-llegar {
             display: inline-block;
-            margin-top: 15px;
-            padding: 10px 18px;
+            padding: 10px 20px;
             background-color: #0066cc;
             color: #ffffff !important;
             text-decoration: none;
             font-weight: bold;
             border-radius: 8px;
+            font-size: 14px;
             transition: background-color 0.2s ease;
         }
         .btn-como-llegar:hover {
@@ -243,27 +271,35 @@
         <p style="text-align:center; color: #666;">Cargando catálogo...</p>
     </div>
 
-    <!-- SECCIÓN DE DIRECCIÓN, HORARIOS Y REDES -->
+    <!-- SECCIÓN DE PIE DE PÁGINA (FOOTER) REORGANIZADO -->
     <div class="footer-catalogo">
-        <div class="footer-info">
-            <h3>📍 Dirección</h3>
-            <p>Choloma, Cortés</p>
-            
-            <h3>⏰ Horarios</h3>
-            <p>Lun - Sab: 9:00 am - 7:00 pm</p>
+        <!-- Fila 1: Dirección y Horarios lado a lado -->
+        <div class="footer-fila-info">
+            <div class="footer-item-info">
+                <h3>📍 Dirección</h3>
+                <p>Choloma, Cortés</p>
+            </div>
+            <div class="footer-item-info">
+                <h3>⏰ Horarios</h3>
+                <p>Lun - Sab: 9:00 am - 7:00 pm</p>
+            </div>
+        </div>
 
-            <p style="font-weight: bold; color: #1a252f; margin-top: 20px;">Redes Sociales</p>
+        <!-- Fila 2: Redes Sociales en una sola fila -->
+        <div class="footer-redes-wrapper">
+            <p class="footer-redes-titulo">Redes Sociales</p>
             <div class="footer-redes">
                 <a href="https://www.tiktok.com/@vasordhn" target="_blank">🎵 TikTok</a>
                 <a href="https://www.instagram.com/vasordhn" target="_blank">📸 Instagram</a>
                 <a href="https://www.facebook.com/vasordhn" target="_blank">📘 Facebook</a>
             </div>
+        </div>
 
-            <div style="margin-top: 20px;">
-                <a href="https://maps.app.goo.gl/apHYU7cwr8ANuH6X8" target="_blank" class="btn-como-llegar">
-                    📍 Cómo llegar a VASORD 🚗
-                </a>
-            </div>
+        <!-- Fila 3: Botón de ubicación -->
+        <div>
+            <a href="https://maps.app.goo.gl/apHYU7cwr8ANuH6X8" target="_blank" class="btn-como-llegar">
+                📍 Cómo llegar a VASORD 🚗
+            </a>
         </div>
     </div>
 
@@ -453,4 +489,3 @@
     </script>
 </body>
 </html>
-
