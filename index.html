@@ -19,29 +19,31 @@
         }
         .header-franja h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 26px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
             font-weight: 700;
         }
 
-        /* MENÚ DE NAVEGACIÓN DINÁMICO */
+        /* MENÚ DE NAVEGACIÓN DINÁMICO AUTOMÁTICO */
         .nav-categorias {
             display: flex;
             justify-content: center;
             gap: 8px;
-            margin: 0 auto 25px auto;
+            margin-bottom: 25px;
             flex-wrap: wrap;
-            max-width: 1200px;
-            padding: 0 15px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 10px;
         }
         .nav-btn {
             background: #ffffff;
             color: #333;
-            padding: 9px 16px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 14px;
             border: 1px solid #ddd;
             box-shadow: 0 2px 5px rgba(0,0,0,0.04);
             cursor: pointer;
@@ -49,6 +51,8 @@
             outline: none;
             text-align: center;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .nav-btn:hover {
             background: #e2e8f0;
@@ -61,18 +65,41 @@
             box-shadow: 0 4px 10px rgba(0,102,204,0.3);
         }
 
-        /* ENCABEZADO DE LA SECCIÓN ACTIVA */
+        /* ADAPTACIÓN MÓVIL DEL MENÚ (4 POR FILA) */
+        @media (max-width: 768px) {
+            .nav-categorias {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+                padding: 0 10px;
+            }
+            .nav-btn {
+                width: 100%;
+                padding: 8px 4px;
+                font-size: 11px;
+                border-radius: 15px;
+            }
+            .header-franja h1 {
+                font-size: 20px;
+            }
+        }
+
+        /* ENCABEZADO DE LA PÁGINA */
         .seccion-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             padding: 0 10px;
         }
-        .seccion-header h2 {
+        .seccion-header h1 {
             color: #1a252f;
-            font-size: 24px;
-            margin: 0;
+            font-size: 28px;
+            margin-bottom: 5px;
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+        .seccion-header p {
+            color: #555;
+            font-size: 14px;
         }
 
         /* CONTENEDOR DE CADA CATEGORÍA / TIPO */
@@ -82,7 +109,7 @@
             padding: 0 15px;
         }
         .categoria-titulo {
-            font-size: 19px;
+            font-size: 20px;
             color: #1a252f;
             margin-bottom: 15px;
             font-weight: bold;
@@ -91,28 +118,17 @@
             text-transform: capitalize;
         }
 
-        /* GRID DE PRODUCTOS: 4 columnas en PC / 2 columnas en Celular */
+        /* GRID RESPONSIVO: 4 columnas en PC / 2 columnas en Celular */
         .grid-productos { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 20px; 
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
         }
 
         @media (max-width: 768px) {
-            .header-franja h1 {
-                font-size: 20px;
-            }
-            .nav-btn {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
             .grid-productos {
-                grid-template-columns: repeat(2, 1fr) !important; 
+                grid-template-columns: repeat(2, 1fr); 
                 gap: 12px;
-                padding: 0;
             }
         }
 
@@ -125,7 +141,6 @@
             flex-direction: column; 
             justify-content: space-between; 
             border: 1px solid #eee; 
-            width: 100%;
         }
 
         /* RECUADRO DE PORTADA */
@@ -323,3 +338,279 @@
         .modal-close {
             position: absolute;
             top: 10px;
+            right: 15px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- FRANJA SUPERIOR ESTILO EMPRESARIAL -->
+    <div class="header-franja">
+        <h1>VASORD Creacioness y Más</h1>
+    </div>
+
+    <!-- MENÚ DE NAVEGACIÓN AUTOMÁTICO -->
+    <div id="nav-categorias" class="nav-categorias">
+        <span style="color:#888; font-size:13px;">Cargando áreas de Google Sheet...</span>
+    </div>
+
+    <div class="seccion-header">
+        <h1 id="titulo-seccion">Catálogo de Productos</h1>
+    </div>
+
+    <div id="contenedor-principal">
+        <p style="text-align:center; color: #666;">Cargando catálogo...</p>
+    </div>
+
+    <!-- SECCIÓN DE PIE DE PÁGINA (FOOTER) -->
+    <div class="footer-catalogo">
+        <div class="footer-fila-info">
+            <div class="footer-item-info">
+                <h3>📍 Dirección</h3>
+                <p>Choloma, Cortés</p>
+            </div>
+            <div class="footer-item-info">
+                <h3>⏰ Horarios</h3>
+                <p>Lun - Sab: 9:00 am - 7:00 pm</p>
+            </div>
+        </div>
+
+        <div class="footer-redes-wrapper">
+            <p class="footer-redes-titulo">Redes Sociales</p>
+            <div class="footer-redes">
+                <a href="https://www.tiktok.com/@vasordhn" target="_blank">🎵 TikTok</a>
+                <a href="https://www.instagram.com/vasordhn" target="_blank">📸 Instagram</a>
+                <a href="https://www.facebook.com/vasordhn" target="_blank">📘 Facebook</a>
+            </div>
+        </div>
+
+        <div>
+            <a href="https://maps.app.goo.gl/apHYU7cwr8ANuH6X8" target="_blank" class="btn-como-llegar">
+                📍 Cómo llegar a VASORD 🚗
+            </a>
+        </div>
+    </div>
+
+    <!-- VENTANA FLOTANTE (MODAL) PARA CONTENIDO -->
+    <div id="videoModal" class="modal-overlay">
+        <div class="modal-content" id="modalContainerBody">
+            <button class="modal-close" onclick="cerrarModal()">×</button>
+        </div>
+    </div>
+
+    <script>
+        const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
+        
+        const HOJAS_DISPONIBLES = ['Arreglos', 'Escolares', 'Flores', 'Mobiliario', 'Eventos']; 
+
+        function obtenerIdDrive(url) {
+            if (!url) return '';
+            let rawUrl = String(url).trim();
+            let match = rawUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || rawUrl.match(/id=([a-zA-Z0-9_-]+)/);
+            return match && match[1] ? match[1] : '';
+        }
+
+        function construirMenu(hojaActiva) {
+            const nav = document.getElementById('nav-categorias');
+            nav.innerHTML = '';
+
+            HOJAS_DISPONIBLES.forEach((nombreHoja) => {
+                let btn = document.createElement('button');
+                btn.className = `nav-btn ${nombreHoja === hojaActiva ? 'active' : ''}`;
+                btn.innerText = nombreHoja;
+                btn.onclick = () => cambiarHoja(nombreHoja);
+                nav.appendChild(btn);
+            });
+        }
+
+        function cambiarHoja(nombreHoja) {
+            construirMenu(nombreHoja);
+            document.getElementById('titulo-seccion').innerText = `Catálogo - ${nombreHoja}`;
+            cargarDatos(nombreHoja);
+        }
+
+        async function cargarDatos(nombreHoja) {
+            const contenedor = document.getElementById('contenedor-principal');
+            contenedor.innerHTML = '<p style="text-align:center; color: #666;">Cargando catálogo...</p>';
+
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nombreHoja)}`;
+                const response = await fetch(url);
+                const text = await response.text();
+                const json = JSON.parse(text.substr(47).slice(0, -2));
+                const rows = json.table.rows;
+
+                let productos = rows.map(r => ({
+                    codigo: r.c[0] ? String(r.c[0].v) : '',
+                    descripcion: r.c[1] ? String(r.c[1].v) : '',
+                    otros: r.c[2] ? String(r.c[2].v) : '',
+                    tipo: r.c[3] ? String(r.c[3].v).trim() : 'General',
+                    medida: r.c[4] ? String(r.c[4].v) : '',
+                    precio: r.c[5] ? String(r.c[5].v) : '',
+                    imagen: r.c[6] ? String(r.c[6].v) : '',
+                    video: r.c[7] && r.c[7].v ? String(r.c[7].v).trim() : ''
+                }));
+
+                renderizarPorCategorias(productos);
+            } catch (error) {
+                contenedor.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los datos de esta área.</p>';
+            }
+        }
+
+        function renderizarPorCategorias(items) {
+            const contenedorPrincipal = document.getElementById('contenedor-principal');
+            contenedorPrincipal.innerHTML = '';
+            
+            let productosGlobales = {};
+
+            items.forEach(item => {
+                if(!item.codigo && !item.descripcion) return;
+                let key = `${item.codigo}_${item.descripcion}`;
+                if (!productosGlobales[key]) {
+                    productosGlobales[key] = {
+                        codigo: item.codigo,
+                        descripcion: item.descripcion,
+                        otros: item.otros,
+                        tipo: item.tipo || 'General',
+                        imagen: item.imagen,
+                        video: item.video,
+                        filas: []
+                    };
+                }
+                productosGlobales[key].filas.push(item);
+            });
+
+            let categoriasMap = {};
+            Object.keys(productosGlobales).forEach(key => {
+                let prod = productosGlobales[key];
+                let cat = prod.tipo !== '' ? prod.tipo : 'General';
+                if (!categoriasMap[cat]) {
+                    categoriasMap[cat] = [];
+                }
+                categoriasMap[cat].push(prod);
+            });
+
+            if (Object.keys(categoriasMap).length === 0) {
+                contenedorPrincipal.innerHTML = '<p style="text-align:center; color: #888;">No hay productos registrados en esta sección.</p>';
+                return;
+            }
+
+            Object.keys(categoriasMap).forEach(categoria => {
+                let productosCat = categoriasMap[categoria];
+
+                let seccionDiv = document.createElement('div');
+                seccionDiv.className = 'categoria-section';
+
+                let tituloDiv = document.createElement('div');
+                tituloDiv.className = 'categoria-titulo';
+                tituloDiv.innerText = categoria;
+                seccionDiv.appendChild(tituloDiv);
+
+                let gridDiv = document.createElement('div');
+                gridDiv.className = 'grid-productos';
+
+                productosCat.forEach(prod => {
+                    let card = document.createElement('div');
+                    card.className = 'card-producto';
+
+                    let videoUrl = prod.video ? String(prod.video).trim() : '';
+                    let videoId = obtenerIdDrive(videoUrl);
+                    let tieneVideoReal = videoUrl !== '' && videoId !== '';
+                    
+                    let imagenId = obtenerIdDrive(prod.imagen);
+                    let portadaSrc = imagenId ? `https://lh3.googleusercontent.com/d/${imagenId}` : '';
+
+                    let textoBoton = tieneVideoReal ? "▶ Ver Video" : "🖼 Ver Imagen";
+                    let accionBoton = tieneVideoReal 
+                        ? `abrirModalVideo(${JSON.stringify(videoUrl)})` 
+                        : `abrirModalImagen(${JSON.stringify(portadaSrc)})`;
+
+                    let mediaHTML = `
+                        <div class="media-container">
+                            ${portadaSrc ? `<img src="${portadaSrc}" alt="${prod.descripcion}">` : '<div style="color:#aaa;">Sin portada</div>'}
+                            ${portadaSrc || tieneVideoReal ? `<div class="video-btn-play" onclick='${accionBoton}'>${textoBoton}</div>` : ''}
+                        </div>
+                    `;
+
+                    let outrosHTML = prod.otros ? `<div class="card-otros">${prod.otros}</div>` : '';
+                    
+                    let variacionesHTML = `<div class="variaciones-container">`;
+                    prod.filas.forEach(f => {
+                        let medidaHTML = f.medida ? `<span class="variacion-medida">${f.medida}</span>` : '';
+                        variacionesHTML += `
+                            <div class="variacion-row-final">
+                                ${medidaHTML}
+                                <span class="variacion-precio">Lps. ${f.precio}</span>
+                            </div>
+                        `;
+                    });
+                    variacionesHTML += `</div>`;
+
+                    card.innerHTML = `
+                        ${mediaHTML}
+                        <div class="card-info">
+                            <div>
+                                <div class="card-title">${prod.codigo}: ${prod.descripcion}</div>
+                                ${outrosHTML}
+                            </div>
+                            ${variacionesHTML}
+                        </div>
+                    `;
+
+                    gridDiv.appendChild(card);
+                });
+
+                seccionDiv.appendChild(gridDiv);
+                contenedorPrincipal.appendChild(seccionDiv);
+            });
+        }
+
+        function abrirModalVideo(videoUrl) {
+            let videoId = obtenerIdDrive(videoUrl);
+            if (!videoId) return;
+
+            let modal = document.getElementById('videoModal');
+            let containerBody = document.getElementById('modalContainerBody');
+            
+            containerBody.innerHTML = `
+                <button class="modal-close" onclick="cerrarModal()">×</button>
+                <iframe src="https://drive.google.com/file/d/${videoId}/preview" allow="autoplay" allowfullscreen></iframe>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function abrirModalImagen(imageUrl) {
+            if (!imageUrl) return;
+
+            let modal = document.getElementById('videoModal');
+            let containerBody = document.getElementById('modalContainerBody');
+            
+            containerBody.innerHTML = `
+                <button class="modal-close" onclick="cerrarModal()">×</button>
+                <img src="${imageUrl}" alt="Imagen ampliada">
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            let modal = document.getElementById('videoModal');
+            let containerBody = document.getElementById('modalContainerBody');
+            
+            containerBody.innerHTML = '';
+            modal.style.display = 'none';
+        }
+
+        // Inicializamos con la primera área
+        cambiarHoja(HOJAS_DISPONIBLES[0]);
+    </script>
+</body>
+</html>
