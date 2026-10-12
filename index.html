@@ -118,13 +118,13 @@
         .variacion-medida { font-weight: 600; color: #444; }
         .variacion-precio { font-weight: bold; color: #27ae60; font-size: 15px; margin-left: auto; }
 
-        /* SECCIÓN DE PIE DE PÁGINA (FOOTER) EN FILAS HORIZONTALES */
+        /* SECCIÓN DE PIE DE PÁGINA (FOOTER) ADAPTADO A MÓVIL */
         .footer-catalogo {
             max-width: 1400px;
             margin: 60px auto 20px auto;
             background: #fff;
             border-radius: 12px;
-            padding: 30px;
+            padding: 30px 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.06);
             border: 1px solid #eee;
             text-align: center;
@@ -136,10 +136,11 @@
 
         .footer-fila-info {
             display: flex;
+            flex-direction: row;
             justify-content: center;
-            align-items: center;
-            gap: 40px;
-            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 30px;
+            width: 100%;
         }
         .footer-item-info {
             display: flex;
@@ -162,6 +163,7 @@
             flex-direction: column;
             align-items: center;
             gap: 10px;
+            width: 100%;
         }
         .footer-redes-titulo {
             font-weight: bold;
@@ -171,14 +173,16 @@
         }
         .footer-redes {
             display: flex;
-            gap: 15px;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 10px;
             justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
+            width: 100%;
         }
         .footer-redes a {
             background: #f4f6f9;
-            padding: 10px 18px;
+            padding: 8px 12px;
             border-radius: 8px;
             text-decoration: none;
             color: #333;
@@ -186,6 +190,7 @@
             font-size: 13px;
             border: 1px solid #ddd;
             transition: background 0.2s;
+            white-space: nowrap;
         }
         .footer-redes a:hover {
             background: #e2e8f0;
@@ -204,6 +209,26 @@
         }
         .btn-como-llegar:hover {
             background-color: #004b99;
+        }
+
+        @media (max-width: 480px) {
+            .footer-fila-info {
+                gap: 15px;
+            }
+            .footer-item-info h3 {
+                font-size: 14px;
+            }
+            .footer-item-info p {
+                font-size: 12px;
+            }
+            .footer-redes a {
+                padding: 7px 8px;
+                font-size: 11px;
+            }
+            .btn-como-llegar {
+                font-size: 13px;
+                padding: 9px 15px;
+            }
         }
 
         /* VENTANA FLOTANTE (MODAL) PARA CONTENIDO */
@@ -263,8 +288,9 @@
 <body>
 
     <div class="seccion-header">
-        <h1>ARREGLOS</h1>
-            </div>
+        <h1>Catálogo de Productos</h1>
+        <p>VASORD Creacioness y Más</p>
+    </div>
 
     <div id="contenedor-principal">
         <p style="text-align:center; color: #666;">Cargando catálogo...</p>
@@ -272,7 +298,7 @@
 
     <!-- SECCIÓN DE PIE DE PÁGINA (FOOTER) REORGANIZADO -->
     <div class="footer-catalogo">
-        <!-- Fila 1: Dirección y Horarios lado a lado -->
+        <!-- Fila 1: Dirección y Horarios lado a lado siempre -->
         <div class="footer-fila-info">
             <div class="footer-item-info">
                 <h3>📍 Dirección</h3>
@@ -284,7 +310,7 @@
             </div>
         </div>
 
-        <!-- Fila 2: Redes Sociales en una sola fila -->
+        <!-- Fila 2: Redes Sociales en una sola fila siempre -->
         <div class="footer-redes-wrapper">
             <p class="footer-redes-titulo">Redes Sociales</p>
             <div class="footer-redes">
@@ -488,4 +514,3 @@
     </script>
 </body>
 </html>
-
