@@ -57,7 +57,7 @@
             position: relative; 
             width: 100%; 
             height: 280px; 
-            background: #f8f9fa; 
+            background: #000; 
             overflow: hidden; 
             display: flex; 
             align-items: center; 
@@ -69,13 +69,14 @@
             height: 100%; 
             object-fit: contain; 
             padding: 5px; 
+            background: #f8f9fa;
         }
 
         .media-container iframe {
             width: 100%;
             height: 100%;
-            border: none;
-            background: #000;
+            border: 0;
+            outline: none;
         }
 
         /* Botón de reproducción */
@@ -195,7 +196,7 @@
                 let mediaHTML = `
                     <div class="media-container" id="media_box_${key}">
                         ${portadaSrc ? `<img src="${portadaSrc}" alt="${prod.descripcion}">` : '<div style="color:#aaa;">Sin portada</div>'}
-                        ${tieneVideo ? `<div class="video-btn-play" onclick='reproducirVideoEnCuadro("${key}", ${JSON.stringify(videoUrl)})'>▶ Reproducir Video</div>` : ''}
+                        ${tieneVideo ? `<div class="video-btn-play" onclick='reproducirVideoDrive("${key}", ${JSON.stringify(videoUrl)})'>▶ Reproducir Video</div>` : ''}
                     </div>
                 `;
 
@@ -228,14 +229,14 @@
             });
         }
 
-        function reproducirVideoEnCuadro(key, videoUrl) {
+        function reproducirVideoDrive(key, videoUrl) {
             let mediaBox = document.getElementById(`media_box_${key}`);
             if (!mediaBox || !videoUrl) return;
 
             let videoId = obtenerIdDrive(videoUrl);
             if (!videoId) return;
 
-            // Inserta el reproductor integrado directamente en el espacio de la portada
+            // Inserta el visor de Google Drive optimizado sin bloqueo de superposición
             mediaBox.innerHTML = `
                 <iframe src="https://drive.google.com/file/d/${videoId}/preview" allow="autoplay" allowfullscreen></iframe>
             `;
