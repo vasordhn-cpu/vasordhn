@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -71,7 +72,7 @@
             padding: 5px; 
         }
 
-        /* Botón de reproducción */
+        /* Botón dinámico */
         .video-btn-play { 
             position: absolute; 
             bottom: 12px; 
@@ -105,7 +106,7 @@
         .variacion-medida { font-weight: 600; color: #444; }
         .variacion-precio { font-weight: bold; color: #27ae60; font-size: 15px; margin-left: auto; }
 
-        /* VENTANA FLOTANTE (MODAL) PARA EL VIDEO */
+        /* VENTANA FLOTANTE (MODAL) PARA CONTENIDO */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -129,11 +130,19 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         .modal-content iframe {
             width: 100%;
             height: 100%;
             border: none;
+        }
+        .modal-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
         }
         .modal-close {
             position: absolute;
@@ -164,9 +173,9 @@
 
     <!-- VENTANA FLOTANTE OCULTA -->
     <div id="videoModal" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content" id="modalContainerBody">
             <button class="modal-close" onclick="cerrarModal()">×</button>
-            <iframe id="modalIframe" src="" allow="autoplay" allowfullscreen></iframe>
+            <!-- Aquí se inyecta dinámicamente el iframe o la imagen -->
         </div>
     </div>
 
@@ -239,10 +248,16 @@
                 let imagenId = obtenerIdDrive(prod.imagen);
                 let portadaSrc = imagenId ? `https://lh3.googleusercontent.com/d/${imagenId}` : '';
 
+                // Determinar el texto del botón según si tiene video o solo imagen
+                let textoBoton = tieneVideo ? "▶ Ver Video" : "🖼 Ver Imagen";
+                let accionBoton = tieneVideo 
+                    ? `abrirModalVideo(${JSON.stringify(videoUrl)})` 
+                    : `abrirModalImagen(${JSON.stringify(portadaSrc)})`;
+
                 let mediaHTML = `
                     <div class="media-container">
                         ${portadaSrc ? `<img src="${portadaSrc}" alt="${prod.descripcion}">` : '<div style="color:#aaa;">Sin portada</div>'}
-                        ${tieneVideo ? `<div class="video-btn-play" onclick='abrirModalVideo(${JSON.stringify(videoUrl)})'>▶ Ver Video</div>` : ''}
+                        ${portadaSrc || tieneVideo ? `<div class="video-btn-play" onclick='${accionBoton}'>${textoBoton}</div>` : ''}
                     </div>
                 `;
 
@@ -280,17 +295,33 @@
             if (!videoId) return;
 
             let modal = document.getElementById('videoModal');
-            let iframe = document.getElementById('modalIframe');
+            let containerBody = document.getElementById('modalContainerBody');
             
-            iframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
+            containerBody.innerHTML = `
+                <button class="modal-close" onclick="cerrarModal()">×</button>
+                <iframe src="https://drive.google.com/file/d/${videoId}/preview" allow="autoplay" allowfullscreen></iframe>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function abrirModalImagen(imageUrl) {
+            if (!imageUrl) return;
+
+            let modal = document.getElementById('videoModal');
+            let containerBody = document.getElementById('modalContainerBody');
+            
+            containerBody.innerHTML = `
+                <button class="modal-close" onclick="cerrarModal()">×</button>
+                <img src="${imageUrl}" alt="Imagen ampliada">
+            `;
             modal.style.display = 'flex';
         }
 
         function cerrarModal() {
             let modal = document.getElementById('videoModal');
-            let iframe = document.getElementById('modalIframe');
+            let containerBody = document.getElementById('modalContainerBody');
             
-            iframe.src = ''; // Detiene el video al cerrar
+            containerBody.innerHTML = ''; // Limpia el contenido al cerrar
             modal.style.display = 'none';
         }
 
