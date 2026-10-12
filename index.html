@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -26,19 +25,19 @@
             font-size: 14px;
         }
 
-        /* GRID RESPONSIVO: 3 columnas en PC / 1 columna en Celular */
+        /* GRID RESPONSIVO: 4 columnas en PC / 2 columnas en Celular */
         .grid-productos { 
             display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
+            grid-template-columns: repeat(4, 1fr); 
             gap: 20px; 
-            max-width: 1200px; 
+            max-width: 1400px; 
             margin: 0 auto; 
         }
 
         @media (max-width: 768px) {
             .grid-productos {
-                grid-template-columns: 1fr; 
-                gap: 15px;
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 12px;
             }
         }
 
@@ -57,7 +56,7 @@
         .media-container { 
             position: relative; 
             width: 100%; 
-            height: 280px; 
+            height: 250px; 
             background: #f8f9fa; 
             overflow: hidden; 
             display: flex; 
@@ -241,7 +240,6 @@
                 let card = document.createElement('div');
                 card.className = 'card-producto';
 
-                // Validación estricta: Solo hay video si la celda tiene texto y contiene un ID de Google Drive válido
                 let videoUrl = prod.video ? String(prod.video).trim() : '';
                 let videoId = obtenerIdDrive(videoUrl);
                 let tieneVideoReal = videoUrl !== '' && videoId !== '';
@@ -329,3 +327,4 @@
     </script>
 </body>
 </html>
+
