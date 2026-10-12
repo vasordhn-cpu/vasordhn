@@ -82,6 +82,21 @@
             .header-franja h1 {
                 font-size: 20px;
             }
+            
+            /* Ajuste compacto para medida y precio en móvil */
+            .variacion-row-final {
+                padding: 4px 8px !important;
+                font-size: 11px !important;
+            }
+            .variacion-medida {
+                font-size: 11px !important;
+            }
+            .variacion-precio {
+                font-size: 12px !important;
+            }
+            .card-info {
+                padding: 10px !important;
+            }
         }
 
         /* ENCABEZADO DE LA PÁGINA */
@@ -411,6 +426,7 @@
         const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
         
         const HOJAS_DISPONIBLES = ['Arreglos', 'Escolares', 'Flores', 'Mobiliario', 'Eventos']; 
+        let hojaActualGlobal = HOJAS_DISPONIBLES[0];
 
         function obtenerIdDrive(url) {
             if (!url) return '';
@@ -433,6 +449,7 @@
         }
 
         function cambiarHoja(nombreHoja) {
+            hojaActualGlobal = nombreHoja;
             construirMenu(nombreHoja);
             document.getElementById('titulo-seccion').innerText = `Catálogo - ${nombreHoja}`;
             cargarDatos(nombreHoja);
@@ -504,6 +521,9 @@
                 return;
             }
 
+            // Ocultar precios y medidas únicamente si la sección activa es "Eventos"
+            let esSeccionEventos = hojaActualGlobal.toLowerCase().trim() === 'eventos';
+
             Object.keys(categoriasMap).forEach(categoria => {
                 let productosCat = categoriasMap[categoria];
 
@@ -543,17 +563,24 @@
 
                     let outrosHTML = prod.otros ? `<div class="card-otros">${prod.otros}</div>` : '';
                     
-                    let variacionesHTML = `<div class="variaciones-container">`;
-                    prod.filas.forEach(f => {
-                        let medidaHTML = f.medida ? `<span class="variacion-medida">${f.medida}</span>` : '';
-                        variacionesHTML += `
-                            <div class="variacion-row-final">
-                                ${medidaHTML}
-                                <span class="variacion-precio">Lps. ${f.precio}</span>
-                            </div>
-                        `;
-                    });
-                    variacionesHTML += `</div>`;
+                    let variacionesHTML = '';
+                    if (!esSeccionEventos) {
+                        variacionesHTML = `<div class="variaciones-container">`;
+                        prod.filas.forEach(f => {
+                            let medidaHTML = f.medida ? `<span class="variacion-medida">${f.medida}</span>` : '';
+                            let precioHTML = f.precio ? `<span class="variacion-precio">Lps. ${f.precio}</span>` : '';
+                            
+                            if (medidaHTML || precioHTML) {
+                                variacionesHTML += `
+                                    <div class="variacion-row-final">
+                                        ${medidaHTML}
+                                        ${precioHTML}
+                                    </div>
+                                `;
+                            }
+                        });
+                        variacionesHTML += `</div>`;
+                    }
 
                     card.innerHTML = `
                         ${mediaHTML}
