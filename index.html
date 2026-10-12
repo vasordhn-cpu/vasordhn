@@ -1,183 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo - VASORD</title>
-    <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f6f9; margin: 0; padding: 20px; }
-
-        /* ENCABEZADO DE LA PÁGINA */
-        .seccion-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .seccion-header h1 {
-            color: #1a252f;
-            font-size: 28px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .seccion-header p {
-            color: #555;
-            font-size: 14px;
-        }
-
-        /* GRID RESPONSIVO: 3 columnas en PC / 1 columna en Celular */
-        .grid-productos { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 20px; 
-            max-width: 1200px; 
-            margin: 0 auto; 
-        }
-
-        @media (max-width: 768px) {
-            .grid-productos {
-                grid-template-columns: 1fr; 
-                gap: 15px;
-            }
-        }
-
-        .card-producto { 
-            background: #fff; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            border: 1px solid #eee; 
-        }
-
-        /* RECUADRO DE PORTADA */
-        .media-container { 
-            position: relative; 
-            width: 100%; 
-            height: 280px; 
-            background: #f8f9fa; 
-            overflow: hidden; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        
-        .media-container img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: contain; 
-            padding: 5px; 
-        }
-
-        /* Botón dinámico */
-        .video-btn-play { 
-            position: absolute; 
-            bottom: 12px; 
-            right: 12px; 
-            background: rgba(0, 0, 0, 0.85); 
-            color: #fff; 
-            padding: 8px 16px; 
-            border-radius: 20px; 
-            font-size: 12px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
-            z-index: 5;
-            transition: transform 0.2s ease, background 0.2s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        .video-btn-play:hover {
-            transform: scale(1.05);
-            background: #0066cc;
-        }
-
-        .card-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
-        .card-title { font-size: 15px; font-weight: bold; color: #1a252f; margin-bottom: 8px; line-height: 1.3; }
-        
-        .card-otros { font-size: 13px; color: #555; background: #f8f9fa; padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid #3498db; line-height: 1.4; }
-
-        .variaciones-container { display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
-        .variacion-row-final { display: flex; justify-content: space-between; align-items: center; background: #fff8e1; border: 1px solid #ffe082; padding: 8px 12px; border-radius: 8px; font-size: 13px; }
-        .variacion-medida { font-weight: 600; color: #444; }
-        .variacion-precio { font-weight: bold; color: #27ae60; font-size: 15px; margin-left: auto; }
-
-        /* VENTANA FLOTANTE (MODAL) PARA CONTENIDO */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .modal-content {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            height: 80vh;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .modal-content img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #000;
-        }
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            background: #e74c3c;
-            color: #fff;
-            border: none;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 5px 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 10000;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="seccion-header">
-        <h1>Catálogo de Productos</h1>
-        <p>VASORD Creacioness y Más</p>
-    </div>
-
-    <div id="grid-productos" class="grid-productos">
-        <p style="text-align:center; grid-column: 1/-1; color: #666;">Cargando catálogo...</p>
-    </div>
-
-    <!-- VENTANA FLOTANTE OCULTA -->
-    <div id="videoModal" class="modal-overlay">
-        <div class="modal-content" id="modalContainerBody">
-            <button class="modal-close" onclick="cerrarModal()">×</button>
-            <!-- Aquí se inyecta dinámicamente el iframe o la imagen -->
-        </div>
-    </div>
-
     <script>
         const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
         const HOJA_A_CARGAR = '2';
@@ -241,22 +61,24 @@
                 let card = document.createElement('div');
                 card.className = 'card-producto';
 
+                // Verificamos si realmente hay un enlace de video válido con ID de Drive
                 let videoUrl = prod.video ? String(prod.video).trim() : '';
-                let tieneVideo = videoUrl !== '';
+                let videoId = obtenerIdDrive(videoUrl);
+                let tieneVideoReal = videoId !== '';
                 
                 let imagenId = obtenerIdDrive(prod.imagen);
                 let portadaSrc = imagenId ? `https://lh3.googleusercontent.com/d/${imagenId}` : '';
 
-                // Determinar el texto del botón según si tiene video o solo imagen
-                let textoBoton = tieneVideo ? "▶ Ver Video" : "🖼 Ver Imagen";
-                let accionBoton = tieneVideo 
+                // Si tiene un video real, muestra "Ver Video". Si no, muestra "Ver Imagen" (siempre que haya imagen).
+                let textoBoton = tieneVideoReal ? "▶ Ver Video" : "🖼 Ver Imagen";
+                let accionBoton = tieneVideoReal 
                     ? `abrirModalVideo(${JSON.stringify(videoUrl)})` 
                     : `abrirModalImagen(${JSON.stringify(portadaSrc)})`;
 
                 let mediaHTML = `
                     <div class="media-container">
                         ${portadaSrc ? `<img src="${portadaSrc}" alt="${prod.descripcion}">` : '<div style="color:#aaa;">Sin portada</div>'}
-                        ${portadaSrc || tieneVideo ? `<div class="video-btn-play" onclick='${accionBoton}'>${textoBoton}</div>` : ''}
+                        ${portadaSrc || tieneVideoReal ? `<div class="video-btn-play" onclick='${accionBoton}'>${textoBoton}</div>` : ''}
                     </div>
                 `;
 
@@ -320,11 +142,10 @@
             let modal = document.getElementById('videoModal');
             let containerBody = document.getElementById('modalContainerBody');
             
-            containerBody.innerHTML = ''; // Limpia el contenido al cerrar
+            containerBody.innerHTML = '';
             modal.style.display = 'none';
         }
 
         cargarDatos();
     </script>
-</body>
-</html>
+
