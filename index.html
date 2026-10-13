@@ -316,7 +316,7 @@
             letter-spacing: 0.5px;
         }
         .servicios-header-col-desc { flex-grow: 1; }
-        .servicios-header-col-medida { width: 130px; text-align: center; }
+        .servicios-header-col-medida { width: 150px; text-align: center; }
         .servicios-header-col-precio { width: 110px; text-align: right; }
 
         .servicio-row {
@@ -358,7 +358,7 @@
             background: #f4f6f9;
             padding: 3px 8px;
             border-radius: 6px;
-            width: 130px;
+            width: 150px;
             text-align: center;
         }
         .servicio-precio {
@@ -370,34 +370,33 @@
             white-space: nowrap;
         }
 
-        /* ADAPTACIÓN MÓVIL: AMPLÍA LA DESCRIPCIÓN Y ACOMODA LA MEDIDA SIN CORTAR TEXTO */
+        /* ADAPTACIÓN MÓVIL: MÁS ESPACIO A DESCRIPCIÓN Y MEDIDA CORRIDA A LA DERECHA */
         @media (max-width: 768px) {
             .servicios-header-row {
                 font-size: 11px;
                 padding: 8px 10px;
             }
-            .servicios-header-col-medida { width: 105px; text-align: center; }
+            .servicios-header-col-medida { width: 95px; text-align: center; }
             .servicios-header-col-precio { width: 55px; text-align: right; }
 
             .servicio-row {
                 padding: 7px 8px;
-                gap: 5px;
+                gap: 4px;
             }
             .servicio-codigo-nombre {
                 font-size: 11px;
-                white-space: normal; /* Permite que el texto se acomode si es necesario sin cortarse */
+                white-space: normal;
                 word-wrap: break-word;
-                max-width: none;
             }
             .servicio-descripcion-extra {
                 display: none;
             }
             .servicio-detalles-precio {
-                gap: 6px;
+                gap: 4px;
             }
             .servicio-medida {
-                font-size: 9.5px;
-                width: 105px;
+                font-size: 9px;
+                width: 95px;
                 padding: 2px 2px;
                 white-space: nowrap;
                 text-align: center;
@@ -746,6 +745,13 @@
                 contenedorPrincipal.innerHTML = '<p style="text-align:center; color: #888; padding: 40px 0;">No hay servicios registrados en esta sección.</p>';
                 return;
             }
+
+            // ORDENAR ALFABÉTICAMENTE POR DESCRIPCIÓN
+            serviciosValidos.sort((a, b) => {
+                let descA = (a.descripcion || '').toLowerCase();
+                let descB = (b.descripcion || '').toLowerCase();
+                return descA.localeCompare(descB);
+            });
 
             let wrapper = document.createElement('div');
             wrapper.className = 'categoria-section';
