@@ -291,7 +291,7 @@
         .variacion-medida { font-weight: 600; color: #444; }
         .variacion-precio { font-weight: bold; color: #27ae60; font-size: 15px; margin-left: auto; }
 
-        /* DISEÑO DE LISTA / TABLA PARA SERVICIOS */
+        /* DISEÑO DE LISTA / TABLA COMPACTA PARA SERVICIOS */
         .servicios-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -300,14 +300,31 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.06);
             border: 1px solid #eee;
             overflow: hidden;
-            padding: 10px;
         }
+        
+        /* ENCABEZADOS DE LA TABLA DE SERVICIOS */
+        .servicios-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0066cc;
+            color: #fff;
+            padding: 10px 18px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .servicios-header-col-desc { flex-grow: 1; }
+        .servicios-header-col-medida { width: 130px; text-align: center; }
+        .servicios-header-col-precio { width: 110px; text-align: right; }
+
         .servicio-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 8px 18px; /* Reducido espacio vertical */
+            border-bottom: 1px solid #f2f4f7;
             gap: 15px;
         }
         .servicio-row:last-child {
@@ -316,16 +333,16 @@
         .servicio-info-principal {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 2px;
             flex-grow: 1;
         }
         .servicio-codigo-nombre {
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 600;
             color: #1a252f;
         }
         .servicio-descripcion-extra {
-            font-size: 13px;
+            font-size: 12px;
             color: #666;
         }
         .servicio-detalles-precio {
@@ -337,27 +354,53 @@
         .servicio-medida {
             font-size: 13px;
             font-weight: 600;
-            color: #555;
+            color: #444;
             background: #f4f6f9;
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 6px;
+            width: 130px;
+            text-align: center;
         }
         .servicio-precio {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             color: #27ae60;
+            width: 110px;
+            text-align: right;
             white-space: nowrap;
         }
 
-        @media (max-width: 600px) {
+        /* ADAPTACIÓN MÓVIL EXTREMA PARA SERVICIOS (TODO EN UNA SOLA LÍNEA) */
+        @media (max-width: 768px) {
+            .servicios-header-row {
+                font-size: 11px;
+                padding: 8px 10px;
+            }
+            .servicios-header-col-medida { width: 90px; }
+            .servicios-header-col-precio { width: 75px; }
+
             .servicio-row {
-                flex-direction: column;
-                align-items: flex-start;
+                padding: 6px 10px; /* Súper compacto */
                 gap: 8px;
             }
-            .servicio-detalles-precio {
-                width: 100%;
-                justify-content: space-between;
+            .servicio-codigo-nombre {
+                font-size: 12px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 160px; /* Fuerza a mantenerse en una línea con puntos suspensivos si es muy largo */
+            }
+            .servicio-descripcion-extra {
+                display: none; /* Oculta notas secundarias larguísimas en móvil para conservar la línea única */
+            }
+            .servicio-medida {
+                font-size: 11px;
+                width: 90px;
+                padding: 2px 4px;
+            }
+            .servicio-precio {
+                font-size: 12px;
+                width: 75px;
             }
         }
 
@@ -677,7 +720,6 @@
                     video: r.c[7] && r.c[7].v ? String(r.c[7].v).trim() : ''
                 }));
 
-                // Si la pestaña actual es "Servicios", renderizamos en formato lista/tabla
                 if (nombreHoja.toLowerCase() === 'servicios') {
                     renderizarComoListaServicios(productos);
                 } else {
@@ -688,7 +730,7 @@
             }
         }
 
-        // FUNCIÓN ESPECIAL PARA RENDERIZAR LA HOJA SERVICIOS EN FORMATO LISTA
+        // FUNCIÓN ACTUALIZADA CON ENCABEZADOS Y DISEÑO COMPACTO PARA SERVICIOS
         function renderizarComoListaServicios(items) {
             const contenedorPrincipal = document.getElementById('contenedor-principal');
             contenedorPrincipal.innerHTML = '';
@@ -706,13 +748,23 @@
             let listaDiv = document.createElement('div');
             listaDiv.className = 'servicios-container';
 
+            // Agregando la fila de Encabezados arriba
+            let headerRow = document.createElement('div');
+            headerRow.className = 'servicios-header-row';
+            headerRow.innerHTML = `
+                <div class="servicios-header-col-desc">Descripción</div>
+                <div class="servicios-header-col-medida">Medida</div>
+                <div class="servicios-header-col-precio">Precio</div>
+            `;
+            listaDiv.appendChild(headerRow);
+
             serviciosValidos.forEach(item => {
                 let row = document.createElement('div');
                 row.className = 'servicio-row';
 
                 let infoExtra = item.otros ? `<div class="servicio-descripcion-extra">${item.otros}</div>` : '';
-                let medidaText = item.medida ? `<span class="servicio-medida">${item.medida}</span>` : '';
-                let precioText = item.precio ? `<span class="servicio-precio">Lps. ${item.precio}</span>` : '';
+                let medidaText = item.medida ? `<span class="servicio-medida">${item.medida}</span>` : '<span class="servicio-medida">-</span>';
+                let precioText = item.precio ? `<span class="servicio-precio">Lps. ${item.precio}</span>` : '<span class="servicio-precio">-</span>';
 
                 row.innerHTML = `
                     <div class="servicio-info-principal">
