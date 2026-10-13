@@ -97,6 +97,9 @@
             .card-info {
                 padding: 10px !important;
             }
+            .inicio-grid-info {
+                grid-template-columns: 1fr !important;
+            }
         }
 
         /* ENCABEZADO DE LA PÁGINA */
@@ -115,6 +118,84 @@
         .seccion-header p {
             color: #555;
             font-size: 14px;
+        }
+
+        /* DISEÑO DE LA PÁGINA DE INICIO (ESTILO WIX) */
+        .inicio-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .inicio-banner-bienvenida {
+            background: #fff;
+            padding: 30px 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            border: 1px solid #eee;
+        }
+        .inicio-banner-bienvenida h2 {
+            color: #0066cc;
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .inicio-banner-bienvenida p {
+            color: #444;
+            font-size: 15px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto 15px auto;
+        }
+        .inicio-nota {
+            display: inline-block;
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #856404;
+            font-weight: 600;
+        }
+        
+        .inicio-grid-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .inicio-card-info {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            border: 1px solid #eee;
+        }
+        .inicio-card-info h3 {
+            color: #004b99;
+            font-size: 18px;
+            margin-top: 0;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+        .inicio-card-info ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .inicio-card-info li {
+            padding: 6px 0;
+            color: #555;
+            font-size: 14px;
+            border-bottom: 1px dashed #f4f6f9;
+        }
+        .inicio-card-info li:last-child {
+            border-bottom: none;
         }
 
         /* CONTENEDOR DE CADA CATEGORÍA / TIPO */
@@ -373,17 +454,17 @@
         <h1>VASORD Creacioness y Más</h1>
     </div>
 
-    <!-- MENÚ DE NAVEGACIÓN AUTOMÁTICO -->
+    <!-- MENÚ DE NAVEGACIÓN AUTOMÁTICO (INICIO + HOJAS DE GOOGLE SHEET) -->
     <div id="nav-categorias" class="nav-categorias">
-        <span style="color:#888; font-size:13px;">Cargando áreas de Google Sheet...</span>
+        <span style="color:#888; font-size:13px;">Cargando menú...</span>
     </div>
 
     <div class="seccion-header">
-        <h1 id="titulo-seccion">Catálogo de Productos</h1>
+        <h1 id="titulo-seccion">Bienvenidos</h1>
     </div>
 
     <div id="contenedor-principal">
-        <p style="text-align:center; color: #666;">Cargando catálogo...</p>
+        <!-- El contenido se cargará dinámicamente según la pestaña seleccionada -->
     </div>
 
     <!-- SECCIÓN DE PIE DE PÁGINA (FOOTER) -->
@@ -425,8 +506,9 @@
     <script>
         const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
         
-        const HOJAS_DISPONIBLES = ['Arreglos', 'Escolares', 'Flores', 'Mobiliario', 'Eventos']; 
-        let hojaActualGlobal = HOJAS_DISPONIBLES[0];
+        // "Inicio" se coloca como la primera opción de forma fija y rápida
+        const HOJAS_DISPONIBLES = ['Inicio', 'Arreglos', 'Escolares', 'Flores', 'Mobiliario', 'Eventos']; 
+        let hojaActualGlobal = 'Inicio';
 
         function obtenerIdDrive(url) {
             if (!url) return '';
@@ -451,13 +533,66 @@
         function cambiarHoja(nombreHoja) {
             hojaActualGlobal = nombreHoja;
             construirMenu(nombreHoja);
-            document.getElementById('titulo-seccion').innerText = `Catálogo - ${nombreHoja}`;
-            cargarDatos(nombreHoja);
+
+            // Actualizar la URL con hashtag para acceso directo sin recargar
+            window.location.hash = nombreHoja;
+
+            if (nombreHoja === 'Inicio') {
+                document.getElementById('titulo-seccion').innerText = 'Bienvenidos';
+                renderizarInicio();
+            } else {
+                document.getElementById('titulo-seccion').innerText = `Catálogo - ${nombreHoja}`;
+                cargarDatos(nombreHoja);
+            }
         }
 
+        // Renderiza la página de Inicio estática al instante (súper rápida)
+        function renderizarInicio() {
+            const contenedor = document.getElementById('contenedor-principal');
+            contenedor.innerHTML = `
+                <div class="inicio-container">
+                    <div class="inicio-banner-bienvenida">
+                        <h2>Transformamos tus celebraciones en momentos inolvidables</h2>
+                        <p>Bienvenidos a nuestra tienda de artículos para cumpleaños, mobiliario, manualidades, decoraciones, papelería, sublimación y más. Brindamos un servicio personalizado para que cada celebración sea especial.</p>
+                        <div class="inicio-nota">
+                            ⚠️ Nota importante: Los precios pueden variar. Recomendamos cotizar antes de realizar un pedido.
+                        </div>
+                    </div>
+
+                    <div class="inicio-grid-info">
+                        <div class="inicio-card-info">
+                            <h3>📦 Aquí encontrarás</h3>
+                            <ul>
+                                <li>✨ Artículos para cumpleaños</li>
+                                <li>📄 Papelería y manualidades</li>
+                                <li>🎈 Decoraciones para eventos</li>
+                                <li>🪑 Renta de mobiliario</li>
+                                <li>🎨 Sublimaciones y regalos</li>
+                                <li>🎁 Arreglos y piñatas</li>
+                                <li><em>y mucho más...</em></li>
+                            </ul>
+                        </div>
+                        <div class="inicio-card-info">
+                            <h3>🖨️ Servicios Secretariales</h3>
+                            <ul>
+                                <li>🖨️ Impresiones color / BN</li>
+                                <li>📋 Copias color / BN</li>
+                                <li>🖼️ Impresión hoja sublimación A4</li>
+                                <li>📸 Impresión de fotografías</li>
+                                <li>💳 Tarjetas de presentación</li>
+                                <li>💌 Tarjetas de invitación</li>
+                                <li><em>y mucho más...</em></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Carga los datos de Google Sheets solo cuando el cliente hace clic en una pestaña del catálogo
         async function cargarDatos(nombreHoja) {
             const contenedor = document.getElementById('contenedor-principal');
-            contenedor.innerHTML = '<p style="text-align:center; color: #666;">Cargando catálogo...</p>';
+            contenedor.innerHTML = '<p style="text-align:center; color: #666; padding: 40px 0;">Cargando productos de ' + nombreHoja + '...</p>';
 
             try {
                 const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nombreHoja)}`;
@@ -517,11 +652,10 @@
             });
 
             if (Object.keys(categoriasMap).length === 0) {
-                contenedorPrincipal.innerHTML = '<p style="text-align:center; color: #888;">No hay productos registrados en esta sección.</p>';
+                contenedorPrincipal.innerHTML = '<p style="text-align:center; color: #888; padding: 40px 0;">No hay productos registrados en esta sección.</p>';
                 return;
             }
 
-            // Ocultar precios y medidas únicamente si la sección activa es "Eventos"
             let esSeccionEventos = hojaActualGlobal.toLowerCase().trim() === 'eventos';
 
             Object.keys(categoriasMap).forEach(categoria => {
@@ -636,8 +770,15 @@
             modal.style.display = 'none';
         }
 
-        // Inicializamos con la primera área
-        cambiarHoja(HOJAS_DISPONIBLES[0]);
+        // Detección automática de la pestaña por medio del hashtag al cargar la página (Ej: #Mobiliario o #Arreglos)
+        let hashRuta = window.location.hash.replace('#', '').trim();
+        let matchPestana = HOJAS_DISPONIBLES.find(h => h.toLowerCase() === decodeURIComponent(hashRuta).toLowerCase());
+
+        if (matchPestana) {
+            cambiarHoja(matchPestana);
+        } else {
+            cambiarHoja('Inicio');
+        }
     </script>
 </body>
 </html>
