@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -83,6 +84,7 @@
                 font-size: 20px;
             }
             
+            /* Ajuste compacto para medida y precio en móvil */
             .variacion-row-final {
                 padding: 4px 8px !important;
                 font-size: 11px !important;
@@ -370,7 +372,7 @@
             white-space: nowrap;
         }
 
-        /* ADAPTACIÓN MÓVIL OPTIMIZADA (TODO EN UNA SOLA LÍNEA HORIZONTAL SIN SALTOS) */
+        /* ADAPTACIÓN MÓVIL OPTIMIZADA: TODO EN UNA SOLA LÍNEA HORIZONTAL SIN SALTOS */
         @media (max-width: 768px) {
             .servicios-header-row {
                 font-size: 11px;
@@ -388,13 +390,13 @@
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 135px; /* Controla el ancho para forzar la línea horizontal única */
+                max-width: 135px;
             }
             .servicio-descripcion-extra {
                 display: none;
             }
             .servicio-medida {
-                font-size: 10px; /* Tamaño optimizado para que medidas largas como Carta entren perfectamente */
+                font-size: 10px;
                 width: 115px;
                 padding: 2px 3px;
                 white-space: nowrap;
@@ -409,7 +411,7 @@
             }
         }
 
-        /* SECCIÓN DE PIE DE PÁGINA (FOOTER) */
+        /* SECCIÓN DE PIE DE PÁGINA (FOOTER) - ESTRUCTURA COMPLETA */
         .footer-catalogo {
             max-width: 1400px;
             margin: 60px auto 20px auto;
@@ -571,7 +573,7 @@
         <h1>VASORD Creacioness y Más</h1>
     </div>
 
-    <!-- MENÚ DE NAVEGACIÓN AUTOMÁTICO -->
+    <!-- MENÚ DE NAVEGACIÓN DINÁMICO AUTOMÁTICO -->
     <div id="nav-categorias" class="nav-categorias">
         <span style="color:#888; font-size:13px;">Cargando menú...</span>
     </div>
@@ -694,25 +696,3 @@
                                 <li>🖼️ Impresión hoja sublimación A4</li>
                                 <li>📸 Impresión de fotografías</li>
                                 <li>💳 Tarjetas de presentación</li>
-                                <li>💌 Tarjetas de invitación</li>
-                                <li><em>y mucho más...</em></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function cargarDatos(nombreHoja) {
-            const contenedor = document.getElementById('contenedor-principal');
-            contenedor.innerHTML = '<p style="text-align:center; color: #666; padding: 40px 0;">Cargando datos de ' + nombreHoja + '...</p>';
-
-            try {
-                const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nombreHoja)}`;
-                const response = await fetch(url);
-                const text = await response.text();
-                const json = JSON.parse(text.substr(47).slice(0, -2));
-                const rows = json.table.rows;
-
-                let productos = rows.map(r => ({
-                    codigo: r.c[0] ? String(r.c[0].v
