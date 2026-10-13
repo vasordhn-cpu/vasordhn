@@ -197,20 +197,25 @@
             border-bottom: none;
         }
 
-        /* CONTENEDOR DE CADA CATEGORÍA / TIPO */
+        /* CONTENEDOR DE CADA CATEGORÍA / TIPO (CON SEPARACIÓN EXTRA) */
         .categoria-section {
             max-width: 1000px;
-            margin: 0 auto 30px auto;
+            margin: 0 auto 40px auto;
             padding: 0 15px;
         }
         .categoria-titulo {
             font-size: 18px;
             color: #1a252f;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            margin-top: 25px;
             font-weight: bold;
             border-left: 4px solid #0066cc;
             padding-left: 10px;
             text-transform: capitalize;
+        }
+        /* El primer título no necesita tanto espacio arriba */
+        .categoria-section:first-of-type .categoria-titulo {
+            margin-top: 0;
         }
 
         /* GRID RESPONSIVO: 4 columnas en PC / 2 columnas en Celular */
@@ -734,7 +739,6 @@
             }
         }
 
-        // FUNCIÓN ACTUALIZADA: AGRUPA Y ORDENA LOS SERVICIOS POR SU COLUMNA "TIPO"
         function renderizarComoListaServiciosAgrupados(items) {
             const contenedorPrincipal = document.getElementById('contenedor-principal');
             contenedorPrincipal.innerHTML = '';
@@ -746,7 +750,6 @@
                 return;
             }
 
-            // Agrupar por tipo
             let gruposTipos = {};
             serviciosValidos.forEach(item => {
                 let tipo = item.tipo && item.tipo !== '' ? item.tipo : 'General';
@@ -756,7 +759,6 @@
                 gruposTipos[tipo].push(item);
             });
 
-            // Ordenar alfabéticamente los nombres de los tipos de servicio
             let tiposOrdenados = Object.keys(gruposTipos).sort((a, b) => a.localeCompare(b));
 
             tiposOrdenados.forEach(tipo => {
@@ -780,7 +782,6 @@
                 `;
                 listaDiv.appendChild(headerRow);
 
-                // Ordenar alfabéticamente los servicios dentro del mismo tipo por descripción
                 let listaServiciosTipo = gruposTipos[tipo].sort((a, b) => {
                     let descA = (a.descripcion || '').toLowerCase();
                     let descB = (b.descripcion || '').toLowerCase();
