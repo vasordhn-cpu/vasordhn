@@ -199,14 +199,14 @@
 
         /* CONTENEDOR DE CADA CATEGORÍA / TIPO */
         .categoria-section {
-            max-width: 1400px;
-            margin: 0 auto 40px auto;
+            max-width: 1000px;
+            margin: 0 auto 30px auto;
             padding: 0 15px;
         }
         .categoria-titulo {
-            font-size: 20px;
+            font-size: 18px;
             color: #1a252f;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-weight: bold;
             border-left: 4px solid #0066cc;
             padding-left: 10px;
@@ -293,13 +293,12 @@
 
         /* DISEÑO DE LISTA / TABLA COMPACTA PARA SERVICIOS */
         .servicios-container {
-            max-width: 1000px;
-            margin: 0 auto;
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.06);
             border: 1px solid #eee;
             overflow: hidden;
+            margin-bottom: 15px;
         }
         
         /* ENCABEZADOS DE LA TABLA DE SERVICIOS */
@@ -370,7 +369,7 @@
             white-space: nowrap;
         }
 
-        /* ADAPTACIÓN MÓVIL: MÁS ESPACIO A DESCRIPCIÓN Y MEDIDA CORRIDA A LA DERECHA */
+        /* ADAPTACIÓN MÓVIL */
         @media (max-width: 768px) {
             .servicios-header-row {
                 font-size: 11px;
@@ -726,7 +725,7 @@
                 }));
 
                 if (nombreHoja.toLowerCase() === 'servicios') {
-                    renderizarComoListaServicios(productos);
+                    renderizarComoListaServiciosAgrupados(productos);
                 } else {
                     renderizarPorCategorias(productos);
                 }
@@ -735,7 +734,8 @@
             }
         }
 
-        function renderizarComoListaServicios(items) {
+        // FUNCIÓN ACTUALIZADA: AGRUPA Y ORDENA LOS SERVICIOS POR SU COLUMNA "TIPO"
+        function renderizarComoListaServiciosAgrupados(items) {
             const contenedorPrincipal = document.getElementById('contenedor-principal');
             contenedorPrincipal.innerHTML = '';
 
@@ -746,51 +746,71 @@
                 return;
             }
 
-            // ORDENAR ALFABÉTICAMENTE POR DESCRIPCIÓN
-            serviciosValidos.sort((a, b) => {
-                let descA = (a.descripcion || '').toLowerCase();
-                let descB = (b.descripcion || '').toLowerCase();
-                return descA.localeCompare(descB);
-            });
-
-            let wrapper = document.createElement('div');
-            wrapper.className = 'categoria-section';
-
-            let listaDiv = document.createElement('div');
-            listaDiv.className = 'servicios-container';
-
-            let headerRow = document.createElement('div');
-            headerRow.className = 'servicios-header-row';
-            headerRow.innerHTML = `
-                <div class="servicios-header-col-desc">Descripción</div>
-                <div class="servicios-header-col-medida">Medida</div>
-                <div class="servicios-header-col-precio">Precio</div>
-            `;
-            listaDiv.appendChild(headerRow);
-
+            // Agrupar por tipo
+            let gruposTipos = {};
             serviciosValidos.forEach(item => {
-                let row = document.createElement('div');
-                row.className = 'servicio-row';
-
-                let infoExtra = item.otros ? `<div class="servicio-descripcion-extra">${item.otros}</div>` : '';
-                let medidaText = item.medida ? `<span class="servicio-medida">${item.medida}</span>` : '<span class="servicio-medida">-</span>';
-                let precioText = item.precio ? `<span class="servicio-precio">Lps. ${item.precio}</span>` : '<span class="servicio-precio">-</span>';
-
-                row.innerHTML = `
-                    <div class="servicio-info-principal">
-                        <div class="servicio-codigo-nombre">${item.codigo ? item.codigo + ': ' : ''}${item.descripcion}</div>
-                        ${infoExtra}
-                    </div>
-                    <div class="servicio-detalles-precio">
-                        ${medidaText}
-                        ${precioText}
-                    </div>
-                `;
-                listaDiv.appendChild(row);
+                let tipo = item.tipo && item.tipo !== '' ? item.tipo : 'General';
+                if (!gruposTipos[tipo]) {
+                    gruposTipos[tipo] = [];
+                }
+                gruposTipos[tipo].push(item);
             });
 
-            wrapper.appendChild(listaDiv);
-            contenedorPrincipal.appendChild(wrapper);
+            // Ordenar alfabéticamente los nombres de los tipos de servicio
+            let tiposOrdenados = Object.keys(gruposTipos).sort((a, b) => a.localeCompare(b));
+
+            tiposOrdenados.forEach(tipo => {
+                let wrapper = document.createElement('div');
+                wrapper.className = 'categoria-section';
+
+                let tituloDiv = document.createElement('div');
+                tituloDiv.className = 'categoria-titulo';
+                tituloDiv.innerText = tipo;
+                wrapper.appendChild(tituloDiv);
+
+                let listaDiv = document.createElement('div');
+                listaDiv.className = 'servicios-container';
+
+                let headerRow = document.createElement('div');
+                headerRow.className = 'servicios-header-row';
+                headerRow.innerHTML = `
+                    <div class="servicios-header-col-desc">Descripción</div>
+                    <div class="servicios-header-col-medida">Medida</div>
+                    <div class="servicios-header-col-precio">Precio</div>
+                `;
+                listaDiv.appendChild(headerRow);
+
+                // Ordenar alfabéticamente los servicios dentro del mismo tipo por descripción
+                let listaServiciosTipo = gruposTipos[tipo].sort((a, b) => {
+                    let descA = (a.descripcion || '').toLowerCase();
+                    let descB = (b.descripcion || '').toLowerCase();
+                    return descA.localeCompare(descB);
+                });
+
+                listaServiciosTipo.forEach(item => {
+                    let row = document.createElement('div');
+                    row.className = 'servicio-row';
+
+                    let infoExtra = item.otros ? `<div class="servicio-descripcion-extra">${item.otros}</div>` : '';
+                    let medidaText = item.medida ? `<span class="servicio-medida">${item.medida}</span>` : '<span class="servicio-medida">-</span>';
+                    let precioText = item.precio ? `<span class="servicio-precio">Lps. ${item.precio}</span>` : '<span class="servicio-precio">-</span>';
+
+                    row.innerHTML = `
+                        <div class="servicio-info-principal">
+                            <div class="servicio-codigo-nombre">${item.codigo ? item.codigo + ': ' : ''}${item.descripcion}</div>
+                            ${infoExtra}
+                        </div>
+                        <div class="servicio-detalles-precio">
+                            ${medidaText}
+                            ${precioText}
+                        </div>
+                    `;
+                    listaDiv.appendChild(row);
+                });
+
+                wrapper.appendChild(listaDiv);
+                contenedorPrincipal.appendChild(wrapper);
+            });
         }
 
         function renderizarPorCategorias(items) {
