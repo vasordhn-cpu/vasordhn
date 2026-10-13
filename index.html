@@ -83,7 +83,6 @@
                 font-size: 20px;
             }
             
-            /* Ajuste compacto para medida y precio en móvil */
             .variacion-row-final {
                 padding: 4px 8px !important;
                 font-size: 11px !important;
@@ -292,6 +291,76 @@
         .variacion-medida { font-weight: 600; color: #444; }
         .variacion-precio { font-weight: bold; color: #27ae60; font-size: 15px; margin-left: auto; }
 
+        /* DISEÑO DE LISTA / TABLA PARA SERVICIOS */
+        .servicios-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            border: 1px solid #eee;
+            overflow: hidden;
+            padding: 10px;
+        }
+        .servicio-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            gap: 15px;
+        }
+        .servicio-row:last-child {
+            border-bottom: none;
+        }
+        .servicio-info-principal {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-grow: 1;
+        }
+        .servicio-codigo-nombre {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a252f;
+        }
+        .servicio-descripcion-extra {
+            font-size: 13px;
+            color: #666;
+        }
+        .servicio-detalles-precio {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: right;
+        }
+        .servicio-medida {
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            background: #f4f6f9;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .servicio-precio {
+            font-size: 16px;
+            font-weight: bold;
+            color: #27ae60;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 600px) {
+            .servicio-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .servicio-detalles-precio {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
         /* SECCIÓN DE PIE DE PÁGINA (FOOTER) */
         .footer-catalogo {
             max-width: 1400px;
@@ -454,7 +523,7 @@
         <h1>VASORD Creacioness y Más</h1>
     </div>
 
-    <!-- MENÚ DE NAVEGACIÓN AUTOMÁTICO (INICIO + HOJAS DE GOOGLE SHEET) -->
+    <!-- MENÚ DE NAVEGACIÓN AUTOMÁTICO -->
     <div id="nav-categorias" class="nav-categorias">
         <span style="color:#888; font-size:13px;">Cargando menú...</span>
     </div>
@@ -506,7 +575,6 @@
     <script>
         const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
         
-        // "Inicio" se coloca como la primera opción de forma fija y rápida
         const HOJAS_DISPONIBLES = ['Inicio', 'Arreglos', 'Escolares', 'Flores', 'Mobiliario', 'Eventos', 'Servicios']; 
         let hojaActualGlobal = 'Inicio';
 
@@ -534,7 +602,6 @@
             hojaActualGlobal = nombreHoja;
             construirMenu(nombreHoja);
 
-            // Actualizar la URL con hashtag para acceso directo sin recargar
             window.location.hash = nombreHoja;
 
             if (nombreHoja === 'Inicio') {
@@ -546,7 +613,6 @@
             }
         }
 
-        // Renderiza la página de Inicio estática al instante (súper rápida)
         function renderizarInicio() {
             const contenedor = document.getElementById('contenedor-principal');
             contenedor.innerHTML = `
@@ -589,10 +655,9 @@
             `;
         }
 
-        // Carga los datos de Google Sheets solo cuando el cliente hace clic en una pestaña del catálogo
         async function cargarDatos(nombreHoja) {
             const contenedor = document.getElementById('contenedor-principal');
-            contenedor.innerHTML = '<p style="text-align:center; color: #666; padding: 40px 0;">Cargando productos de ' + nombreHoja + '...</p>';
+            contenedor.innerHTML = '<p style="text-align:center; color: #666; padding: 40px 0;">Cargando datos de ' + nombreHoja + '...</p>';
 
             try {
                 const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nombreHoja)}`;
@@ -612,10 +677,58 @@
                     video: r.c[7] && r.c[7].v ? String(r.c[7].v).trim() : ''
                 }));
 
-                renderizarPorCategorias(productos);
+                // Si la pestaña actual es "Servicios", renderizamos en formato lista/tabla
+                if (nombreHoja.toLowerCase() === 'servicios') {
+                    renderizarComoListaServicios(productos);
+                } else {
+                    renderizarPorCategorias(productos);
+                }
             } catch (error) {
                 contenedor.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los datos de esta área.</p>';
             }
+        }
+
+        // FUNCIÓN ESPECIAL PARA RENDERIZAR LA HOJA SERVICIOS EN FORMATO LISTA
+        function renderizarComoListaServicios(items) {
+            const contenedorPrincipal = document.getElementById('contenedor-principal');
+            contenedorPrincipal.innerHTML = '';
+
+            let serviciosValidos = items.filter(item => item.codigo || item.descripcion);
+
+            if (serviciosValidos.length === 0) {
+                contenedorPrincipal.innerHTML = '<p style="text-align:center; color: #888; padding: 40px 0;">No hay servicios registrados en esta sección.</p>';
+                return;
+            }
+
+            let wrapper = document.createElement('div');
+            wrapper.className = 'categoria-section';
+
+            let listaDiv = document.createElement('div');
+            listaDiv.className = 'servicios-container';
+
+            serviciosValidos.forEach(item => {
+                let row = document.createElement('div');
+                row.className = 'servicio-row';
+
+                let infoExtra = item.otros ? `<div class="servicio-descripcion-extra">${item.otros}</div>` : '';
+                let medidaText = item.medida ? `<span class="servicio-medida">${item.medida}</span>` : '';
+                let precioText = item.precio ? `<span class="servicio-precio">Lps. ${item.precio}</span>` : '';
+
+                row.innerHTML = `
+                    <div class="servicio-info-principal">
+                        <div class="servicio-codigo-nombre">${item.codigo ? item.codigo + ': ' : ''}${item.descripcion}</div>
+                        ${infoExtra}
+                    </div>
+                    <div class="servicio-detalles-precio">
+                        ${medidaText}
+                        ${precioText}
+                    </div>
+                `;
+                listaDiv.appendChild(row);
+            });
+
+            wrapper.appendChild(listaDiv);
+            contenedorPrincipal.appendChild(wrapper);
         }
 
         function renderizarPorCategorias(items) {
@@ -770,7 +883,6 @@
             modal.style.display = 'none';
         }
 
-        // Detección automática de la pestaña por medio del hashtag al cargar la página (Ej: #Mobiliario o #Arreglos)
         let hashRuta = window.location.hash.replace('#', '').trim();
         let matchPestana = HOJAS_DISPONIBLES.find(h => h.toLowerCase() === decodeURIComponent(hashRuta).toLowerCase());
 
