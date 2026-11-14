@@ -37,3 +37,17 @@ function crearControlesPaginacion(totalProductos) {
 
     return controles;
 }
+
+
+let datosActualesPaginacion = [];
+
+function cambiarPaginaCatalogo(nuevaPagina) {
+    const totalPaginas = Math.ceil(
+        datosActualesPaginacion.length / PRODUCTOS_POR_PAGINA
+    );
+
+    if (nuevaPagina < 1 || nuevaPagina > totalPaginas) return;
+
+    paginaActualCatalogo = nuevaPagina;
+    renderizarPorCategorias(datosActualesPaginacion, false);
+}
