@@ -559,3 +559,41 @@
             cursor: pointer;
             z-index: 10000;
         }
+
+/* CONTROLES DE PAGINACIÓN */
+.controles-paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    margin: 30px auto;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.controles-paginacion button {
+    background: #0066cc;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.controles-paginacion button:hover:not(:disabled) {
+    background: #004b99;
+}
+
+.controles-paginacion button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+.controles-paginacion span {
+    color: #333333;
+    font-size: 14px;
+    font-weight: bold;
+}
