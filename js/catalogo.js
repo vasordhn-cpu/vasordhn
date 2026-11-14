@@ -217,7 +217,11 @@ function renderizarComoListaServiciosAgrupados(items) {
                     gridDiv.appendChild(card);
                 });
 
-                seccionDiv.appendChild(gridDiv);
+              seccionDiv.appendChild(gridDiv);
                 contenedorPrincipal.appendChild(seccionDiv);
             });
+
+            contenedorPrincipal.appendChild(
+                crearControlesPaginacion(datosActualesPaginacion.length)
+            );
         }
