@@ -654,21 +654,28 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
 
  
-    // ==========================================
-    // FACEBOOK MESSENGER
-    // ==========================================
+    
+// ==========================================
+// FACEBOOK MESSENGER
+// ==========================================
 
-    crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
+crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
 
-        const mensajeMessenger = encodeURIComponent(mensaje);
+    const urlMessenger = new URL(
+        'https://www.facebook.com/messages/new'
+    );
 
-        const urlMessenger =
-            'https://www.facebook.com/messages/new?text=' +
-            mensajeMessenger;
+    // Codificar el mensaje conservando los caracteres Unicode
+    urlMessenger.searchParams.set('text', mensaje);
 
-        window.open(urlMessenger, '_blank', 'noopener');
+    window.open(
+        urlMessenger.toString(),
+        '_blank',
+        'noopener'
+    );
 
-    });
+});
+
 
 
 
