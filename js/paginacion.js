@@ -49,5 +49,5 @@ function cambiarPaginaCatalogo(nuevaPagina) {
     if (nuevaPagina < 1 || nuevaPagina > totalPaginas) return;
 
     paginaActualCatalogo = nuevaPagina;
-    renderizarPorCategorias(datosActualesPaginacion, false);
+    renderizarPorCategorias(datosActualesPaginacion, true);
 }
