@@ -296,6 +296,30 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 </div>
             `;
 
+
+const botonCompartir = document.createElement('button');
+
+botonCompartir.type = 'button';
+botonCompartir.textContent = '↗ Compartir producto';
+
+botonCompartir.style.cssText = `
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background: #16834A;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+`;
+
+botonCompartir.onclick = () => compartirProducto(prod);
+
+card.querySelector('.card-info').appendChild(botonCompartir);
+
+            
             gridDiv.appendChild(card);
         });
 
