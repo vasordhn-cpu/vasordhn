@@ -653,19 +653,23 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
     });
 
 
+ 
     // ==========================================
-    // FACEBOOK
+    // FACEBOOK MESSENGER
     // ==========================================
 
-    crearBoton('🔵 Facebook', '#1877F2', () => {
+    crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
 
-        const urlFacebook =
-            'https://www.facebook.com/sharer/sharer.php?u=' +
-            encodeURIComponent(enlace);
+        const mensajeMessenger = encodeURIComponent(mensaje);
 
-        window.open(urlFacebook, '_blank', 'noopener');
+        const urlMessenger =
+            'https://www.facebook.com/messages/new?text=' +
+            mensajeMessenger;
+
+        window.open(urlMessenger, '_blank', 'noopener');
 
     });
+
 
 
     // ==========================================
