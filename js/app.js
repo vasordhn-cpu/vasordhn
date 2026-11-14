@@ -113,6 +113,64 @@ function cerrarModal() {
 
 let productoFichaActual = null;
 
+
+// ==========================================
+// PREPARAR FOTOGRAFÍAS PARA COMPARTIR
+// ==========================================
+
+const archivosCompartirPreparados = new Map();
+const archivosCompartirEnProceso = new Map();
+
+function prepararArchivoCompartir(imagenUrl, codigo) {
+    if (!imagenUrl) return Promise.resolve(null);
+
+    if (archivosCompartirPreparados.has(imagenUrl)) {
+        return Promise.resolve(
+            archivosCompartirPreparados.get(imagenUrl)
+        );
+    }
+
+    if (archivosCompartirEnProceso.has(imagenUrl)) {
+        return archivosCompartirEnProceso.get(imagenUrl);
+    }
+
+    const preparacion = fetch(imagenUrl)
+        .then(respuesta => {
+            if (!respuesta.ok) {
+                throw new Error('No se pudo preparar la fotografía.');
+            }
+
+            return respuesta.blob();
+        })
+        .then(blob => {
+            const nombre = (codigo || 'producto')
+                .toString()
+                .replace(/[^a-zA-Z0-9_-]/g, '_');
+
+            const archivo = new File(
+                [blob],
+                `VASORD_${nombre}.jpg`,
+                { type: blob.type || 'image/jpeg' }
+            );
+
+            archivosCompartirPreparados.set(imagenUrl, archivo);
+
+            return archivo;
+        })
+        .catch(error => {
+            console.warn('No se pudo preparar la fotografía:', error);
+            return null;
+        })
+        .finally(() => {
+            archivosCompartirEnProceso.delete(imagenUrl);
+        });
+
+    archivosCompartirEnProceso.set(imagenUrl, preparacion);
+
+    return preparacion;
+}
+
+
 function escaparTextoHTML(texto) {
     return String(texto || '').replace(/[&<>"']/g, caracter => ({
         '&': '&amp;',
@@ -133,6 +191,11 @@ function abrirFichaProducto(prod) {
     const imagen = imagenId
         ? `https://lh3.googleusercontent.com/d/${imagenId}`
         : '';
+
+    // PREPARAR LA FOTO MIENTRAS SE VISUALIZA LA FICHA
+    if (imagen) {
+        prepararArchivoCompartir(imagen, prod.codigo);
+    }
 
     const videoId = obtenerIdDrive(prod.video);
 
@@ -229,8 +292,6 @@ async function compartirProducto(prod) {
         })
         .filter(Boolean);
 
-    // MENSAJE COMPACTO SIN ENLACE DE FOTOGRAFÍA
-
     const mensaje = [
         '🛍️ VASORD Creacioness y Más',
         `📦 Producto: ${prod.descripcion || ''}`,
@@ -242,50 +303,69 @@ async function compartirProducto(prod) {
         `🔗 Ver producto: ${enlace}`
     ].filter(Boolean).join('\n');
 
-    // DETECTAR SI ES UN CELULAR
-
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    if (!esMovil) {
-    mostrarMenuCompartir(mensaje, enlace, imagenUrl, prod.codigo);
-    return;
-}
-    
-    // COMPARTIR FOTOGRAFÍA ADJUNTA EN CELULAR Y COMPUTADORA
+    // EN COMPUTADORA: INTENTAR COMPARTIR FOTO Y DATOS JUNTOS
+    // El archivo ya debe estar preparado al abrir la ficha.
 
-    if (imagenUrl && navigator.share && navigator.canShare) {
+    if (!esMovil && imagenUrl && navigator.share && navigator.canShare) {
+        const archivo = archivosCompartirPreparados.get(imagenUrl);
+
+        if (archivo) {
+            try {
+                const datosCompartir = {
+                    title: prod.descripcion || 'Producto VASORD',
+                    text: mensaje,
+                    files: [archivo]
+                };
+
+                if (navigator.canShare({ files: [archivo] })) {
+                    // IMPORTANTE: no colocar ningún await antes de esta llamada.
+                    await navigator.share(datosCompartir);
+                    return;
+                }
+
+            } catch (error) {
+                if (error.name === 'AbortError') return;
+
+                console.warn(
+                    'Windows no pudo compartir la fotografía:',
+                    error
+                );
+            }
+        }
+    }
+
+    // EN CELULAR: CONSERVAR EL COMPARTIDO DE FOTO ADJUNTA
+
+    if (esMovil && imagenUrl && navigator.share && navigator.canShare) {
         try {
-            const respuesta = await fetch(imagenUrl);
+            let archivo = archivosCompartirPreparados.get(imagenUrl);
 
-            if (!respuesta.ok) {
-                throw new Error('No se pudo obtener la fotografía.');
+            if (!archivo) {
+                archivo = await prepararArchivoCompartir(
+                    imagenUrl,
+                    prod.codigo
+                );
             }
 
-            const blob = await respuesta.blob();
-
-            const nombreArchivo = (prod.codigo || 'producto')
-                .toString()
-                .replace(/[^a-zA-Z0-9_-]/g, '_');
-
-            const archivo = new File(
-                [blob],
-                `VASORD_${nombreArchivo}.jpg`,
-                { type: blob.type || 'image/jpeg' }
-            );
-
-            if (navigator.canShare({ files: [archivo] })) {
+            if (archivo && navigator.canShare({ files: [archivo] })) {
                 await navigator.share({
                     title: prod.descripcion || 'Producto VASORD',
                     text: mensaje,
                     files: [archivo]
                 });
+
                 return;
             }
 
         } catch (error) {
             if (error.name === 'AbortError') return;
 
-            console.warn('No fue posible compartir la fotografía:', error);
+            console.warn(
+                'No fue posible compartir la fotografía:',
+                error
+            );
         }
     }
 
@@ -297,15 +377,20 @@ async function compartirProducto(prod) {
                 title: prod.descripcion || 'Producto VASORD',
                 text: mensaje
             });
+
             return;
+
         } catch (error) {
             if (error.name === 'AbortError') return;
 
-            console.warn('No fue posible compartir el mensaje:', error);
+            console.warn(
+                'No fue posible compartir el mensaje:',
+                error
+            );
         }
     }
 
-    // MENÚ ALTERNATIVO PARA COMPUTADORA O NAVEGADORES SIN SOPORTE
+    // SI NO SE PUEDE COMPARTIR EL ARCHIVO, MOSTRAR MENÚ VASORD
 
     mostrarMenuCompartir(mensaje, enlace, imagenUrl, prod.codigo);
 }
@@ -357,15 +442,11 @@ async function descargarImagenProducto(imagenUrl, codigo) {
 
 function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
-    // ELIMINAR MENÚ ANTERIOR SI EXISTE
-
     const anterior = document.getElementById('menuCompartirVASORD');
 
     if (anterior) {
         anterior.remove();
     }
-
-    // CREAR FONDO
 
     const fondo = document.createElement('div');
     fondo.id = 'menuCompartirVASORD';
@@ -383,8 +464,6 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
         opacity:1 !important;
         visibility:visible !important;
     `;
-
-    // CREAR CAJA
 
     const caja = document.createElement('div');
 
@@ -415,8 +494,6 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
     `;
 
     caja.appendChild(titulo);
-
-    // CREAR BOTONES
 
     function crearBoton(texto, color, accion) {
 
@@ -450,19 +527,15 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
         caja.appendChild(boton);
     }
 
-    // WHATSAPP
+    // WHATSAPP: ABRIR CON EL MENSAJE, SIN DESCARGA AUTOMÁTICA
 
-    crearBoton('🟢 WhatsApp', '#25D366', async () => {
-
-        if (imagenUrl) {
-            await descargarImagenProducto(imagenUrl, codigo);
-        }
+    crearBoton('🟢 WhatsApp', '#25D366', () => {
 
         const urlWhatsApp =
             'https://api.whatsapp.com/send?text=' +
             encodeURIComponent(mensaje);
 
-        window.open(urlWhatsApp, '_blank');
+        window.open(urlWhatsApp, '_blank', 'noopener');
 
     });
 
@@ -474,18 +547,16 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
             'https://www.facebook.com/sharer/sharer.php?u=' +
             encodeURIComponent(enlace);
 
-        window.open(urlFacebook, '_blank');
+        window.open(urlFacebook, '_blank', 'noopener');
 
     });
 
     // DESCARGAR FOTO
 
     if (imagenUrl) {
-
         crearBoton('📸 Descargar foto del producto', '#64A9D9', () => {
             descargarImagenProducto(imagenUrl, codigo);
         });
-
     }
 
     // COPIAR ENLACE
@@ -493,15 +564,11 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
     crearBoton('📋 Copiar enlace', '#16834A', async () => {
 
         try {
-
             await navigator.clipboard.writeText(enlace);
-
             alert('¡Enlace copiado correctamente!');
 
         } catch (error) {
-
             window.prompt('Copia este enlace:', enlace);
-
         }
 
     });
@@ -511,8 +578,6 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
     crearBoton('✖ Cerrar', '#666666', () => {
         fondo.remove();
     });
-
-    // EVITAR QUE LOS CLICS INTERNOS CIERREN EL MENÚ
 
     caja.addEventListener('click', function(evento) {
         evento.stopPropagation();
@@ -528,10 +593,7 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
     });
 
-    // MOSTRAR MENÚ
-
     fondo.appendChild(caja);
-
     document.body.appendChild(fondo);
 
     fondo.style.display = 'flex';
