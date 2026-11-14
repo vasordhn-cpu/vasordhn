@@ -1,3 +1,4 @@
+
 async function cargarDatos(nombreHoja) {
     const contenedor = document.getElementById('contenedor-principal');
 
@@ -138,12 +139,10 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
 
     let listaProductos = [];
 
-    // Si ya están agrupados, reutilizamos los productos.
     if (yaAgrupados) {
         listaProductos = items;
 
     } else {
-        // Agrupar productos y conservar sus variaciones.
         let productosGlobales = {};
 
         items.forEach(item => {
@@ -168,14 +167,11 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
 
         listaProductos = Object.values(productosGlobales);
 
-        // Guardar todos los productos para la paginación.
         datosActualesPaginacion = listaProductos;
 
-        // Volver a la primera página al cambiar de sección.
         reiniciarPaginacionCatalogo();
     }
 
-    // Obtener solamente los productos de la página actual.
     const productosPagina = obtenerProductosPaginados(listaProductos);
 
     let categoriasMap = {};
@@ -222,26 +218,26 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             card.dataset.codigo = String(prod.codigo || '');
             card.dataset.descripcion = String(prod.descripcion || '');
 
-            // Comprobar si el producto tiene video.
+            // COMPROBAR VIDEO
             let videoUrl = prod.video ? String(prod.video).trim() : '';
             let videoId = obtenerIdDrive(videoUrl);
 
             let tieneVideoReal = videoUrl !== '' && videoId !== '';
 
-            // Obtener la imagen del producto.
+            // OBTENER IMAGEN
             let imagenId = obtenerIdDrive(prod.imagen);
 
             let portadaSrc = imagenId
                 ? `https://lh3.googleusercontent.com/d/${imagenId}`
                 : '';
 
-            // Crear botón independiente para las fotos y el video.
+            // CREAR BOTONES CON CLASES INDEPENDIENTES
             let botonesHTML = '';
 
             if (portadaSrc) {
                 botonesHTML += `
                     <button type="button"
-                        class="boton-ver-media"
+                        class="boton-ver-media boton-ver-fotos"
                         onclick='abrirModalImagen(${JSON.stringify(portadaSrc)})'>
                         🖼 Ver fotos
                     </button>
@@ -251,14 +247,14 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             if (tieneVideoReal) {
                 botonesHTML += `
                     <button type="button"
-                        class="boton-ver-media"
+                        class="boton-ver-media boton-ver-video"
                         onclick='abrirModalVideo(${JSON.stringify(videoUrl)})'>
                         ▶ Ver video
                     </button>
                 `;
             }
 
-            // Mantener los botones superpuestos sobre la portada.
+            // CONTENEDOR DE IMAGEN Y BOTONES
             let mediaHTML = `
                 <div class="media-container">
                     ${portadaSrc
@@ -315,7 +311,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 </div>
             `;
 
-            // Botón para compartir el producto.
+            // BOTÓN PARA COMPARTIR PRODUCTO
             const botonCompartir = document.createElement('button');
 
             botonCompartir.type = 'button';
@@ -347,8 +343,9 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
         contenedorPrincipal.appendChild(seccionDiv);
     });
 
-    // Crear los botones de paginación.
+    // CONTROLES DE PAGINACIÓN
     contenedorPrincipal.appendChild(
         crearControlesPaginacion(listaProductos.length)
     );
 }
+
