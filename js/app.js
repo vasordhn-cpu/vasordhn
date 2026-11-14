@@ -657,27 +657,23 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
     
 
 
+ 
     // ==========================================
     // FACEBOOK MESSENGER
     // ==========================================
 
     crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
 
-        // Preparar mensaje compatible con Messenger
-        const mensajeMessenger = mensaje
-            .replace(/\p{Extended_Pictographic}/gu, '')
-            .replace(/\uFE0F/g, '')
-            .replace(/\uFFFD/g, '')
-            .replace(/[ \t]{2,}/g, ' ')
-            .trim();
+        const mensajeMessenger = encodeURIComponent(mensaje);
 
         const urlMessenger =
             'https://www.facebook.com/messages/new?text=' +
-            encodeURIComponent(mensajeMessenger);
+            mensajeMessenger;
 
         window.open(urlMessenger, '_blank', 'noopener');
 
     });
+
 
 
 
