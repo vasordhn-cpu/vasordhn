@@ -204,7 +204,7 @@ function crearEnlaceProducto(prod) {
     return `${window.location.origin}${window.location.pathname}?${parametros.toString()}`;
 }
 
-// FUNCIÓN ACTUALIZADA PARA COMPARTIR PRODUCTOS
+
 async function compartirProducto(prod) {
     if (!prod) return;
 
@@ -230,32 +230,117 @@ async function compartirProducto(prod) {
         `🔗 Ver producto: ${enlace}`
     ].filter(Boolean).join('\n\n');
 
-    // INTENTAR ABRIR EL MENÚ NATIVO PARA COMPARTIR
-    if (navigator.share) {
+    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (esMovil && navigator.share) {
         try {
             await navigator.share({
                 title: prod.descripcion || 'Producto VASORD',
                 text: mensaje
             });
-
             return;
-
         } catch (error) {
-            // Si el usuario cierra el menú, no mostramos ningún error.
-            if (error.name === 'AbortError') {
-                return;
-            }
+            if (error.name === 'AbortError') return;
         }
     }
 
-    // ALTERNATIVA: COPIAR EL MENSAJE
-    try {
-        await navigator.clipboard.writeText(mensaje);
-        alert('¡Mensaje copiado! Ya puedes compartirlo.');
-    } catch (error) {
-        window.prompt('Copia el mensaje para compartirlo:', mensaje);
-    }
+    mostrarMenuCompartir(mensaje, enlace);
 }
+
+function mostrarMenuCompartir(mensaje, enlace) {
+    const anterior = document.getElementById('menuCompartirVASORD');
+    if (anterior) anterior.remove();
+
+    const fondo = document.createElement('div');
+    fondo.id = 'menuCompartirVASORD';
+
+    fondo.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.65);
+        z-index:100000;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:15px;
+    `;
+
+    const caja = document.createElement('div');
+
+    caja.style.cssText = `
+        background:white;
+        width:100%;
+        max-width:340px;
+        padding:25px;
+        border-radius:15px;
+        text-align:center;
+        box-shadow:0 5px 25px rgba(0,0,0,0.3);
+    `;
+
+    const titulo = document.createElement('h3');
+    titulo.textContent = 'Compartir producto';
+    titulo.style.margin = '0 0 20px';
+    caja.appendChild(titulo);
+
+    function crearBoton(texto, color, accion) {
+        const boton = document.createElement('button');
+        boton.type = 'button';
+        boton.textContent = texto;
+
+        boton.style.cssText = `
+            display:block;
+            width:100%;
+            padding:13px;
+            margin:10px 0;
+            border:0;
+            border-radius:8px;
+            background:${color};
+            color:white;
+            font-size:15px;
+            font-weight:bold;
+            cursor:pointer;
+        `;
+
+        boton.onclick = accion;
+        caja.appendChild(boton);
+    }
+
+    crearBoton('🟢 WhatsApp', '#25D366', () => {
+        window.open(
+            'https://api.whatsapp.com/send?text=' + encodeURIComponent(mensaje),
+            '_blank',
+            'noopener'
+        );
+    });
+
+    crearBoton('🔵 Facebook', '#1877F2', () => {
+        window.open(
+            'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(enlace),
+            '_blank',
+            'noopener'
+        );
+    });
+
+    crearBoton('📋 Copiar enlace', '#16834A', async () => {
+        try {
+            await navigator.clipboard.writeText(enlace);
+            alert('¡Enlace copiado correctamente!');
+        } catch (error) {
+            window.prompt('Copia este enlace:', enlace);
+        }
+    });
+
+    crearBoton('✖ Cerrar', '#666666', () => fondo.remove());
+
+    fondo.onclick = (evento) => {
+        if (evento.target === fondo) fondo.remove();
+    };
+
+    fondo.appendChild(caja);
+    document.body.appendChild(fondo);
+}
+
+
 
 function abrirProductoDesdeEnlace() {
     const parametros = new URLSearchParams(window.location.search);
