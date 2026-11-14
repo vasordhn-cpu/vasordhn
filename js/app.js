@@ -279,6 +279,10 @@ async function compartirProducto(prod) {
     const imagenUrl = imagenId
         ? `https://lh3.googleusercontent.com/d/${imagenId}`
         : '';
+    // PREPARAR FOTO AL ABRIR EL MENÚ DE COMPARTIR
+if (imagenUrl) {
+    prepararArchivoCompartir(imagenUrl, prod.codigo);
+}
 
     const variaciones = (prod.filas || [])
         .map(f => {
