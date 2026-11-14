@@ -287,13 +287,22 @@ body {
 }
 
 /* BOTÓN DINÁMICO */
-.video-btn-play {
+.botones-media {
     position: absolute;
     bottom: 12px;
     right: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    z-index: 5;
+}
+
+.boton-ver-media {
     background: rgba(0, 0, 0, 0.85);
     color: #fff;
-    padding: 8px 16px;
+    padding: 8px 12px;
+    border: none;
     border-radius: 20px;
     font-size: 12px;
     font-weight: bold;
@@ -301,9 +310,13 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    z-index: 5;
     transition: transform 0.2s ease, background 0.2s ease;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.boton-ver-media:hover {
+    background: #16834A;
+    transform: scale(1.05);
 }
 
 .video-btn-play:hover {
