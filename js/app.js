@@ -426,36 +426,184 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
         caja.appendChild(boton);
     }
 
-  // WHATSAPP: ELEGIR APLICACIÓN O VERSIÓN WEB
-crearBoton('🟢 WhatsApp', '#25D366', () => {
 
-    const usarAplicacion = confirm(
-        '¿Cómo deseas compartir este producto?\n\n' +
-        'ACEPTAR: Abrir WhatsApp Aplicación\n\n' +
-        'CANCELAR: Abrir WhatsApp Web'
-    );
+    // ==========================================
+    // WHATSAPP: ELEGIR APLICACIÓN O VERSIÓN WEB
+    // ==========================================
 
-    if (usarAplicacion) {
+    crearBoton('🟢 WhatsApp', '#25D366', () => {
 
-        // Abrir WhatsApp instalado en la computadora
-        const urlWhatsAppApp =
-            'whatsapp://send?text=' + encodeURIComponent(mensaje);
+        // Crear ventana de selección
+        const selector = document.createElement('div');
 
-        window.location.href = urlWhatsAppApp;
+        selector.style.cssText = `
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.65);
+            z-index:2147483648;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:15px;
+            box-sizing:border-box;
+        `;
 
-    } else {
+        const cajaSelector = document.createElement('div');
 
-        // Abrir WhatsApp Web en el navegador
-        const urlWhatsAppWeb =
-            'https://web.whatsapp.com/send?text=' + encodeURIComponent(mensaje);
+        cajaSelector.style.cssText = `
+            background:white;
+            color:#222;
+            width:100%;
+            max-width:330px;
+            padding:25px;
+            border-radius:15px;
+            text-align:center;
+            box-shadow:0 5px 25px rgba(0,0,0,0.3);
+            box-sizing:border-box;
+        `;
 
-        window.open(urlWhatsAppWeb, '_blank');
+        cajaSelector.innerHTML = `
+            <h3 style="margin:0 0 18px;">
+                ¿Cómo deseas abrir WhatsApp?
+            </h3>
 
-    }
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:10px;
+                padding:13px;
+                margin-bottom:10px;
+                border:1px solid #ddd;
+                border-radius:8px;
+                cursor:pointer;
+                text-align:left;
+            ">
+                <input type="radio"
+                       name="tipoWhatsApp"
+                       value="app"
+                       checked>
+                <span>🟢 WhatsApp Aplicación</span>
+            </label>
 
-    fondo.remove();
-});
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:10px;
+                padding:13px;
+                margin-bottom:20px;
+                border:1px solid #ddd;
+                border-radius:8px;
+                cursor:pointer;
+                text-align:left;
+            ">
+                <input type="radio"
+                       name="tipoWhatsApp"
+                       value="web">
+                <span>🌐 WhatsApp Web</span>
+            </label>
+
+            <div style="display:flex; gap:10px;">
+
+                <button id="continuarWhatsApp"
+                    type="button"
+                    style="
+                        flex:1;
+                        padding:12px;
+                        background:#25D366;
+                        color:white;
+                        border:0;
+                        border-radius:8px;
+                        font-weight:bold;
+                        cursor:pointer;
+                    ">
+                    Continuar
+                </button>
+
+                <button id="cancelarWhatsApp"
+                    type="button"
+                    style="
+                        flex:1;
+                        padding:12px;
+                        background:#666;
+                        color:white;
+                        border:0;
+                        border-radius:8px;
+                        font-weight:bold;
+                        cursor:pointer;
+                    ">
+                    Cancelar
+                </button>
+
+            </div>
+        `;
+
+        selector.appendChild(cajaSelector);
+        document.body.appendChild(selector);
+
+
+        // ==========================================
+        // BOTÓN CONTINUAR
+        // ==========================================
+
+        cajaSelector.querySelector('#continuarWhatsApp')
+            .addEventListener('click', () => {
+
+                const opcionSeleccionada =
+                    cajaSelector.querySelector(
+                        'input[name="tipoWhatsApp"]:checked'
+                    );
+
+                if (!opcionSeleccionada) return;
+
+                const seleccion = opcionSeleccionada.value;
+
+                if (seleccion === 'app') {
+
+                    // Abrir WhatsApp Aplicación
+                    const urlWhatsAppApp =
+                        'whatsapp://send?text=' +
+                        encodeURIComponent(mensaje);
+
+                    window.location.href = urlWhatsAppApp;
+
+                } else {
+
+                    // Abrir WhatsApp Web
+                    const urlWhatsAppWeb =
+                        'https://web.whatsapp.com/send?text=' +
+                        encodeURIComponent(mensaje);
+
+                    window.open(
+                        urlWhatsAppWeb,
+                        '_blank'
+                    );
+                }
+
+                selector.remove();
+                fondo.remove();
+            });
+
+
+        // ==========================================
+        // BOTÓN CANCELAR
+        // ==========================================
+
+        cajaSelector.querySelector('#cancelarWhatsApp')
+            .addEventListener('click', () => {
+
+                // Cierra solamente la ventana de selección
+                // y conserva abierto el menú principal.
+                selector.remove();
+
+            });
+
+    });
+
+
+    // ==========================================
     // FACEBOOK
+    // ==========================================
+
     crearBoton('🔵 Facebook', '#1877F2', () => {
 
         const urlFacebook =
@@ -466,14 +614,22 @@ crearBoton('🟢 WhatsApp', '#25D366', () => {
 
     });
 
+
+    // ==========================================
     // DESCARGAR FOTO
+    // ==========================================
+
     if (imagenUrl) {
         crearBoton('📸 Descargar foto del producto', '#64A9D9', () => {
             descargarImagenProducto(imagenUrl, codigo);
         });
     }
 
+
+    // ==========================================
     // COPIAR ENLACE
+    // ==========================================
+
     crearBoton('📋 Copiar enlace', '#16834A', async () => {
         try {
             await navigator.clipboard.writeText(enlace);
@@ -483,7 +639,11 @@ crearBoton('🟢 WhatsApp', '#25D366', () => {
         }
     });
 
-    // CERRAR
+
+    // ==========================================
+    // CERRAR MENÚ
+    // ==========================================
+
     crearBoton('✖ Cerrar', '#666666', () => {
         fondo.remove();
     });
