@@ -340,8 +340,6 @@ function mostrarMenuCompartir(mensaje, enlace) {
     document.body.appendChild(fondo);
 }
 
-
-
 function abrirProductoDesdeEnlace() {
     const parametros = new URLSearchParams(window.location.search);
 
@@ -351,8 +349,8 @@ function abrirProductoDesdeEnlace() {
     if (!codigo && !descripcion) return;
 
     const indice = datosActualesPaginacion.findIndex(prod =>
-        prod.codigo === codigo &&
-        prod.descripcion === descripcion
+        String(prod.codigo || '') === String(codigo || '') &&
+        String(prod.descripcion || '') === String(descripcion || '')
     );
 
     if (indice === -1) {
@@ -366,7 +364,29 @@ function abrirProductoDesdeEnlace() {
 
     renderizarPorCategorias(datosActualesPaginacion, true);
 
-    abrirFichaProducto(datosActualesPaginacion[indice]);
+    const tarjetas = document.querySelectorAll('.card-producto');
+
+    const tarjeta = Array.from(tarjetas).find(card =>
+        card.dataset.codigo === String(codigo || '') &&
+        card.dataset.descripcion === String(descripcion || '')
+    );
+
+    if (tarjeta) {
+        tarjeta.style.outline = '4px solid #16834A';
+        tarjeta.style.boxShadow = '0 0 20px rgba(22,131,74,0.55)';
+        tarjeta.style.borderRadius = '12px';
+
+        tarjeta.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+    }
+
+    window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname + window.location.hash
+    );
 }
 
 const parametrosIniciales = new URLSearchParams(window.location.search);
