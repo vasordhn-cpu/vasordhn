@@ -1,14 +1,24 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo - VASORD Creacioness y Más</title>
-    <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f6f9; margin: 0; padding: 0 0 20px 0; }
 
-        /* FRANJA SUPERIOR ESTILO EMPRESARIAL */
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0 0 20px 0;
+        }
+
+        /* FRANJA SUPERIOR */
         .header-franja {
             background: linear-gradient(135deg, #004b99, #0066cc);
             color: #ffffff;
@@ -17,6 +27,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             margin-bottom: 25px;
         }
+
         .header-franja h1 {
             margin: 0;
             font-size: 26px;
@@ -25,7 +36,7 @@
             font-weight: 700;
         }
 
-        /* MENÚ DE NAVEGACIÓN DINÁMICO AUTOMÁTICO */
+        /* MENÚ DE NAVEGACIÓN */
         .nav-categorias {
             display: flex;
             justify-content: center;
@@ -37,6 +48,7 @@
             margin-right: auto;
             padding: 0 10px;
         }
+
         .nav-btn {
             background: #ffffff;
             color: #333;
@@ -54,10 +66,12 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .nav-btn:hover {
             background: #e2e8f0;
             transform: translateY(-2px);
         }
+
         .nav-btn.active {
             background: #0066cc;
             color: #ffffff;
@@ -65,7 +79,7 @@
             box-shadow: 0 4px 10px rgba(0,102,204,0.3);
         }
 
-        /* ADAPTACIÓN MÓVIL DEL MENÚ (4 POR FILA) */
+        /* ADAPTACIÓN MÓVIL DEL MENÚ */
         @media (max-width: 768px) {
             .nav-categorias {
                 display: grid;
@@ -73,29 +87,35 @@
                 gap: 6px;
                 padding: 0 10px;
             }
+
             .nav-btn {
                 width: 100%;
                 padding: 8px 4px;
                 font-size: 11px;
                 border-radius: 15px;
             }
+
             .header-franja h1 {
                 font-size: 20px;
             }
-            
+
             .variacion-row-final {
                 padding: 4px 8px !important;
                 font-size: 11px !important;
             }
+
             .variacion-medida {
                 font-size: 11px !important;
             }
+
             .variacion-precio {
                 font-size: 12px !important;
             }
+
             .card-info {
                 padding: 10px !important;
             }
+
             .inicio-grid-info {
                 grid-template-columns: 1fr !important;
             }
@@ -107,6 +127,7 @@
             margin-bottom: 30px;
             padding: 0 10px;
         }
+
         .seccion-header h1 {
             color: #1a252f;
             font-size: 28px;
@@ -114,12 +135,13 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+
         .seccion-header p {
             color: #555;
             font-size: 14px;
         }
 
-        /* DISEÑO DE LA PÁGINA DE INICIO (ESTILO WIX) */
+        /* PÁGINA DE INICIO */
         .inicio-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -128,6 +150,7 @@
             flex-direction: column;
             gap: 25px;
         }
+
         .inicio-banner-bienvenida {
             background: #fff;
             padding: 30px 20px;
@@ -136,6 +159,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.06);
             border: 1px solid #eee;
         }
+
         .inicio-banner-bienvenida h2 {
             color: #0066cc;
             font-size: 22px;
@@ -144,6 +168,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
         .inicio-banner-bienvenida p {
             color: #444;
             font-size: 15px;
@@ -151,6 +176,7 @@
             max-width: 800px;
             margin: 0 auto 15px auto;
         }
+
         .inicio-nota {
             display: inline-block;
             background: #fff8e1;
@@ -161,12 +187,13 @@
             color: #856404;
             font-weight: 600;
         }
-        
+
         .inicio-grid-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
+
         .inicio-card-info {
             background: #fff;
             padding: 25px;
@@ -174,6 +201,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.06);
             border: 1px solid #eee;
         }
+
         .inicio-card-info h3 {
             color: #004b99;
             font-size: 18px;
@@ -182,27 +210,31 @@
             padding-bottom: 8px;
             margin-bottom: 15px;
         }
+
         .inicio-card-info ul {
             list-style: none;
             padding: 0;
             margin: 0;
         }
+
         .inicio-card-info li {
             padding: 6px 0;
             color: #555;
             font-size: 14px;
             border-bottom: 1px dashed #f4f6f9;
         }
+
         .inicio-card-info li:last-child {
             border-bottom: none;
         }
 
-        /* CONTENEDOR DE CADA CATEGORÍA / TIPO (CON SEPARACIÓN EXTRA) */
+        /* CATEGORÍAS */
         .categoria-section {
             max-width: 1000px;
             margin: 0 auto 40px auto;
             padding: 0 15px;
         }
+
         .categoria-titulo {
             font-size: 18px;
             color: #1a252f;
@@ -213,90 +245,138 @@
             padding-left: 10px;
             text-transform: capitalize;
         }
-        /* El primer título no necesita tanto espacio arriba */
+
         .categoria-section:first-of-type .categoria-titulo {
             margin-top: 0;
         }
 
-        /* GRID RESPONSIVO: 4 columnas en PC / 2 columnas en Celular */
-        .grid-productos { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 20px; 
+        /* GRID DE PRODUCTOS */
+        .grid-productos {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
         }
 
         @media (max-width: 768px) {
             .grid-productos {
-                grid-template-columns: repeat(2, 1fr); 
+                grid-template-columns: repeat(2, 1fr);
                 gap: 12px;
             }
         }
 
-        .card-producto { 
-            background: #fff; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            border: 1px solid #eee; 
+        .card-producto {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #eee;
         }
 
-        /* RECUADRO DE PORTADA */
-        .media-container { 
-            position: relative; 
-            width: 100%; 
-            height: 250px; 
-            background: #f8f9fa; 
-            overflow: hidden; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        
-        .media-container img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: contain; 
-            padding: 5px; 
+        /* PORTADAS */
+        .media-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background: #f8f9fa;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Botón dinámico */
-        .video-btn-play { 
-            position: absolute; 
-            bottom: 12px; 
-            right: 12px; 
-            background: rgba(0, 0, 0, 0.85); 
-            color: #fff; 
-            padding: 8px 16px; 
-            border-radius: 20px; 
-            font-size: 12px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
+        .media-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 5px;
+        }
+
+        /* BOTÓN DE VIDEO */
+        .video-btn-play {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
             z-index: 5;
             transition: transform 0.2s ease, background 0.2s ease;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
+
         .video-btn-play:hover {
             transform: scale(1.05);
             background: #0066cc;
         }
 
-        .card-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
-        .card-title { font-size: 15px; font-weight: bold; color: #1a252f; margin-bottom: 8px; line-height: 1.3; }
-        
-        .card-otros { font-size: 13px; color: #555; background: #f8f9fa; padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid #3498db; line-height: 1.4; }
+        .card-info {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
 
-        .variaciones-container { display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
-        .variacion-row-final { display: flex; justify-content: space-between; align-items: center; background: #fff8e1; border: 1px solid #ffe082; padding: 8px 12px; border-radius: 8px; font-size: 13px; }
-        .variacion-medida { font-weight: 600; color: #444; }
-        .variacion-precio { font-weight: bold; color: #27ae60; font-size: 15px; margin-left: auto; }
+        .card-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #1a252f;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
 
-        /* DISEÑO DE LISTA / TABLA COMPACTA PARA SERVICIOS */
+        .card-otros {
+            font-size: 13px;
+            color: #555;
+            background: #f8f9fa;
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-left: 3px solid #3498db;
+            line-height: 1.4;
+        }
+
+        .variaciones-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: auto;
+        }
+
+        .variacion-row-final {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .variacion-medida {
+            font-weight: 600;
+            color: #444;
+        }
+
+        .variacion-precio {
+            font-weight: bold;
+            color: #27ae60;
+            font-size: 15px;
+            margin-left: auto;
+        }
+
+        /* SERVICIOS */
         .servicios-container {
             background: #fff;
             border-radius: 12px;
@@ -305,8 +385,7 @@
             overflow: hidden;
             margin-bottom: 15px;
         }
-        
-        /* ENCABEZADOS DE LA TABLA DE SERVICIOS */
+
         .servicios-header-row {
             display: flex;
             justify-content: space-between;
@@ -319,9 +398,20 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .servicios-header-col-desc { flex-grow: 1; }
-        .servicios-header-col-medida { width: 150px; text-align: center; }
-        .servicios-header-col-precio { width: 110px; text-align: right; }
+
+        .servicios-header-col-desc {
+            flex-grow: 1;
+        }
+
+        .servicios-header-col-medida {
+            width: 150px;
+            text-align: center;
+        }
+
+        .servicios-header-col-precio {
+            width: 110px;
+            text-align: right;
+        }
 
         .servicio-row {
             display: flex;
@@ -331,30 +421,36 @@
             border-bottom: 1px solid #f2f4f7;
             gap: 15px;
         }
+
         .servicio-row:last-child {
             border-bottom: none;
         }
+
         .servicio-info-principal {
             display: flex;
             flex-direction: column;
             gap: 2px;
             flex-grow: 1;
         }
+
         .servicio-codigo-nombre {
             font-size: 14px;
             font-weight: 600;
             color: #1a252f;
         }
+
         .servicio-descripcion-extra {
             font-size: 12px;
             color: #666;
         }
+
         .servicio-detalles-precio {
             display: flex;
             align-items: center;
             gap: 15px;
             text-align: right;
         }
+
         .servicio-medida {
             font-size: 13px;
             font-weight: 600;
@@ -365,6 +461,7 @@
             width: 150px;
             text-align: center;
         }
+
         .servicio-precio {
             font-size: 14px;
             font-weight: bold;
@@ -374,30 +471,42 @@
             white-space: nowrap;
         }
 
-        /* ADAPTACIÓN MÓVIL */
+        /* ADAPTACIÓN MÓVIL DE SERVICIOS */
         @media (max-width: 768px) {
             .servicios-header-row {
                 font-size: 11px;
                 padding: 8px 10px;
             }
-            .servicios-header-col-medida { width: 95px; text-align: center; }
-            .servicios-header-col-precio { width: 55px; text-align: right; }
+
+            .servicios-header-col-medida {
+                width: 95px;
+                text-align: center;
+            }
+
+            .servicios-header-col-precio {
+                width: 55px;
+                text-align: right;
+            }
 
             .servicio-row {
                 padding: 7px 8px;
                 gap: 4px;
             }
+
             .servicio-codigo-nombre {
                 font-size: 11px;
                 white-space: normal;
                 word-wrap: break-word;
             }
+
             .servicio-descripcion-extra {
                 display: none;
             }
+
             .servicio-detalles-precio {
                 gap: 4px;
             }
+
             .servicio-medida {
                 font-size: 9px;
                 width: 95px;
@@ -405,6 +514,7 @@
                 white-space: nowrap;
                 text-align: center;
             }
+
             .servicio-precio {
                 font-size: 11px;
                 width: 55px;
@@ -413,7 +523,7 @@
             }
         }
 
-        /* SECCIÓN DE PIE DE PÁGINA (FOOTER) */
+        /* FOOTER */
         .footer-catalogo {
             max-width: 1400px;
             margin: 60px auto 20px auto;
@@ -437,16 +547,19 @@
             gap: 30px;
             width: 100%;
         }
+
         .footer-item-info {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+
         .footer-item-info h3 {
             color: #1a252f;
             font-size: 16px;
             margin: 0 0 4px 0;
         }
+
         .footer-item-info p {
             color: #555;
             font-size: 14px;
@@ -460,12 +573,14 @@
             gap: 10px;
             width: 100%;
         }
+
         .footer-redes-titulo {
             font-weight: bold;
             color: #1a252f;
             font-size: 15px;
             margin: 0;
         }
+
         .footer-redes {
             display: flex;
             flex-direction: row;
@@ -475,6 +590,7 @@
             align-items: center;
             width: 100%;
         }
+
         .footer-redes a {
             background: #f4f6f9;
             padding: 8px 12px;
@@ -487,6 +603,7 @@
             transition: background 0.2s;
             white-space: nowrap;
         }
+
         .footer-redes a:hover {
             background: #e2e8f0;
         }
@@ -502,19 +619,36 @@
             font-size: 14px;
             transition: background-color 0.2s ease;
         }
+
         .btn-como-llegar:hover {
             background-color: #004b99;
         }
 
         @media (max-width: 480px) {
-            .footer-fila-info { gap: 15px; }
-            .footer-item-info h3 { font-size: 14px; }
-            .footer-item-info p { font-size: 12px; }
-            .footer-redes a { padding: 7px 8px; font-size: 11px; }
-            .btn-como-llegar { font-size: 13px; padding: 9px 15px; }
+            .footer-fila-info {
+                gap: 15px;
+            }
+
+            .footer-item-info h3 {
+                font-size: 14px;
+            }
+
+            .footer-item-info p {
+                font-size: 12px;
+            }
+
+            .footer-redes a {
+                padding: 7px 8px;
+                font-size: 11px;
+            }
+
+            .btn-como-llegar {
+                font-size: 13px;
+                padding: 9px 15px;
+            }
         }
 
-        /* VENTANA FLOTANTE (MODAL) PARA CONTENIDO */
+        /* MODAL */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -528,6 +662,7 @@
             align-items: center;
             padding: 20px;
         }
+
         .modal-content {
             position: relative;
             width: 100%;
@@ -541,17 +676,20 @@
             justify-content: center;
             align-items: center;
         }
+
         .modal-content iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
+
         .modal-content img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             background: #000;
         }
+
         .modal-close {
             position: absolute;
             top: 10px;
@@ -566,16 +704,90 @@
             cursor: pointer;
             z-index: 10000;
         }
+
+        /* =====================================
+           PAGINACIÓN: CENTRADA EN PC Y CELULAR
+        ===================================== */
+
+        .controles-paginacion {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            gap: 12px !important;
+
+            width: 100% !important;
+            max-width: 1000px !important;
+
+            margin: 30px auto !important;
+            padding: 20px 10px !important;
+
+            box-sizing: border-box !important;
+            text-align: center !important;
+        }
+
+        .controles-paginacion button {
+            background: #0066cc !important;
+            color: #ffffff !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 12px 24px !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .controles-paginacion button:hover:not(:disabled) {
+            background: #004b99 !important;
+        }
+
+        .controles-paginacion button:disabled {
+            background: #cccccc !important;
+            color: #666666 !important;
+            cursor: not-allowed;
+        }
+
+        .controles-paginacion span {
+            color: #333333 !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+            text-align: center !important;
+        }
+
+        /* PAGINACIÓN EN CELULARES */
+        @media (max-width: 768px) {
+            .controles-paginacion {
+                justify-content: center !important;
+                gap: 8px !important;
+                padding: 15px 5px !important;
+                margin: 20px auto !important;
+            }
+
+            .controles-paginacion button {
+                padding: 10px 16px !important;
+                font-size: 12px !important;
+            }
+
+            .controles-paginacion span {
+                font-size: 12px !important;
+                width: 100%;
+                order: -1;
+            }
+        }
+
     </style>
 </head>
+
 <body>
 
-    <!-- FRANJA SUPERIOR ESTILO EMPRESARIAL -->
+    <!-- FRANJA SUPERIOR -->
     <div class="header-franja">
         <h1>VASORD Creacioness y Más</h1>
     </div>
 
-    <!-- MENÚ DE NAVEGACIÓN AUTOMÁTICO -->
+    <!-- MENÚ DE NAVEGACIÓN -->
     <div id="nav-categorias" class="nav-categorias">
         <span style="color:#888; font-size:13px;">Cargando menú...</span>
     </div>
@@ -585,16 +797,18 @@
     </div>
 
     <div id="contenedor-principal">
-        <!-- El contenido se cargará dinámicamente según la pestaña seleccionada -->
+        <!-- El contenido se cargará dinámicamente -->
     </div>
 
-    <!-- SECCIÓN DE PIE DE PÁGINA (FOOTER) -->
+    <!-- FOOTER -->
     <div class="footer-catalogo">
+
         <div class="footer-fila-info">
             <div class="footer-item-info">
                 <h3>📍 Dirección</h3>
                 <p>Choloma, Cortés</p>
             </div>
+
             <div class="footer-item-info">
                 <h3>⏰ Horarios</h3>
                 <p>Lun - Sab: 9:00 am - 7:00 pm</p>
@@ -603,6 +817,7 @@
 
         <div class="footer-redes-wrapper">
             <p class="footer-redes-titulo">Redes Sociales</p>
+
             <div class="footer-redes">
                 <a href="https://www.tiktok.com/@vasordhn" target="_blank">🎵 TikTok</a>
                 <a href="https://www.instagram.com/vasordhn" target="_blank">📸 Instagram</a>
@@ -615,20 +830,21 @@
                 📍 Cómo llegar a VASORD 🚗
             </a>
         </div>
+
     </div>
 
-    <!-- VENTANA FLOTANTE (MODAL) PARA CONTENIDO -->
+    <!-- MODAL PARA IMÁGENES Y VIDEOS -->
     <div id="videoModal" class="modal-overlay">
         <div class="modal-content" id="modalContainerBody">
             <button class="modal-close" onclick="cerrarModal()">×</button>
         </div>
     </div>
 
-<script src="js/configuracion.js"></script>
-<script src="js/paginacion.js"></script>
-<script src="js/catalogo.js"></script>
-<script src="js/app.js"></script>
+    <!-- ARCHIVOS JAVASCRIPT -->
+    <script src="js/configuracion.js"></script>
+    <script src="js/paginacion.js"></script>
+    <script src="js/catalogo.js"></script>
+    <script src="js/app.js"></script>
 
-    
 </body>
 </html>
