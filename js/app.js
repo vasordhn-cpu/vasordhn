@@ -115,58 +115,8 @@ let productoFichaActual = null;
 
 
 // ==========================================
-// PREPARAR FOTOGRAFÍAS PARA COMPARTIR
+// ESCAPAR TEXTO HTML
 // ==========================================
-
-const archivosCompartirPreparados = new Map();
-const archivosCompartirEnProceso = new Map();
-
-function prepararArchivoCompartir(imagenUrl, codigo) {
-    if (!imagenUrl) return Promise.resolve(null);
-
-    if (archivosCompartirPreparados.has(imagenUrl)) {
-        return Promise.resolve(archivosCompartirPreparados.get(imagenUrl));
-    }
-
-    if (archivosCompartirEnProceso.has(imagenUrl)) {
-        return archivosCompartirEnProceso.get(imagenUrl);
-    }
-
-    const preparacion = fetch(imagenUrl)
-        .then(respuesta => {
-            if (!respuesta.ok) {
-                throw new Error('No se pudo preparar la fotografía.');
-            }
-
-            return respuesta.blob();
-        })
-        .then(blob => {
-            const nombre = (codigo || 'producto')
-                .toString()
-                .replace(/[^a-zA-Z0-9_-]/g, '_');
-
-            const archivo = new File(
-                [blob],
-                `VASORD_${nombre}.jpg`,
-                { type: blob.type || 'image/jpeg' }
-            );
-
-            archivosCompartirPreparados.set(imagenUrl, archivo);
-            return archivo;
-        })
-        .catch(error => {
-            console.warn('No se pudo preparar la fotografía:', error);
-            return null;
-        })
-        .finally(() => {
-            archivosCompartirEnProceso.delete(imagenUrl);
-        });
-
-    archivosCompartirEnProceso.set(imagenUrl, preparacion);
-
-    return preparacion;
-}
-
 
 function escaparTextoHTML(texto) {
     return String(texto || '').replace(/[&<>"']/g, caracter => ({
@@ -178,6 +128,11 @@ function escaparTextoHTML(texto) {
     })[caracter]);
 }
 
+
+// ==========================================
+// ABRIR FICHA DEL PRODUCTO
+// ==========================================
+
 function abrirFichaProducto(prod) {
     productoFichaActual = prod;
 
@@ -188,11 +143,6 @@ function abrirFichaProducto(prod) {
     const imagen = imagenId
         ? `https://lh3.googleusercontent.com/d/${imagenId}`
         : '';
-
-    // PREPARAR LA FOTOGRAFÍA ANTES DE COMPARTIR
-    if (imagen) {
-        prepararArchivoCompartir(imagen, prod.codigo);
-    }
 
     const videoId = obtenerIdDrive(prod.video);
 
@@ -254,6 +204,11 @@ function abrirFichaProducto(prod) {
     modal.style.display = 'flex';
 }
 
+
+// ==========================================
+// CREAR ENLACE DEL PRODUCTO
+// ==========================================
+
 function crearEnlaceProducto(prod) {
     const parametros = new URLSearchParams();
 
@@ -269,7 +224,7 @@ function crearEnlaceProducto(prod) {
 // COMPARTIR PRODUCTO
 // ==========================================
 
-async function compartirProducto(prod) {
+function compartirProducto(prod) {
     if (!prod) return;
 
     const enlace = crearEnlaceProducto(prod);
@@ -280,16 +235,13 @@ async function compartirProducto(prod) {
         ? `https://lh3.googleusercontent.com/d/${imagenId}`
         : '';
 
-    // PREPARAR FOTO ANTES DE MOSTRAR EL MENÚ
-if (imagenUrl) {
-    await prepararArchivoCompartir(imagenUrl, prod.codigo);
-}
-
     const variaciones = (prod.filas || [])
         .map(f => {
             const partes = [];
+
             if (f.medida) partes.push(f.medida);
             if (f.precio) partes.push('Lps. ' + f.precio);
+
             return partes.join(' - ');
         })
         .filter(Boolean);
@@ -304,45 +256,6 @@ if (imagenUrl) {
             : '',
         `🔗 Ver producto: ${enlace}`
     ].filter(Boolean).join('\n');
-
-    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-    // EN CELULAR: COMPARTIR FOTO Y DATOS
-    if (esMovil && imagenUrl && navigator.share && navigator.canShare) {
-        try {
-            let archivo = archivosCompartirPreparados.get(imagenUrl);
-
-            if (!archivo) {
-                archivo = await prepararArchivoCompartir(imagenUrl, prod.codigo);
-            }
-
-            if (archivo && navigator.canShare({ files: [archivo] })) {
-                await navigator.share({
-                    title: prod.descripcion || 'Producto VASORD',
-                    text: mensaje,
-                    files: [archivo]
-                });
-                return;
-            }
-        } catch (error) {
-            if (error.name === 'AbortError') return;
-            console.warn('No fue posible compartir la fotografía:', error);
-        }
-    }
-
-    // ALTERNATIVA DE TEXTO PARA CELULARES
-    if (esMovil && navigator.share) {
-        try {
-            await navigator.share({
-                title: prod.descripcion || 'Producto VASORD',
-                text: mensaje
-            });
-            return;
-        } catch (error) {
-            if (error.name === 'AbortError') return;
-            console.warn('No fue posible compartir el mensaje:', error);
-        }
-    }
 
     mostrarMenuCompartir(mensaje, enlace, imagenUrl, prod.codigo);
 }
@@ -376,14 +289,12 @@ async function descargarImagenProducto(imagenUrl, codigo) {
 
         setTimeout(() => URL.revokeObjectURL(urlTemporal), 1500);
 
-        alert('¡Fotografía descargada! Ya puedes adjuntarla en WhatsApp.');
-
     } catch (error) {
         console.error('Error al descargar la fotografía:', error);
 
         window.open(imagenUrl, '_blank', 'noopener');
 
-        alert('Abre la fotografía y guárdala en tu dispositivo.');
+        alert('No se pudo descargar directamente. Abre la fotografía y guárdala en tu dispositivo.');
     }
 }
 
@@ -477,45 +388,18 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
         caja.appendChild(boton);
     }
 
-    // WHATSAPP: COMPARTIR FOTO Y TODOS LOS DATOS
-crearBoton('🟢 WhatsApp', '#25D366', async () => {
 
-    if (!imagenUrl) {
-        alert('Este producto no tiene fotografía disponible.');
-        return;
-    }
+    // WHATSAPP: ABRIR CON LOS DATOS Y EL ENLACE
+    crearBoton('🟢 WhatsApp', '#25D366', () => {
 
-    if (!navigator.share || !navigator.canShare) {
-        alert('Tu navegador no permite compartir fotografías directamente. Descarga la imagen y adjúntala manualmente en WhatsApp.');
-        return;
-    }
+        const urlWhatsApp =
+            'https://wa.me/?text=' + encodeURIComponent(mensaje);
 
-    try {
-        const archivo = await prepararArchivoCompartir(imagenUrl, codigo);
+        window.open(urlWhatsApp, '_blank');
 
-        if (!archivo) {
-            alert('No se pudo preparar la fotografía. Intenta nuevamente.');
-            return;
-        }
+        fondo.remove();
+    });
 
-        if (!navigator.canShare({ files: [archivo] })) {
-            alert('Tu navegador no permite compartir este archivo. Puedes descargarlo y adjuntarlo manualmente.');
-            return;
-        }
-
-        await navigator.share({
-            title: 'VASORD Creacioness y Más',
-            text: mensaje,
-            files: [archivo]
-        });
-
-    } catch (error) {
-        if (error.name === 'AbortError') return;
-
-        console.error('Error al compartir:', error);
-        alert('No fue posible compartir la fotografía. Puedes descargarla y adjuntarla manualmente.');
-    }
-});
 
     // FACEBOOK
     crearBoton('🔵 Facebook', '#1877F2', () => {
@@ -525,7 +409,9 @@ crearBoton('🟢 WhatsApp', '#25D366', async () => {
             encodeURIComponent(enlace);
 
         window.open(urlFacebook, '_blank', 'noopener');
+
     });
+
 
     // DESCARGAR FOTO
     if (imagenUrl) {
@@ -533,6 +419,7 @@ crearBoton('🟢 WhatsApp', '#25D366', async () => {
             descargarImagenProducto(imagenUrl, codigo);
         });
     }
+
 
     // COPIAR ENLACE
     crearBoton('📋 Copiar enlace', '#16834A', async () => {
@@ -544,10 +431,12 @@ crearBoton('🟢 WhatsApp', '#25D366', async () => {
         }
     });
 
+
     // CERRAR
     crearBoton('✖ Cerrar', '#666666', () => {
         fondo.remove();
     });
+
 
     caja.addEventListener('click', function(evento) {
         evento.stopPropagation();
@@ -643,3 +532,4 @@ if (matchPestana) {
 } else {
     cambiarHoja('Inicio');
 }
+
