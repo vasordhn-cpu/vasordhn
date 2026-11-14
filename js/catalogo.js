@@ -245,8 +245,13 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                             bottom: auto !important;
                             left: auto !important;
                             width: 100%;
-                            padding: 10px 5px;
-                            border-radius: 8px;
+                            padding: 6px 5px;
+                            font-size: 12px;
+                            background: #2196F3;
+                            color: #FFFFFF;
+                            border: none;
+                            border-radius: 6px;
+                            font-weight: 600;
                             cursor: pointer;
                         "
                         onclick='abrirModalImagen(${JSON.stringify(portadaSrc)})'>
@@ -266,8 +271,13 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                             bottom: auto !important;
                             left: auto !important;
                             width: 100%;
-                            padding: 10px 5px;
-                            border-radius: 8px;
+                            padding: 6px 5px;
+                            font-size: 12px;
+                            background: #1565C0;
+                            color: #FFFFFF;
+                            border: none;
+                            border-radius: 6px;
+                            font-weight: 600;
                             cursor: pointer;
                         "
                         onclick='abrirModalVideo(${JSON.stringify(videoUrl)})'>
@@ -325,8 +335,8 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                         display: flex;
                         flex-direction: column;
                         width: 100%;
-                        gap: 8px;
-                        padding: 0 10px 10px;
+                        gap: 6px;
+                        padding: 0 10px 8px;
                     ">
 
                     ${botonesHTML
@@ -336,9 +346,9 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                                 inset: auto !important;
                                 display: grid !important;
                                 grid-template-columns: repeat(2, minmax(0, 1fr));
-                                gap: 8px;
+                                gap: 6px;
                                 width: 100%;
-                                padding-top: 10px;
+                                padding-top: 8px;
                             ">${botonesHTML}</div>`
                         : ''}
 
@@ -365,12 +375,13 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 display: block;
                 width: 100%;
                 margin-top: 0;
-                padding: 10px;
-                background: #16834A;
-                color: white;
+                padding: 7px;
+                font-size: 12px;
+                background: #0D47A1;
+                color: #FFFFFF;
                 border: none;
-                border-radius: 8px;
-                font-weight: bold;
+                border-radius: 6px;
+                font-weight: 600;
                 cursor: pointer;
             `;
 
@@ -392,5 +403,4 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
         crearControlesPaginacion(listaProductos.length)
     );
 }
-
 
