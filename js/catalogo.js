@@ -263,9 +263,9 @@ let mediaHTML = `
             ? `<img src="${portadaSrc}" alt="${prod.descripcion}">`
             : '<div style="color:#aaa;">Sin portada</div>'}
 
-        <div class="botones-media">
-            ${botonesHTML}
-        </div>
+        ${botonesHTML
+    ? `<div class="botones-media">${botonesHTML}</div>`
+    : ''}
     </div>
 `;
 
