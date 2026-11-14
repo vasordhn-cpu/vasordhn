@@ -426,17 +426,35 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
         caja.appendChild(boton);
     }
 
-    // WHATSAPP
-    crearBoton('🟢 WhatsApp', '#25D366', () => {
+  // WHATSAPP: ELEGIR APLICACIÓN O VERSIÓN WEB
+crearBoton('🟢 WhatsApp', '#25D366', () => {
 
-        const urlWhatsApp =
+    const usarAplicacion = confirm(
+        '¿Cómo deseas compartir este producto?\n\n' +
+        'ACEPTAR: Abrir WhatsApp Aplicación\n\n' +
+        'CANCELAR: Abrir WhatsApp Web'
+    );
+
+    if (usarAplicacion) {
+
+        // Abrir WhatsApp instalado en la computadora
+        const urlWhatsAppApp =
+            'whatsapp://send?text=' + encodeURIComponent(mensaje);
+
+        window.location.href = urlWhatsAppApp;
+
+    } else {
+
+        // Abrir WhatsApp Web en el navegador
+        const urlWhatsAppWeb =
             'https://web.whatsapp.com/send?text=' + encodeURIComponent(mensaje);
 
-        window.open(urlWhatsApp, '_blank');
+        window.open(urlWhatsAppWeb, '_blank');
 
-        fondo.remove();
-    });
+    }
 
+    fondo.remove();
+});
     // FACEBOOK
     crearBoton('🔵 Facebook', '#1877F2', () => {
 
