@@ -235,25 +235,39 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 ? `https://lh3.googleusercontent.com/d/${imagenId}`
                 : '';
 
-            let textoBoton = tieneVideoReal
-                ? "▶ Ver Video"
-                : "🖼 Ver Imagen";
+            let botonesHTML = '';
 
-            let accionBoton = tieneVideoReal
-                ? `abrirModalVideo(${JSON.stringify(videoUrl)})`
-                : `abrirModalImagen(${JSON.stringify(portadaSrc)})`;
+if (portadaSrc) {
+    botonesHTML += `
+        <button type="button"
+            class="boton-ver-media"
+            onclick='abrirModalImagen(${JSON.stringify(portadaSrc)})'>
+            🖼 Ver fotos
+        </button>
+    `;
+}
 
-            let mediaHTML = `
-                <div class="media-container">
-                    ${portadaSrc
-                        ? `<img src="${portadaSrc}" alt="${prod.descripcion}">`
-                        : '<div style="color:#aaa;">Sin portada</div>'}
+if (tieneVideoReal) {
+    botonesHTML += `
+        <button type="button"
+            class="boton-ver-media"
+            onclick='abrirModalVideo(${JSON.stringify(videoUrl)})'>
+            ▶ Ver video
+        </button>
+    `;
+}
 
-                    ${portadaSrc || tieneVideoReal
-                        ? `<div class="video-btn-play" onclick='${accionBoton}'>${textoBoton}</div>`
-                        : ''}
-                </div>
-            `;
+let mediaHTML = `
+    <div class="media-container">
+        ${portadaSrc
+            ? `<img src="${portadaSrc}" alt="${prod.descripcion}">`
+            : '<div style="color:#aaa;">Sin portada</div>'}
+
+        <div class="botones-media">
+            ${botonesHTML}
+        </div>
+    </div>
+`;
 
             let outrosHTML = prod.otros
                 ? `<div class="card-otros">${prod.otros}</div>`
