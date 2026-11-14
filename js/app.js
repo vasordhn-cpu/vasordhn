@@ -246,6 +246,11 @@ async function compartirProducto(prod) {
 
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
+    if (!esMovil) {
+    mostrarMenuCompartir(mensaje, enlace, imagenUrl, prod.codigo);
+    return;
+}
+    
     // COMPARTIR FOTOGRAFÍA ADJUNTA EN CELULAR Y COMPUTADORA
 
     if (imagenUrl && navigator.share && navigator.canShare) {
