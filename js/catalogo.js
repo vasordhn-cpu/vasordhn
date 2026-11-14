@@ -24,10 +24,12 @@ async function cargarDatos(nombreHoja) {
         }));
 
         if (nombreHoja.toLowerCase() === 'servicios') {
-            renderizarComoListaServiciosAgrupados(productos);
-        } else {
-            renderizarPorCategorias(productos);
-        }
+    renderizarComoListaServiciosAgrupados(productos);
+} else {
+    renderizarPorCategorias(productos);
+
+    abrirProductoDesdeEnlace();
+}
 
     } catch (error) {
         console.error('Error al cargar los datos:', error);
