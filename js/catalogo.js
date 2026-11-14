@@ -105,7 +105,7 @@ function renderizarComoListaServiciosAgrupados(items) {
             });
         }
 
-        function renderizarPorCategorias(items) {
+       function renderizarPorCategorias(items, yaAgrupados = false)
             const contenedorPrincipal = document.getElementById('contenedor-principal');
             contenedorPrincipal.innerHTML = '';
             
