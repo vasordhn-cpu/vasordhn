@@ -316,6 +316,7 @@ botonCompartir.style.cssText = `
 `;
 
 botonCompartir.onclick = () => compartirProducto(prod);
+            console.log('Producto seleccionado:', prod);
 
 card.querySelector('.card-info').appendChild(botonCompartir);
 
