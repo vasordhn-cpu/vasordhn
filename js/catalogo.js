@@ -231,7 +231,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 ? `https://lh3.googleusercontent.com/d/${imagenId}`
                 : '';
 
-            // CREAR BOTONES DE IMAGEN Y VIDEO
+            // BOTONES DE IMAGEN Y VIDEO CON COLORES PASTEL
             let botonesHTML = '';
 
             if (portadaSrc) {
@@ -239,17 +239,13 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                     <button type="button"
                         class="boton-ver-media boton-ver-fotos"
                         style="
-                            position: static !important;
-                            top: auto !important;
-                            right: auto !important;
-                            bottom: auto !important;
-                            left: auto !important;
+                            display: block;
                             width: 100%;
                             padding: 6px 5px;
                             font-size: 12px;
-                            background: #2196F3;
-                            color: #FFFFFF;
-                            border: none;
+                            background: #90CAF9;
+                            color: #23456B;
+                            border: 1px solid #BBDEFB;
                             border-radius: 6px;
                             font-weight: 600;
                             cursor: pointer;
@@ -265,17 +261,13 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                     <button type="button"
                         class="boton-ver-media boton-ver-video"
                         style="
-                            position: static !important;
-                            top: auto !important;
-                            right: auto !important;
-                            bottom: auto !important;
-                            left: auto !important;
+                            display: block;
                             width: 100%;
                             padding: 6px 5px;
                             font-size: 12px;
-                            background: #1565C0;
-                            color: #FFFFFF;
-                            border: none;
+                            background: #BBDEFB;
+                            color: #23456B;
+                            border: 1px solid #D6EAF8;
                             border-radius: 6px;
                             font-weight: 600;
                             cursor: pointer;
@@ -286,7 +278,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 `;
             }
 
-            // CONTENEDOR DE LA PORTADA
+            // CONTENEDOR DE IMAGEN
             let mediaHTML = `
                 <div class="media-container">
                     ${portadaSrc
@@ -326,7 +318,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 variacionesHTML += `</div>`;
             }
 
-            // ORDEN DE LOS ELEMENTOS DE LA TARJETA
+            // ESTRUCTURA DE LA TARJETA
             card.innerHTML = `
                 ${mediaHTML}
 
@@ -377,9 +369,9 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 margin-top: 0;
                 padding: 7px;
                 font-size: 12px;
-                background: #0D47A1;
-                color: #FFFFFF;
-                border: none;
+                background: #81AEEB;
+                color: #23456B;
+                border: 1px solid #C5DDF5;
                 border-radius: 6px;
                 font-weight: 600;
                 cursor: pointer;
@@ -403,4 +395,5 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
         crearControlesPaginacion(listaProductos.length)
     );
 }
+
 
