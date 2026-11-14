@@ -305,6 +305,44 @@ async function descargarImagenProducto(imagenUrl, codigo) {
 
 function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
+    // Detectar celulares y tabletas
+    const esCelular = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // ==========================================
+    // CELULAR: MENÚ NATIVO DE APLICACIONES
+    // ==========================================
+
+    if (esCelular && navigator.share) {
+
+        navigator.share({
+            title: 'VASORD Creacioness y Más',
+            text: mensaje
+        }).catch(error => {
+
+            if (error.name === 'AbortError') return;
+
+            console.error('Error al compartir:', error);
+
+            mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo);
+        });
+
+        return;
+    }
+
+    // ==========================================
+    // COMPUTADORA: MENÚ BLANCO DE VASORD
+    // ==========================================
+
+    mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo);
+}
+
+
+// ==========================================
+// MENÚ PERSONALIZADO PARA COMPUTADORA
+// ==========================================
+
+function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
+
     const anterior = document.getElementById('menuCompartirVASORD');
 
     if (anterior) {
@@ -388,8 +426,7 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
         caja.appendChild(boton);
     }
 
-
-    // WHATSAPP: ABRIR CON LOS DATOS Y EL ENLACE
+    // WHATSAPP
     crearBoton('🟢 WhatsApp', '#25D366', () => {
 
         const urlWhatsApp =
@@ -399,7 +436,6 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
         fondo.remove();
     });
-
 
     // FACEBOOK
     crearBoton('🔵 Facebook', '#1877F2', () => {
@@ -412,14 +448,12 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
     });
 
-
     // DESCARGAR FOTO
     if (imagenUrl) {
         crearBoton('📸 Descargar foto del producto', '#64A9D9', () => {
             descargarImagenProducto(imagenUrl, codigo);
         });
     }
-
 
     // COPIAR ENLACE
     crearBoton('📋 Copiar enlace', '#16834A', async () => {
@@ -431,12 +465,10 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
         }
     });
 
-
     // CERRAR
     crearBoton('✖ Cerrar', '#666666', () => {
         fondo.remove();
     });
-
 
     caja.addEventListener('click', function(evento) {
         evento.stopPropagation();
@@ -532,4 +564,5 @@ if (matchPestana) {
 } else {
     cambiarHoja('Inicio');
 }
+
 
