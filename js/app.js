@@ -246,14 +246,7 @@ async function compartirProducto(prod) {
 
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    // EN COMPUTADORA ABRIR DIRECTAMENTE EL MENÚ
-
-    if (!esMovil) {
-        mostrarMenuCompartir(mensaje, enlace, imagenUrl, prod.codigo);
-        return;
-    }
-
-    // EN CELULAR CONSERVAR EL ENVÍO DE LA FOTO
+    // COMPARTIR FOTOGRAFÍA ADJUNTA EN CELULAR Y COMPUTADORA
 
     if (imagenUrl && navigator.share && navigator.canShare) {
         try {
@@ -293,7 +286,7 @@ async function compartirProducto(prod) {
 
     // ALTERNATIVA PARA CELULARES SIN COMPARTIR ARCHIVOS
 
-    if (navigator.share) {
+    if (esMovil && navigator.share) {
         try {
             await navigator.share({
                 title: prod.descripcion || 'Producto VASORD',
@@ -302,8 +295,12 @@ async function compartirProducto(prod) {
             return;
         } catch (error) {
             if (error.name === 'AbortError') return;
+
+            console.warn('No fue posible compartir el mensaje:', error);
         }
     }
+
+    // MENÚ ALTERNATIVO PARA COMPUTADORA O NAVEGADORES SIN SOPORTE
 
     mostrarMenuCompartir(mensaje, enlace, imagenUrl, prod.codigo);
 }
@@ -350,7 +347,7 @@ async function descargarImagenProducto(imagenUrl, codigo) {
 
 
 // ==========================================
-// MENÚ DE COMPARTIR CORREGIDO
+// MENÚ DE COMPARTIR
 // ==========================================
 
 function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
@@ -450,22 +447,19 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
     // WHATSAPP
 
-  
-crearBoton('🟢 WhatsApp', '#25D366', async () => {
+    crearBoton('🟢 WhatsApp', '#25D366', async () => {
 
-    // 1. Descargar primero la fotografía
-    if (imagenUrl) {
-        await descargarImagenProducto(imagenUrl, codigo);
-    }
+        if (imagenUrl) {
+            await descargarImagenProducto(imagenUrl, codigo);
+        }
 
-    // 2. Abrir WhatsApp con el mensaje preparado
-    const urlWhatsApp =
-        'https://api.whatsapp.com/send?text=' +
-        encodeURIComponent(mensaje);
+        const urlWhatsApp =
+            'https://api.whatsapp.com/send?text=' +
+            encodeURIComponent(mensaje);
 
-    window.open(urlWhatsApp, '_blank');
+        window.open(urlWhatsApp, '_blank');
 
-});
+    });
 
     // FACEBOOK
 
@@ -534,8 +528,6 @@ crearBoton('🟢 WhatsApp', '#25D366', async () => {
     fondo.appendChild(caja);
 
     document.body.appendChild(fondo);
-
-    // ASEGURAR QUE QUEDE VISIBLE
 
     fondo.style.display = 'flex';
 }
@@ -616,3 +608,4 @@ if (matchPestana) {
 } else {
     cambiarHoja('Inicio');
 }
+
