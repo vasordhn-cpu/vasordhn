@@ -234,15 +234,16 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             // CREAR BOTONES CON CLASES INDEPENDIENTES
             let botonesHTML = '';
 
-            if (portadaSrc) {
-                botonesHTML += `
-                    <button type="button"
-                        class="boton-ver-media boton-ver-fotos"
-                        onclick='abrirModalImagen(${JSON.stringify(portadaSrc)})'>
-                        🖼 Ver fotos
-                    </button>
-                `;
-            }
+           if (portadaSrc) {
+    botonesHTML += `
+        <button type="button"
+            class="boton-ver-media boton-ver-fotos"
+            style="bottom: 12px !important; top: auto !important;"
+            onclick='abrirModalImagen(${JSON.stringify(portadaSrc)})'>
+            🖼 Ver fotos
+        </button>
+    `;
+}
 
             if (tieneVideoReal) {
                 botonesHTML += `
