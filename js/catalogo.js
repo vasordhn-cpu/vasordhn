@@ -245,15 +245,16 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
     `;
 }
 
-            if (tieneVideoReal) {
-                botonesHTML += `
-                    <button type="button"
-                        class="boton-ver-media boton-ver-video"
-                        onclick='abrirModalVideo(${JSON.stringify(videoUrl)})'>
-                        ▶ Ver video
-                    </button>
-                `;
-            }
+           if (tieneVideoReal) {
+    botonesHTML += `
+        <button type="button"
+            class="boton-ver-media boton-ver-video"
+            style="bottom: 52px !important; top: auto !important;"
+            onclick='abrirModalVideo(${JSON.stringify(videoUrl)})'>
+            ▶ Ver video
+        </button>
+    `;
+}
 
             // CONTENEDOR DE IMAGEN Y BOTONES
             let mediaHTML = `
