@@ -825,3 +825,20 @@ body {
     }
 }
 
+
+/* PRUEBA PARA COMPROBAR SI SE CARGA EL CSS */
+.controles-paginacion {
+    background: #ff0000 !important;
+    border: 5px solid #000000 !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin: 30px auto !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+}
+
+.controles-paginacion button {
+    background: #0066cc !important;
+    color: white !important;
+}
