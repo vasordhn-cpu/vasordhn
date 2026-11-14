@@ -319,12 +319,12 @@ body {
 }
 
 /* BOTÓN VER FOTOS */
-.botones-media .boton-ver-media:first-child {
+.botones-media .boton-ver-fotos {
     bottom: 12px;
 }
 
 /* BOTÓN VER VIDEO */
-.botones-media .boton-ver-media:last-child:not(:first-child) {
+.botones-media .boton-ver-video {
     bottom: 52px;
 }
 
