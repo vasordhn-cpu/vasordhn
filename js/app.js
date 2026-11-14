@@ -282,11 +282,22 @@ function abrirProductoDesdeEnlace() {
 }
 
 
-        let hashRuta = window.location.hash.replace('#', '').trim();
-        let matchPestana = HOJAS_DISPONIBLES.find(h => h.toLowerCase() === decodeURIComponent(hashRuta).toLowerCase());
+        
+const parametrosIniciales = new URLSearchParams(window.location.search);
 
-        if (matchPestana) {
-            cambiarHoja(matchPestana);
-        } else {
-            cambiarHoja('Inicio');
-        }
+const seccionCompartida = parametrosIniciales.get('seccion');
+
+let hashRuta = window.location.hash.replace('#', '').trim();
+
+let seccionInicial = seccionCompartida || decodeURIComponent(hashRuta);
+
+let matchPestana = HOJAS_DISPONIBLES.find(
+    h => h.toLowerCase() === seccionInicial.toLowerCase()
+);
+
+if (matchPestana) {
+    cambiarHoja(matchPestana);
+} else {
+    cambiarHoja('Inicio');
+}
+
