@@ -214,7 +214,6 @@ async function compartirProducto(prod) {
 
     const enlace = crearEnlaceProducto(prod);
 
-    // OBTENER FOTOGRAFÍA DEL PRODUCTO
     const imagenId = obtenerIdDrive(prod.imagen);
 
     const imagenUrl = imagenId
@@ -230,19 +229,22 @@ async function compartirProducto(prod) {
         })
         .filter(Boolean);
 
+    // MENSAJE COMPACTO: SIN MOSTRAR EL LINK DE LA FOTOGRAFÍA
+
     const mensaje = [
         '🛍️ VASORD Creacioness y Más',
         `📦 Producto: ${prod.descripcion || ''}`,
         prod.codigo ? `🔖 Código: ${prod.codigo}` : '',
         prod.otros ? `📝 Descripción: ${prod.otros}` : '',
         variaciones.length
-            ? '💰 Medidas y precios:\n' + variaciones.map(v => '• ' + v).join('\n')
+            ? '💰 Medidas y precios: ' + variaciones.join(' | ')
             : '',
-        imagenUrl ? `🖼️ Foto del producto: ${imagenUrl}` : '',
         `🔗 Ver producto: ${enlace}`
-    ].filter(Boolean).join('\n\n');
+    ].filter(Boolean).join('\n');
 
-    // INTENTAR COMPARTIR FOTO Y DATOS DESDE EL CELULAR
+    // COMPARTIR FOTO EN DISPOSITIVOS COMPATIBLES
+    // Si no se puede compartir el archivo, se muestra el menú.
+
     if (imagenUrl && navigator.share && navigator.canShare) {
         try {
             const respuesta = await fetch(imagenUrl);
@@ -284,18 +286,8 @@ async function compartirProducto(prod) {
         }
     }
 
-    // ALTERNATIVA PARA EQUIPOS Y APLICACIONES NO COMPATIBLES
-    if (navigator.share) {
-        try {
-            await navigator.share({
-                title: prod.descripcion || 'Producto VASORD',
-                text: mensaje
-            });
-            return;
-        } catch (error) {
-            if (error.name === 'AbortError') return;
-        }
-    }
+    // COMPUTADORA Y EQUIPOS SIN COMPARTIR ARCHIVOS:
+    // MOSTRAR SIEMPRE EL MENÚ PERSONALIZADO.
 
     mostrarMenuCompartir(mensaje, enlace, imagenUrl, prod.codigo);
 }
@@ -520,5 +512,3 @@ if (matchPestana) {
 } else {
     cambiarHoja('Inicio');
 }
-
-
