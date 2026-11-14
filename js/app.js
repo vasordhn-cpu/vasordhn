@@ -655,24 +655,58 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
  
     
+
 // ==========================================
 // FACEBOOK MESSENGER
 // ==========================================
 
 crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
 
-    const urlMessenger = new URL(
-        'https://www.facebook.com/messages/new'
-    );
-
-    // Codificar el mensaje conservando los caracteres Unicode
-    urlMessenger.searchParams.set('text', mensaje);
-
+    // Abrir Messenger
     window.open(
-        urlMessenger.toString(),
-        '_blank',
-        'noopener'
+        'https://www.facebook.com/messages/new',
+        '_blank'
     );
+
+    // Copiar el mensaje completo conservando los emojis
+    async function copiarMensaje() {
+        try {
+            await navigator.clipboard.writeText(mensaje);
+
+            alert(
+                '¡Mensaje copiado correctamente! 😊\n\n' +
+                'En Messenger, abre la conversación y pega el mensaje.'
+            );
+
+        } catch (error) {
+
+            // Método alternativo para copiar
+            const campo = document.createElement('textarea');
+
+            campo.value = mensaje;
+            campo.style.position = 'fixed';
+            campo.style.opacity = '0';
+
+            document.body.appendChild(campo);
+
+            campo.select();
+
+            const copiado = document.execCommand('copy');
+
+            document.body.removeChild(campo);
+
+            if (copiado) {
+                alert(
+                    '¡Mensaje copiado! 😊\n\n' +
+                    'Ahora pégalo en Messenger.'
+                );
+            } else {
+                alert('No se pudo copiar el mensaje. Intenta nuevamente.');
+            }
+        }
+    }
+
+    copiarMensaje();
 
 });
 
