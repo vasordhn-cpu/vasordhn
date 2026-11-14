@@ -209,6 +209,7 @@ function crearEnlaceProducto(prod) {
     return `${window.location.origin}${window.location.pathname}?${parametros.toString()}`;
 }
 
+
 async function compartirProducto(prod) {
     if (!prod) return;
 
@@ -234,18 +235,6 @@ async function compartirProducto(prod) {
         `🔗 Ver producto: ${enlace}`
     ].filter(Boolean).join('\n\n');
 
-    if (navigator.share) {
-        try {
-            await navigator.share({
-                title: prod.descripcion || 'Producto VASORD',
-                text: mensaje
-            });
-            return;
-        } catch (error) {
-            if (error.name === 'AbortError') return;
-        }
-    }
-
     try {
         await navigator.clipboard.writeText(mensaje);
         alert('¡Mensaje copiado! Ya puedes compartirlo.');
@@ -253,6 +242,7 @@ async function compartirProducto(prod) {
         window.prompt('Copia el mensaje para compartirlo:', mensaje);
     }
 }
+
 
 function abrirProductoDesdeEnlace() {
     const parametros = new URLSearchParams(window.location.search);
