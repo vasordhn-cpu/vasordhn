@@ -476,49 +476,45 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
         caja.appendChild(boton);
     }
 
-    // WHATSAPP: INTENTAR COMPARTIR FOTO Y TODOS LOS DATOS
-    crearBoton('🟢 WhatsApp', '#25D366', async () => {
+    // WHATSAPP: COMPARTIR FOTO Y TODOS LOS DATOS
+crearBoton('🟢 WhatsApp', '#25D366', async () => {
 
-        if (!imagenUrl) {
-            alert('Este producto no tiene fotografía disponible.');
-            return;
-        }
+    if (!imagenUrl) {
+        alert('Este producto no tiene fotografía disponible.');
+        return;
+    }
 
-        const archivo = archivosCompartirPreparados.get(imagenUrl);
+    if (!navigator.share || !navigator.canShare) {
+        alert('Tu navegador no permite compartir fotografías directamente. Descarga la imagen y adjúntala manualmente en WhatsApp.');
+        return;
+    }
+
+    try {
+        const archivo = await prepararArchivoCompartir(imagenUrl, codigo);
 
         if (!archivo) {
-            alert('La fotografía todavía se está preparando. Espera unos segundos, cierra este menú y vuelve a intentarlo.');
+            alert('No se pudo preparar la fotografía. Intenta nuevamente.');
             return;
         }
 
-        if (!navigator.share || !navigator.canShare) {
-            alert('Tu navegador no permite compartir fotografías directamente. Puedes descargar la imagen y adjuntarla manualmente en WhatsApp.');
+        if (!navigator.canShare({ files: [archivo] })) {
+            alert('Tu navegador no permite compartir este archivo. Puedes descargarlo y adjuntarlo manualmente.');
             return;
         }
 
-        const datosCompartir = {
+        await navigator.share({
             title: 'VASORD Creacioness y Más',
             text: mensaje,
             files: [archivo]
-        };
+        });
 
-        if (!navigator.canShare({ files: [archivo] })) {
-            alert('Windows o tu navegador no permiten compartir este archivo desde aquí. Puedes descargar la imagen y adjuntarla manualmente.');
-            return;
-        }
+    } catch (error) {
+        if (error.name === 'AbortError') return;
 
-        try {
-            // Se llama directamente desde el clic, sin esperar otra operación.
-            await navigator.share(datosCompartir);
-
-        } catch (error) {
-            if (error.name === 'AbortError') return;
-
-            console.error('Error al compartir fotografía:', error);
-
-            alert('No fue posible abrir el menú para compartir. Puedes descargar la imagen y adjuntarla manualmente en WhatsApp.');
-        }
-    });
+        console.error('Error al compartir:', error);
+        alert('No fue posible compartir la fotografía. Puedes descargarla y adjuntarla manualmente.');
+    }
+});
 
     // FACEBOOK
     crearBoton('🔵 Facebook', '#1877F2', () => {
