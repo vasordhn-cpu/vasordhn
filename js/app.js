@@ -430,7 +430,7 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
     crearBoton('🟢 WhatsApp', '#25D366', () => {
 
         const urlWhatsApp =
-            'https://wa.me/?text=' + encodeURIComponent(mensaje);
+            https://web.whatsapp.com/send?text=' + encodeURIComponent(mensaje);
 
         window.open(urlWhatsApp, '_blank');
 
