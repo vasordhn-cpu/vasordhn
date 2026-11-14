@@ -319,13 +319,17 @@ body {
 }
 
 /* BOTÓN VER FOTOS */
-.botones-media .boton-ver-fotos {
-    bottom: 12px;
+.media-container .botones-media button.boton-ver-fotos {
+    position: absolute !important;
+    bottom: 12px !important;
+    top: auto !important;
 }
 
 /* BOTÓN VER VIDEO */
-.botones-media .boton-ver-video {
-    bottom: 52px;
+.media-container .botones-media button.boton-ver-video {
+    position: absolute !important;
+    bottom: 52px !important;
+    top: auto !important;
 }
 
 .boton-ver-media:hover {
