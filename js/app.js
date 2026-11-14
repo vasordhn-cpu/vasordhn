@@ -206,7 +206,7 @@ function crearEnlaceProducto(prod) {
 
 
 // ==========================================
-// COMPARTIR PRODUCTO CON FOTOGRAFÍA
+// COMPARTIR PRODUCTO
 // ==========================================
 
 async function compartirProducto(prod) {
@@ -229,7 +229,7 @@ async function compartirProducto(prod) {
         })
         .filter(Boolean);
 
-    // MENSAJE COMPACTO: SIN MOSTRAR EL LINK DE LA FOTOGRAFÍA
+    // MENSAJE COMPACTO SIN ENLACE DE FOTOGRAFÍA
 
     const mensaje = [
         '🛍️ VASORD Creacioness y Más',
@@ -242,8 +242,18 @@ async function compartirProducto(prod) {
         `🔗 Ver producto: ${enlace}`
     ].filter(Boolean).join('\n');
 
-    // COMPARTIR FOTO EN DISPOSITIVOS COMPATIBLES
-    // Si no se puede compartir el archivo, se muestra el menú.
+    // DETECTAR SI ES UN CELULAR
+
+    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // EN COMPUTADORA ABRIR DIRECTAMENTE EL MENÚ
+
+    if (!esMovil) {
+        mostrarMenuCompartir(mensaje, enlace, imagenUrl, prod.codigo);
+        return;
+    }
+
+    // EN CELULAR CONSERVAR EL ENVÍO DE LA FOTO
 
     if (imagenUrl && navigator.share && navigator.canShare) {
         try {
@@ -265,29 +275,35 @@ async function compartirProducto(prod) {
                 { type: blob.type || 'image/jpeg' }
             );
 
-            const datosCompartir = {
-                title: prod.descripcion || 'Producto VASORD',
-                text: mensaje,
-                files: [archivo]
-            };
-
             if (navigator.canShare({ files: [archivo] })) {
-                await navigator.share(datosCompartir);
+                await navigator.share({
+                    title: prod.descripcion || 'Producto VASORD',
+                    text: mensaje,
+                    files: [archivo]
+                });
                 return;
             }
 
         } catch (error) {
             if (error.name === 'AbortError') return;
 
-            console.warn(
-                'No fue posible compartir la fotografía directamente:',
-                error
-            );
+            console.warn('No fue posible compartir la fotografía:', error);
         }
     }
 
-    // COMPUTADORA Y EQUIPOS SIN COMPARTIR ARCHIVOS:
-    // MOSTRAR SIEMPRE EL MENÚ PERSONALIZADO.
+    // ALTERNATIVA PARA CELULARES SIN COMPARTIR ARCHIVOS
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: prod.descripcion || 'Producto VASORD',
+                text: mensaje
+            });
+            return;
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+        }
+    }
 
     mostrarMenuCompartir(mensaje, enlace, imagenUrl, prod.codigo);
 }
@@ -334,106 +350,187 @@ async function descargarImagenProducto(imagenUrl, codigo) {
 
 
 // ==========================================
-// MENÚ DE COMPARTIR
+// MENÚ DE COMPARTIR CORREGIDO
 // ==========================================
 
 function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
+
+    // ELIMINAR MENÚ ANTERIOR SI EXISTE
+
     const anterior = document.getElementById('menuCompartirVASORD');
-    if (anterior) anterior.remove();
+
+    if (anterior) {
+        anterior.remove();
+    }
+
+    // CREAR FONDO
 
     const fondo = document.createElement('div');
     fondo.id = 'menuCompartirVASORD';
 
     fondo.style.cssText = `
-        position:fixed;
-        inset:0;
-        background:rgba(0,0,0,0.65);
-        z-index:100000;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:15px;
+        position:fixed !important;
+        inset:0 !important;
+        background:rgba(0,0,0,0.65) !important;
+        z-index:2147483647 !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        padding:15px !important;
+        box-sizing:border-box !important;
+        opacity:1 !important;
+        visibility:visible !important;
     `;
+
+    // CREAR CAJA
 
     const caja = document.createElement('div');
 
     caja.style.cssText = `
-        background:white;
-        width:100%;
-        max-width:340px;
-        padding:25px;
-        border-radius:15px;
-        text-align:center;
-        box-shadow:0 5px 25px rgba(0,0,0,0.3);
+        background:white !important;
+        color:#222 !important;
+        width:100% !important;
+        max-width:340px !important;
+        padding:25px !important;
+        border-radius:15px !important;
+        text-align:center !important;
+        box-shadow:0 5px 25px rgba(0,0,0,0.3) !important;
+        box-sizing:border-box !important;
+        position:relative !important;
+        z-index:2147483647 !important;
+        opacity:1 !important;
+        visibility:visible !important;
     `;
 
     const titulo = document.createElement('h3');
+
     titulo.textContent = 'Compartir producto';
-    titulo.style.margin = '0 0 20px';
+
+    titulo.style.cssText = `
+        color:#222;
+        margin:0 0 20px;
+        font-size:20px;
+    `;
+
     caja.appendChild(titulo);
 
+    // CREAR BOTONES
+
     function crearBoton(texto, color, accion) {
+
         const boton = document.createElement('button');
+
         boton.type = 'button';
         boton.textContent = texto;
 
         boton.style.cssText = `
-            display:block;
-            width:100%;
-            padding:13px;
-            margin:10px 0;
-            border:0;
-            border-radius:8px;
-            background:${color};
-            color:white;
-            font-size:15px;
-            font-weight:bold;
-            cursor:pointer;
+            display:block !important;
+            width:100% !important;
+            padding:13px !important;
+            margin:10px 0 !important;
+            border:0 !important;
+            border-radius:8px !important;
+            background:${color} !important;
+            color:white !important;
+            font-size:15px !important;
+            font-weight:bold !important;
+            cursor:pointer !important;
+            opacity:1 !important;
+            visibility:visible !important;
         `;
 
-        boton.onclick = accion;
+        boton.addEventListener('click', function(evento) {
+            evento.preventDefault();
+            evento.stopPropagation();
+            accion();
+        });
+
         caja.appendChild(boton);
     }
 
+    // WHATSAPP
+
     crearBoton('🟢 WhatsApp', '#25D366', () => {
-        window.open(
-            'https://api.whatsapp.com/send?text=' + encodeURIComponent(mensaje),
-            '_blank',
-            'noopener'
-        );
+
+        const urlWhatsApp =
+            'https://api.whatsapp.com/send?text=' +
+            encodeURIComponent(mensaje);
+
+        window.open(urlWhatsApp, '_blank');
+
     });
+
+    // FACEBOOK
 
     crearBoton('🔵 Facebook', '#1877F2', () => {
-        window.open(
-            'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(enlace),
-            '_blank',
-            'noopener'
-        );
+
+        const urlFacebook =
+            'https://www.facebook.com/sharer/sharer.php?u=' +
+            encodeURIComponent(enlace);
+
+        window.open(urlFacebook, '_blank');
+
     });
 
+    // DESCARGAR FOTO
+
     if (imagenUrl) {
+
         crearBoton('📸 Descargar foto del producto', '#64A9D9', () => {
             descargarImagenProducto(imagenUrl, codigo);
         });
+
     }
 
+    // COPIAR ENLACE
+
     crearBoton('📋 Copiar enlace', '#16834A', async () => {
+
         try {
+
             await navigator.clipboard.writeText(enlace);
+
             alert('¡Enlace copiado correctamente!');
+
         } catch (error) {
+
             window.prompt('Copia este enlace:', enlace);
+
         }
+
     });
 
-    crearBoton('✖ Cerrar', '#666666', () => fondo.remove());
+    // CERRAR
 
-    fondo.onclick = (evento) => {
-        if (evento.target === fondo) fondo.remove();
-    };
+    crearBoton('✖ Cerrar', '#666666', () => {
+        fondo.remove();
+    });
+
+    // EVITAR QUE LOS CLICS INTERNOS CIERREN EL MENÚ
+
+    caja.addEventListener('click', function(evento) {
+        evento.stopPropagation();
+    });
+
+    fondo.addEventListener('click', function(evento) {
+
+        evento.stopPropagation();
+
+        if (evento.target === fondo) {
+            fondo.remove();
+        }
+
+    });
+
+    // MOSTRAR MENÚ
 
     fondo.appendChild(caja);
+
     document.body.appendChild(fondo);
+
+    // ASEGURAR QUE QUEDE VISIBLE
+
+    fondo.style.display = 'flex';
 }
 
 
