@@ -1,4 +1,3 @@
-
 async function cargarDatos(nombreHoja) {
     const contenedor = document.getElementById('contenedor-principal');
 
@@ -24,12 +23,11 @@ async function cargarDatos(nombreHoja) {
         }));
 
         if (nombreHoja.toLowerCase() === 'servicios') {
-    renderizarComoListaServiciosAgrupados(productos);
-} else {
-    renderizarPorCategorias(productos);
-
-    abrirProductoDesdeEnlace();
-}
+            renderizarComoListaServiciosAgrupados(productos);
+        } else {
+            renderizarPorCategorias(productos);
+            abrirProductoDesdeEnlace();
+        }
 
     } catch (error) {
         console.error('Error al cargar los datos:', error);
@@ -177,7 +175,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
         reiniciarPaginacionCatalogo();
     }
 
-    // Obtener solamente los 24 productos de la página actual.
+    // Obtener solamente los productos de la página actual.
     const productosPagina = obtenerProductosPaginados(listaProductos);
 
     let categoriasMap = {};
@@ -224,50 +222,54 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             card.dataset.codigo = String(prod.codigo || '');
             card.dataset.descripcion = String(prod.descripcion || '');
 
+            // Comprobar si el producto tiene video.
             let videoUrl = prod.video ? String(prod.video).trim() : '';
             let videoId = obtenerIdDrive(videoUrl);
 
             let tieneVideoReal = videoUrl !== '' && videoId !== '';
 
+            // Obtener la imagen del producto.
             let imagenId = obtenerIdDrive(prod.imagen);
 
             let portadaSrc = imagenId
                 ? `https://lh3.googleusercontent.com/d/${imagenId}`
                 : '';
 
+            // Crear botón independiente para las fotos y el video.
             let botonesHTML = '';
 
-if (portadaSrc) {
-    botonesHTML += `
-        <button type="button"
-            class="boton-ver-media"
-            onclick='abrirModalImagen(${JSON.stringify(portadaSrc)})'>
-            🖼 Ver fotos
-        </button>
-    `;
-}
+            if (portadaSrc) {
+                botonesHTML += `
+                    <button type="button"
+                        class="boton-ver-media"
+                        onclick='abrirModalImagen(${JSON.stringify(portadaSrc)})'>
+                        🖼 Ver fotos
+                    </button>
+                `;
+            }
 
-if (tieneVideoReal) {
-    botonesHTML += `
-        <button type="button"
-            class="boton-ver-media"
-            onclick='abrirModalVideo(${JSON.stringify(videoUrl)})'>
-            ▶ Ver video
-        </button>
-    `;
-}
+            if (tieneVideoReal) {
+                botonesHTML += `
+                    <button type="button"
+                        class="boton-ver-media"
+                        onclick='abrirModalVideo(${JSON.stringify(videoUrl)})'>
+                        ▶ Ver video
+                    </button>
+                `;
+            }
 
-let mediaHTML = `
-    <div class="media-container">
-        ${portadaSrc
-            ? `<img src="${portadaSrc}" alt="${prod.descripcion}">`
-            : '<div style="color:#aaa;">Sin portada</div>'}
+            // Mantener los botones superpuestos sobre la portada.
+            let mediaHTML = `
+                <div class="media-container">
+                    ${portadaSrc
+                        ? `<img src="${portadaSrc}" alt="${prod.descripcion}">`
+                        : '<div style="color:#aaa;">Sin portada</div>'}
 
-        ${botonesHTML
-    ? `<div class="botones-media">${botonesHTML}</div>`
-    : ''}
-    </div>
-`;
+                    ${botonesHTML
+                        ? `<div class="botones-media">${botonesHTML}</div>`
+                        : ''}
+                </div>
+            `;
 
             let outrosHTML = prod.otros
                 ? `<div class="card-otros">${prod.otros}</div>`
@@ -313,31 +315,31 @@ let mediaHTML = `
                 </div>
             `;
 
+            // Botón para compartir el producto.
+            const botonCompartir = document.createElement('button');
 
-const botonCompartir = document.createElement('button');
+            botonCompartir.type = 'button';
+            botonCompartir.textContent = '↗ Compartir producto';
 
-botonCompartir.type = 'button';
-botonCompartir.textContent = '↗ Compartir producto';
+            botonCompartir.style.cssText = `
+                display: block;
+                width: 100%;
+                margin-top: 10px;
+                padding: 10px;
+                background: #16834A;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                cursor: pointer;
+            `;
 
-botonCompartir.style.cssText = `
-    display: block;
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    background: #16834A;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-`;
+            botonCompartir.onclick = () => compartirProducto(prod);
 
-botonCompartir.onclick = () => compartirProducto(prod);
             console.log('Producto seleccionado:', prod);
 
-card.querySelector('.card-info').appendChild(botonCompartir);
+            card.querySelector('.card-info').appendChild(botonCompartir);
 
-            
             gridDiv.appendChild(card);
         });
 
