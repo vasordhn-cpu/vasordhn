@@ -205,10 +205,21 @@ function crearEnlaceProducto(prod) {
 }
 
 
+// ==========================================
+// COMPARTIR PRODUCTO CON FOTOGRAFÍA
+// ==========================================
+
 async function compartirProducto(prod) {
     if (!prod) return;
 
     const enlace = crearEnlaceProducto(prod);
+
+    // OBTENER FOTOGRAFÍA DEL PRODUCTO
+    const imagenId = obtenerIdDrive(prod.imagen);
+
+    const imagenUrl = imagenId
+        ? `https://lh3.googleusercontent.com/d/${imagenId}`
+        : '';
 
     const variaciones = (prod.filas || [])
         .map(f => {
@@ -227,12 +238,54 @@ async function compartirProducto(prod) {
         variaciones.length
             ? '💰 Medidas y precios:\n' + variaciones.map(v => '• ' + v).join('\n')
             : '',
+        imagenUrl ? `🖼️ Foto del producto: ${imagenUrl}` : '',
         `🔗 Ver producto: ${enlace}`
     ].filter(Boolean).join('\n\n');
 
-    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    // INTENTAR COMPARTIR FOTO Y DATOS DESDE EL CELULAR
+    if (imagenUrl && navigator.share && navigator.canShare) {
+        try {
+            const respuesta = await fetch(imagenUrl);
 
-    if (esMovil && navigator.share) {
+            if (!respuesta.ok) {
+                throw new Error('No se pudo obtener la fotografía.');
+            }
+
+            const blob = await respuesta.blob();
+
+            const nombreArchivo = (prod.codigo || 'producto')
+                .toString()
+                .replace(/[^a-zA-Z0-9_-]/g, '_');
+
+            const archivo = new File(
+                [blob],
+                `VASORD_${nombreArchivo}.jpg`,
+                { type: blob.type || 'image/jpeg' }
+            );
+
+            const datosCompartir = {
+                title: prod.descripcion || 'Producto VASORD',
+                text: mensaje,
+                files: [archivo]
+            };
+
+            if (navigator.canShare({ files: [archivo] })) {
+                await navigator.share(datosCompartir);
+                return;
+            }
+
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+
+            console.warn(
+                'No fue posible compartir la fotografía directamente:',
+                error
+            );
+        }
+    }
+
+    // ALTERNATIVA PARA EQUIPOS Y APLICACIONES NO COMPATIBLES
+    if (navigator.share) {
         try {
             await navigator.share({
                 title: prod.descripcion || 'Producto VASORD',
@@ -244,10 +297,55 @@ async function compartirProducto(prod) {
         }
     }
 
-    mostrarMenuCompartir(mensaje, enlace);
+    mostrarMenuCompartir(mensaje, enlace, imagenUrl, prod.codigo);
 }
 
-function mostrarMenuCompartir(mensaje, enlace) {
+
+// ==========================================
+// DESCARGAR FOTOGRAFÍA DEL PRODUCTO
+// ==========================================
+
+async function descargarImagenProducto(imagenUrl, codigo) {
+    if (!imagenUrl) return;
+
+    try {
+        const respuesta = await fetch(imagenUrl);
+
+        if (!respuesta.ok) {
+            throw new Error('No se pudo descargar la imagen.');
+        }
+
+        const blob = await respuesta.blob();
+        const urlTemporal = URL.createObjectURL(blob);
+
+        const enlaceDescarga = document.createElement('a');
+
+        enlaceDescarga.href = urlTemporal;
+        enlaceDescarga.download = `VASORD_${codigo || 'producto'}.jpg`;
+
+        document.body.appendChild(enlaceDescarga);
+        enlaceDescarga.click();
+        enlaceDescarga.remove();
+
+        setTimeout(() => URL.revokeObjectURL(urlTemporal), 1500);
+
+        alert('¡Fotografía descargada! Ya puedes adjuntarla en WhatsApp.');
+
+    } catch (error) {
+        console.error('Error al descargar la fotografía:', error);
+
+        window.open(imagenUrl, '_blank', 'noopener');
+
+        alert('Abre la fotografía y guárdala en tu dispositivo.');
+    }
+}
+
+
+// ==========================================
+// MENÚ DE COMPARTIR
+// ==========================================
+
+function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
     const anterior = document.getElementById('menuCompartirVASORD');
     if (anterior) anterior.remove();
 
@@ -321,6 +419,12 @@ function mostrarMenuCompartir(mensaje, enlace) {
         );
     });
 
+    if (imagenUrl) {
+        crearBoton('📸 Descargar foto del producto', '#64A9D9', () => {
+            descargarImagenProducto(imagenUrl, codigo);
+        });
+    }
+
     crearBoton('📋 Copiar enlace', '#16834A', async () => {
         try {
             await navigator.clipboard.writeText(enlace);
@@ -339,6 +443,11 @@ function mostrarMenuCompartir(mensaje, enlace) {
     fondo.appendChild(caja);
     document.body.appendChild(fondo);
 }
+
+
+// ==========================================
+// ABRIR PRODUCTO DESDE ENLACE COMPARTIDO
+// ==========================================
 
 function abrirProductoDesdeEnlace() {
     const parametros = new URLSearchParams(window.location.search);
@@ -388,6 +497,11 @@ function abrirProductoDesdeEnlace() {
         window.location.pathname + window.location.hash
     );
 }
+
+
+// ==========================================
+// INICIAR CATÁLOGO
+// ==========================================
 
 const parametrosIniciales = new URLSearchParams(window.location.search);
 
