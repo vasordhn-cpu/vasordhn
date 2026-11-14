@@ -450,15 +450,22 @@ function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
     // WHATSAPP
 
-    crearBoton('🟢 WhatsApp', '#25D366', () => {
+  
+crearBoton('🟢 WhatsApp', '#25D366', async () => {
 
-        const urlWhatsApp =
-            'https://api.whatsapp.com/send?text=' +
-            encodeURIComponent(mensaje);
+    // 1. Descargar primero la fotografía
+    if (imagenUrl) {
+        await descargarImagenProducto(imagenUrl, codigo);
+    }
 
-        window.open(urlWhatsApp, '_blank');
+    // 2. Abrir WhatsApp con el mensaje preparado
+    const urlWhatsApp =
+        'https://api.whatsapp.com/send?text=' +
+        encodeURIComponent(mensaje);
 
-    });
+    window.open(urlWhatsApp, '_blank');
+
+});
 
     // FACEBOOK
 
