@@ -272,41 +272,39 @@
 
         /* INFORMACIÓN DE LAS TARJETAS */
         .card-info {
-            padding: 10px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
             justify-content: flex-start;
-            gap: 5px;
+            gap: 2px;
         }
 
         .card-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             color: #1a252f;
-            margin-top: 0;
-            margin-bottom: 3px;
+            margin: 0 0 2px 0;
             line-height: 1.2;
         }
 
-        /* ÁREA OTROS: LETRA MÁS PEQUEÑA */
+        /* OTROS SIN RECUADRO */
         .card-otros {
             font-size: 12px;
             color: #555;
-            background: #f8f9fa;
-            padding: 6px 8px;
-            border-radius: 6px;
-            margin-top: 0;
-            margin-bottom: 4px;
-            border-left: 3px solid #3498db;
+            background: transparent;
+            padding: 2px 0;
+            border: none;
+            margin: 0 0 3px 0;
             line-height: 1.2;
             overflow-wrap: anywhere;
         }
 
+        /* VARIACIONES SIN CAJAS */
         .variaciones-container {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 1px;
             margin-top: 0;
         }
 
@@ -314,11 +312,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #fff8e1;
-            border: 1px solid #ffe082;
-            padding: 6px 9px;
-            border-radius: 8px;
-            font-size: 13px;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #eeeeee;
+            padding: 3px 0;
+            border-radius: 0;
+            font-size: 12px;
+        }
+
+        .variacion-row-final:last-child {
+            border-bottom: none;
         }
 
         .variacion-medida {
@@ -329,7 +332,7 @@
         .variacion-precio {
             font-weight: bold;
             color: #27ae60;
-            font-size: 15px;
+            font-size: 14px;
             margin-left: auto;
         }
 
@@ -656,9 +659,32 @@
                 gap: 12px;
             }
 
+            /* TARJETAS COMPACTAS EN CELULAR */
+            .card-info {
+                padding: 6px;
+                gap: 2px;
+            }
+
+            .card-title {
+                font-size: 12px;
+            }
+
+            .card-otros {
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+                padding: 2px 0 !important;
+                margin-bottom: 2px !important;
+                background: transparent !important;
+                border: none !important;
+            }
+
             .variacion-row-final {
-                padding: 4px 8px;
+                padding: 3px 0;
                 font-size: 11px;
+                background: transparent;
+                border: none;
+                border-bottom: 1px solid #eeeeee;
+                border-radius: 0;
             }
 
             .variacion-medida {
@@ -667,24 +693,6 @@
 
             .variacion-precio {
                 font-size: 12px;
-            }
-
-            .card-info {
-                padding: 8px;
-                gap: 4px;
-            }
-
-            .card-title {
-                font-size: 13px;
-            }
-
-            /* OTROS EN CELULAR: LETRA MÁS PEQUEÑA */
-            .card-otros {
-                font-size: 10px !important;
-                line-height: 1.2 !important;
-                padding: 5px 7px !important;
-                margin-bottom: 3px !important;
-                overflow-wrap: anywhere;
             }
 
             .inicio-grid-info {
@@ -854,4 +862,5 @@
 
 </body>
 </html>
+
 
