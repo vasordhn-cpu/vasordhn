@@ -1,4 +1,3 @@
-
 function obtenerIdDrive(url) {
     if (!url) return '';
     let rawUrl = String(url).trim();
@@ -303,92 +302,28 @@ async function descargarImagenProducto(imagenUrl, codigo) {
 // MENÚ DE COMPARTIR
 // ==========================================
 
-async function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
+function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
+    // Detectar celulares y tabletas
     const esCelular = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     // ==========================================
-    // CELULAR: COMPARTIR FOTO + TEXTO
+    // CELULAR: MENÚ NATIVO DE APLICACIONES
     // ==========================================
 
     if (esCelular && navigator.share) {
 
-        let archivoImagen = null;
-
-        // Intentar preparar la fotografía como archivo
-        if (imagenUrl && navigator.canShare && typeof File !== 'undefined') {
-            try {
-                const respuesta = await fetch(imagenUrl);
-
-                if (!respuesta.ok) {
-                    throw new Error('No se pudo obtener la fotografía.');
-                }
-
-                const blob = await respuesta.blob();
-                const tipoImagen = blob.type || 'image/jpeg';
-
-                const extension = tipoImagen.includes('png')
-                    ? 'png'
-                    : tipoImagen.includes('webp')
-                        ? 'webp'
-                        : 'jpg';
-
-                archivoImagen = new File(
-                    [blob],
-                    `VASORD_${codigo || 'producto'}.${extension}`,
-                    { type: tipoImagen }
-                );
-
-            } catch (error) {
-                console.error('No se pudo preparar la fotografía:', error);
-                archivoImagen = null;
-            }
-        }
-
-        try {
-
-            // Compartir fotografía, texto y enlace
-            if (archivoImagen) {
-                const datosCompartir = {
-                    files: [archivoImagen],
-                    title: 'VASORD Creacioness y Más',
-                    text: mensaje
-                };
-
-                if (navigator.canShare(datosCompartir)) {
-                    await navigator.share(datosCompartir);
-                    return;
-                }
-            }
-
-            // Si no se puede compartir la foto, enviar texto y enlace
-            await navigator.share({
-                title: 'VASORD Creacioness y Más',
-                text: mensaje
-            });
-
-        } catch (error) {
+        navigator.share({
+            title: 'VASORD Creacioness y Más',
+            text: mensaje
+        }).catch(error => {
 
             if (error.name === 'AbortError') return;
 
-            console.error('Error al compartir desde el celular:', error);
+            console.error('Error al compartir:', error);
 
-            // Si falla el envío con foto, intentar solamente texto
-            try {
-                await navigator.share({
-                    title: 'VASORD Creacioness y Más',
-                    text: mensaje
-                });
-
-            } catch (errorTexto) {
-
-                if (errorTexto.name === 'AbortError') return;
-
-                console.error('No se pudo compartir el texto:', errorTexto);
-
-                mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo);
-            }
-        }
+            mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo);
+        });
 
         return;
     }
@@ -494,7 +429,7 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
     crearBoton('🟢 WhatsApp', '#25D366', () => {
 
         const urlWhatsApp =
-            'https://web.whatsapp.com/send?text=' + encodeURIComponent(mensaje);
+            https://web.whatsapp.com/send?text=' + encodeURIComponent(mensaje);
 
         window.open(urlWhatsApp, '_blank');
 
