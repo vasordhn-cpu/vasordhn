@@ -231,41 +231,57 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 ? `https://lh3.googleusercontent.com/d/${imagenId}`
                 : '';
 
-            // CREAR BOTONES CON CLASES INDEPENDIENTES
+            // CREAR BOTONES DE IMAGEN Y VIDEO
             let botonesHTML = '';
 
-           if (portadaSrc) {
-    botonesHTML += `
-        <button type="button"
-            class="boton-ver-media boton-ver-fotos"
-            style="bottom: 12px !important; top: auto !important;"
-            onclick='abrirModalImagen(${JSON.stringify(portadaSrc)})'>
-            🖼 Ver fotos
-        </button>
-    `;
-}
+            if (portadaSrc) {
+                botonesHTML += `
+                    <button type="button"
+                        class="boton-ver-media boton-ver-fotos"
+                        style="
+                            position: static !important;
+                            top: auto !important;
+                            right: auto !important;
+                            bottom: auto !important;
+                            left: auto !important;
+                            width: 100%;
+                            padding: 10px 5px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                        "
+                        onclick='abrirModalImagen(${JSON.stringify(portadaSrc)})'>
+                        🖼 Ver imagen
+                    </button>
+                `;
+            }
 
-           if (tieneVideoReal) {
-    botonesHTML += `
-        <button type="button"
-            class="boton-ver-media boton-ver-video"
-            style="bottom: 52px !important; top: auto !important;"
-            onclick='abrirModalVideo(${JSON.stringify(videoUrl)})'>
-            ▶ Ver video
-        </button>
-    `;
-}
+            if (tieneVideoReal) {
+                botonesHTML += `
+                    <button type="button"
+                        class="boton-ver-media boton-ver-video"
+                        style="
+                            position: static !important;
+                            top: auto !important;
+                            right: auto !important;
+                            bottom: auto !important;
+                            left: auto !important;
+                            width: 100%;
+                            padding: 10px 5px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                        "
+                        onclick='abrirModalVideo(${JSON.stringify(videoUrl)})'>
+                        ▶ Ver video
+                    </button>
+                `;
+            }
 
-            // CONTENEDOR DE IMAGEN Y BOTONES
+            // CONTENEDOR DE LA PORTADA
             let mediaHTML = `
                 <div class="media-container">
                     ${portadaSrc
                         ? `<img src="${portadaSrc}" alt="${prod.descripcion}">`
                         : '<div style="color:#aaa;">Sin portada</div>'}
-
-                    ${botonesHTML
-                        ? `<div class="botones-media">${botonesHTML}</div>`
-                        : ''}
                 </div>
             `;
 
@@ -300,8 +316,34 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 variacionesHTML += `</div>`;
             }
 
+            // ORDEN DE LOS ELEMENTOS DE LA TARJETA
             card.innerHTML = `
                 ${mediaHTML}
+
+                <div class="acciones-producto"
+                    style="
+                        display: flex;
+                        flex-direction: column;
+                        width: 100%;
+                        gap: 8px;
+                        padding: 0 10px 10px;
+                    ">
+
+                    ${botonesHTML
+                        ? `<div class="botones-media"
+                            style="
+                                position: static !important;
+                                inset: auto !important;
+                                display: grid !important;
+                                grid-template-columns: repeat(2, minmax(0, 1fr));
+                                gap: 8px;
+                                width: 100%;
+                                padding-top: 10px;
+                            ">${botonesHTML}</div>`
+                        : ''}
+
+                    <div class="compartir-container" style="width:100%;"></div>
+                </div>
 
                 <div class="card-info">
                     <div>
@@ -322,7 +364,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             botonCompartir.style.cssText = `
                 display: block;
                 width: 100%;
-                margin-top: 10px;
+                margin-top: 0;
                 padding: 10px;
                 background: #16834A;
                 color: white;
@@ -336,7 +378,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
 
             console.log('Producto seleccionado:', prod);
 
-            card.querySelector('.card-info').appendChild(botonCompartir);
+            card.querySelector('.compartir-container').appendChild(botonCompartir);
 
             gridDiv.appendChild(card);
         });
@@ -350,4 +392,5 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
         crearControlesPaginacion(listaProductos.length)
     );
 }
+
 
