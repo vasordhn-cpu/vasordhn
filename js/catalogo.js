@@ -221,6 +221,9 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             let card = document.createElement('div');
             card.className = 'card-producto';
 
+            card.dataset.codigo = String(prod.codigo || '');
+            card.dataset.descripcion = String(prod.descripcion || '');
+
             let videoUrl = prod.video ? String(prod.video).trim() : '';
             let videoId = obtenerIdDrive(videoUrl);
 
