@@ -1,5 +1,5 @@
 
-const PRODUCTOS_POR_PAGINA = 24;
+const PRODUCTOS_POR_PAGINA = 20;
 
 let paginaActualCatalogo = 1;
 let datosActualesPaginacion = [];
