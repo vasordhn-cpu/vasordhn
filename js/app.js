@@ -303,34 +303,87 @@ async function descargarImagenProducto(imagenUrl, codigo) {
 // MENÚ DE COMPARTIR
 // ==========================================
 
-function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
+async function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
     // Detectar celulares y tabletas
     const esCelular = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     // ==========================================
-    // CELULAR: MENÚ NATIVO DE APLICACIONES
+    // CELULAR: COMPARTIR FOTO + DATOS + ENLACE
     // ==========================================
 
     if (esCelular && navigator.share) {
 
-        navigator.share({
-            title: 'VASORD Creacioness y Más',
-            text: mensaje
-        }).catch(error => {
+        try {
+
+            // Si existe fotografía, intentar convertirla en archivo
+            if (imagenUrl && navigator.canShare) {
+
+                const respuesta = await fetch(imagenUrl);
+
+                if (!respuesta.ok) {
+                    throw new Error('No se pudo obtener la fotografía.');
+                }
+
+                const blob = await respuesta.blob();
+
+                const tipoImagen = blob.type || 'image/jpeg';
+
+                const extension = tipoImagen.includes('png') ? 'png' : 'jpg';
+
+                const archivo = new File(
+                    [blob],
+                    `VASORD_${codigo || 'producto'}.${extension}`,
+                    { type: tipoImagen }
+                );
+
+                // Comprobar si el celular permite compartir archivos
+                const archivos = [archivo];
+
+                if (navigator.canShare({ files: archivos })) {
+
+                    await navigator.share({
+                        title: 'VASORD Creacioness y Más',
+                        text: mensaje,
+                        files: archivos
+                    });
+
+                    return;
+                }
+            }
+
+            // Si no se puede compartir la fotografía,
+            // compartir al menos los datos y el enlace.
+            await navigator.share({
+                title: 'VASORD Creacioness y Más',
+                text: mensaje
+            });
+
+        } catch (error) {
 
             if (error.name === 'AbortError') return;
 
-            console.error('Error al compartir:', error);
+            console.error('Error al compartir desde celular:', error);
 
-            mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo);
-        });
+            // Si falla la imagen, intentar compartir el texto
+            try {
+                await navigator.share({
+                    title: 'VASORD Creacioness y Más',
+                    text: mensaje
+                });
+            } catch (errorTexto) {
+                if (errorTexto.name !== 'AbortError') {
+                    console.error('Error al compartir texto:', errorTexto);
+                    alert('No se pudo compartir el producto. Intenta nuevamente.');
+                }
+            }
+        }
 
         return;
     }
 
     // ==========================================
-    // COMPUTADORA: MENÚ BLANCO DE VASORD
+    // COMPUTADORA: CONSERVAR MENÚ ACTUAL
     // ==========================================
 
     mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo);
