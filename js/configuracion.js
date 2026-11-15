@@ -5,12 +5,12 @@ const HOJAS_DISPONIBLES = [
     'Arreglos',
     'Escolares',
     'Flores',
-    'Cajas y empaques',
-    'Arte en papel y foamy',
-    'Proyectos creativos',
     'Servicios',
     'Mobiliario',
     'Eventos'
+    'Cajas y empaques',
+    'Arte en papel y foamy',
+    'Proyectos creativos',
 ];
 
 let hojaActualGlobal = 'Inicio';
