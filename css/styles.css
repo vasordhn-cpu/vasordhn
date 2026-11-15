@@ -877,3 +877,49 @@ body {
     background: #0066cc !important;
     color: white !important;
 }
+
+
+/* En computadora, conservar los botones en la distribución original */
+.nav-fila {
+    display: contents;
+}
+
+/* Menú para celulares */
+@media (max-width: 768px) {
+
+    .nav-categorias {
+        display: block;
+        width: 100%;
+        padding: 0 10px;
+    }
+
+    .nav-fila {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        width: 100%;
+        margin-bottom: 6px;
+    }
+
+    .nav-fila-cortos .nav-btn {
+        grid-column: span 1;
+        width: 100%;
+        min-width: 0;
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+
+    .nav-fila-largos .nav-btn {
+        grid-column: span 2;
+        width: 100%;
+        min-width: 0;
+        padding: 8px 6px;
+        font-size: 11px;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        overflow-wrap: anywhere;
+        line-height: 1.3;
+        height: auto;
+    }
+}
