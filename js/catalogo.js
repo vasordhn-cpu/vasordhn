@@ -1,13 +1,46 @@
+
+// ==========================================
+// CACHÉ DE DATOS DE GOOGLE SHEETS
+// ==========================================
+
 const cacheDatosHojas = new Map();
+
+
+// ==========================================
+// CARGAR DATOS DE UNA HOJA
+// ==========================================
+
 async function cargarDatos(nombreHoja) {
     const contenedor = document.getElementById('contenedor-principal');
+    const claveHoja = String(nombreHoja).trim();
 
-    contenedor.innerHTML = '<p style="text-align:center; color: #666; padding: 40px 0;">Cargando datos de ' + nombreHoja + '...</p>';
+    // COMPROBAR SI LOS DATOS YA ESTÁN GUARDADOS
+    if (cacheDatosHojas.has(claveHoja)) {
+        const productos = cacheDatosHojas.get(claveHoja);
+
+        if (claveHoja.toLowerCase() === 'servicios') {
+            renderizarComoListaServiciosAgrupados(productos);
+        } else {
+            renderizarPorCategorias(productos);
+            abrirProductoDesdeEnlace();
+        }
+
+        return;
+    }
+
+    contenedor.innerHTML =
+        '<p style="text-align:center; color: #666; padding: 40px 0;">Cargando datos de ' +
+        nombreHoja + '...</p>';
 
     try {
         const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nombreHoja)}`;
 
         const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error('No se pudieron cargar los datos de Google Sheets.');
+        }
+
         const text = await response.text();
         const json = JSON.parse(text.substr(47).slice(0, -2));
         const rows = json.table.rows;
@@ -23,7 +56,10 @@ async function cargarDatos(nombreHoja) {
             video: r.c[7] && r.c[7].v ? String(r.c[7].v).trim() : ''
         }));
 
-        if (nombreHoja.toLowerCase() === 'servicios') {
+        // GUARDAR LOS DATOS EN MEMORIA
+        cacheDatosHojas.set(claveHoja, productos);
+
+        if (claveHoja.toLowerCase() === 'servicios') {
             renderizarComoListaServiciosAgrupados(productos);
         } else {
             renderizarPorCategorias(productos);
@@ -33,10 +69,15 @@ async function cargarDatos(nombreHoja) {
     } catch (error) {
         console.error('Error al cargar los datos:', error);
 
-        contenedor.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los datos de esta área.</p>';
+        contenedor.innerHTML =
+            '<p style="text-align:center; color: red;">Error al cargar los datos de esta área.</p>';
     }
 }
 
+
+// ==========================================
+// RENDERIZAR SERVICIOS AGRUPADOS
+// ==========================================
 
 function renderizarComoListaServiciosAgrupados(items) {
     const contenedorPrincipal = document.getElementById('contenedor-principal');
@@ -46,7 +87,9 @@ function renderizarComoListaServiciosAgrupados(items) {
     let serviciosValidos = items.filter(item => item.codigo || item.descripcion);
 
     if (serviciosValidos.length === 0) {
-        contenedorPrincipal.innerHTML = '<p style="text-align:center; color: #888; padding: 40px 0;">No hay servicios registrados en esta sección.</p>';
+        contenedorPrincipal.innerHTML =
+            '<p style="text-align:center; color: #888; padding: 40px 0;">No hay servicios registrados en esta sección.</p>';
+
         return;
     }
 
@@ -132,6 +175,10 @@ function renderizarComoListaServiciosAgrupados(items) {
 }
 
 
+// ==========================================
+// RENDERIZAR PRODUCTOS POR CATEGORÍAS
+// ==========================================
+
 function renderizarPorCategorias(items, yaAgrupados = false) {
     const contenedorPrincipal = document.getElementById('contenedor-principal');
 
@@ -172,6 +219,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
         reiniciarPaginacionCatalogo();
     }
 
+    // OBTENER SOLAMENTE LOS PRODUCTOS DE LA PÁGINA ACTUAL
     const productosPagina = obtenerProductosPaginados(listaProductos);
 
     let categoriasMap = {};
@@ -279,6 +327,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             }
 
             // CONTENEDOR DE IMAGEN
+            // CARGA PROGRESIVA PARA MEJORAR EL RENDIMIENTO
             let mediaHTML = `
                 <div class="media-container">
                     ${portadaSrc
@@ -395,5 +444,3 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
         crearControlesPaginacion(listaProductos.length)
     );
 }
-
-
