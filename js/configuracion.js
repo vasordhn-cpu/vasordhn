@@ -7,7 +7,7 @@ const HOJAS_DISPONIBLES = [
     'Flores',
     'Servicios',
     'Mobiliario',
-    'Eventos'
+    'Eventos',
     'Cajas y empaques',
     'Arte en papel y foamy',
     'Proyectos creativos',
