@@ -6,18 +6,70 @@ function obtenerIdDrive(url) {
     return match && match[1] ? match[1] : '';
 }
 
+
+// ==========================================
+// CONSTRUIR MENÚ DE NAVEGACIÓN
+// ==========================================
+
 function construirMenu(hojaActiva) {
     const nav = document.getElementById('nav-categorias');
     nav.innerHTML = '';
 
-    HOJAS_DISPONIBLES.forEach((nombreHoja) => {
-        let btn = document.createElement('button');
+    // Crear grupos separados para categorías cortas y largas
+    const filaCortos = document.createElement('div');
+    filaCortos.className = 'nav-fila nav-fila-cortos';
+
+    const filaLargos = document.createElement('div');
+    filaLargos.className = 'nav-fila nav-fila-largos';
+
+    // Separar las categorías según la longitud de su nombre
+    const hojasCortas = [];
+    const hojasLargas = [];
+
+    HOJAS_DISPONIBLES.forEach(nombreHoja => {
+        if (nombreHoja.trim().length > 16) {
+            hojasLargas.push(nombreHoja);
+        } else {
+            hojasCortas.push(nombreHoja);
+        }
+    });
+
+    // Crear primero todos los botones cortos
+    hojasCortas.forEach(nombreHoja => {
+        const btn = document.createElement('button');
+
         btn.className = `nav-btn ${nombreHoja === hojaActiva ? 'active' : ''}`;
         btn.innerText = nombreHoja;
         btn.onclick = () => cambiarHoja(nombreHoja);
-        nav.appendChild(btn);
+
+        filaCortos.appendChild(btn);
     });
+
+    // Crear después todos los botones largos
+    hojasLargas.forEach(nombreHoja => {
+        const btn = document.createElement('button');
+
+        btn.className = `nav-btn nav-btn-largo ${nombreHoja === hojaActiva ? 'active' : ''}`;
+        btn.innerText = nombreHoja;
+        btn.onclick = () => cambiarHoja(nombreHoja);
+
+        filaLargos.appendChild(btn);
+    });
+
+    // Mostrar primero los cortos y después los largos
+    if (hojasCortas.length > 0) {
+        nav.appendChild(filaCortos);
+    }
+
+    if (hojasLargas.length > 0) {
+        nav.appendChild(filaLargos);
+    }
 }
+
+
+// ==========================================
+// CAMBIAR DE HOJA
+// ==========================================
 
 function cambiarHoja(nombreHoja) {
     hojaActualGlobal = nombreHoja;
@@ -34,8 +86,14 @@ function cambiarHoja(nombreHoja) {
     }
 }
 
+
+// ==========================================
+// PÁGINA DE INICIO
+// ==========================================
+
 function renderizarInicio() {
     const contenedor = document.getElementById('contenedor-principal');
+
     contenedor.innerHTML = `
         <div class="inicio-container">
             <div class="inicio-banner-bienvenida">
@@ -59,6 +117,7 @@ function renderizarInicio() {
                         <li><em>y mucho más...</em></li>
                     </ul>
                 </div>
+
                 <div class="inicio-card-info">
                     <h3>🖨️ Servicios Secretariales</h3>
                     <ul>
@@ -76,6 +135,11 @@ function renderizarInicio() {
     `;
 }
 
+
+// ==========================================
+// ABRIR MODAL DE VIDEO
+// ==========================================
+
 function abrirModalVideo(videoUrl) {
     let videoId = obtenerIdDrive(videoUrl);
     if (!videoId) return;
@@ -87,8 +151,14 @@ function abrirModalVideo(videoUrl) {
         <button class="modal-close" onclick="cerrarModal()">×</button>
         <iframe src="https://drive.google.com/file/d/${videoId}/preview" allow="autoplay" allowfullscreen></iframe>
     `;
+
     modal.style.display = 'flex';
 }
+
+
+// ==========================================
+// ABRIR MODAL DE IMAGEN
+// ==========================================
 
 function abrirModalImagen(imageUrl) {
     if (!imageUrl) return;
@@ -100,8 +170,14 @@ function abrirModalImagen(imageUrl) {
         <button class="modal-close" onclick="cerrarModal()">×</button>
         <img src="${imageUrl}" alt="Imagen ampliada">
     `;
+
     modal.style.display = 'flex';
 }
+
+
+// ==========================================
+// CERRAR MODAL
+// ==========================================
 
 function cerrarModal() {
     let modal = document.getElementById('videoModal');
@@ -110,6 +186,7 @@ function cerrarModal() {
     containerBody.innerHTML = '';
     modal.style.display = 'none';
 }
+
 
 let productoFichaActual = null;
 
@@ -140,6 +217,7 @@ function abrirFichaProducto(prod) {
     const cuerpo = document.getElementById('modalContainerBody');
 
     const imagenId = obtenerIdDrive(prod.imagen);
+
     const imagen = imagenId
         ? `https://lh3.googleusercontent.com/d/${imagenId}`
         : '';
@@ -653,54 +731,44 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
     });
 
 
- 
-    
+    // ==========================================
+    // FACEBOOK MESSENGER
+    // ==========================================
 
+    crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
 
- 
-   
+        const mensajeMessenger = mensaje
+            .replace(/✨\s*VASORD CREACIONES Y MÁS\s*✨/g,
+                '━━━━━━━━━━━━━━━━━━\nVASORD CREACIONES Y MÁS\n━━━━━━━━━━━━━━━━━━')
+            .replace(/🎁\s*¡MIRA ESTE PRODUCTO!/g, '')
+            .replace(/📦\s*(?:Producto:\s*)?/g,
+                '\n● PRODUCTO:\n')
+            .replace(/🔖\s*C[oó]digo:/g,
+                '\n● CÓDIGO:')
+            .replace(/📝\s*DESCRIPCIÓN/g,
+                '\n● DESCRIPCIÓN')
+            .replace(/🛍️?\s*MEDIDAS Y PRECIOS/g,
+                '\n● MEDIDAS Y PRECIOS')
+            .replace(/📏\s*/g, '')
+            .replace(/💰\s*/g, '')
+            .replace(/🛒\s*¿Te interesa este producto\?/g,
+                '\n━━━━━━━━━━━━━━━━━━')
+            .replace(/Conoce más detalles aquí:/g, '')
+            .replace(/🔗\s*Ver producto:/g,
+                '\n◆ VER PRODUCTO:\n')
+            .replace(/💖\s*¡Gracias por preferir VASORD!?/g,
+                '\n━━━━━━━━━━━━━━━━━━\nVASORD CREACIONES Y MÁS')
+            .replace(/✨|🎁|📦|🔖|📝|💰|🛒|🔗|💖|🛍️|📏/gu, '')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
 
+        const urlMessenger =
+            'https://www.facebook.com/messages/new?text=' +
+            encodeURIComponent(mensajeMessenger);
 
-// ==========================================
-// FACEBOOK MESSENGER
-// ==========================================
+        window.open(urlMessenger, '_blank', 'noopener');
 
-crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
-
-    const mensajeMessenger = mensaje
-        .replace(/✨\s*VASORD CREACIONES Y MÁS\s*✨/g,
-            '━━━━━━━━━━━━━━━━━━\nVASORD CREACIONES Y MÁS\n━━━━━━━━━━━━━━━━━━')
-        .replace(/🎁\s*¡MIRA ESTE PRODUCTO!/g, '')
-        .replace(/📦\s*(?:Producto:\s*)?/g,
-            '\n● PRODUCTO:\n')
-        .replace(/🔖\s*C[oó]digo:/g,
-            '\n● CÓDIGO:')
-        .replace(/📝\s*DESCRIPCIÓN/g,
-            '\n● DESCRIPCIÓN')
-        .replace(/🛍️?\s*MEDIDAS Y PRECIOS/g,
-            '\n● MEDIDAS Y PRECIOS')
-        .replace(/📏\s*/g, '')
-        .replace(/💰\s*/g, '')
-        .replace(/🛒\s*¿Te interesa este producto\?/g,
-            '\n━━━━━━━━━━━━━━━━━━')
-        .replace(/Conoce más detalles aquí:/g, '')
-        .replace(/🔗\s*Ver producto:/g,
-            '\n◆ VER PRODUCTO:\n')
-        .replace(/💖\s*¡Gracias por preferir VASORD!?/g,
-            '\n━━━━━━━━━━━━━━━━━━\nVASORD CREACIONES Y MÁS')
-        .replace(/✨|🎁|📦|🔖|📝|💰|🛒|🔗|💖|🛍️|📏/gu, '')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
-
-    const urlMessenger =
-        'https://www.facebook.com/messages/new?text=' +
-        encodeURIComponent(mensajeMessenger);
-
-    window.open(urlMessenger, '_blank', 'noopener');
-
-});
-
-
+    });
 
 
     // ==========================================
