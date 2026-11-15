@@ -660,26 +660,37 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
  
    
 
+
 // ==========================================
 // FACEBOOK MESSENGER
 // ==========================================
 
 crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
 
-    // Preparar mensaje exclusivo para Messenger
     const mensajeMessenger = mensaje
-        .replace(/^✨ VASORD CREACIONES Y MÁS ✨/m,
-                 '*VASORD CREACIONES Y MÁS*')
-        .replace(/^🎁 ¡MIRA ESTE PRODUCTO!/m,
-                 '*PRESENTACIÓN DEL PRODUCTO*')
-        .replace(/^📦 /m, '*PRODUCTO:* ')
-        .replace(/^🔖 Código:/m, '*CÓDIGO:*')
-        .replace(/^📝 DESCRIPCIÓN/m, '*DESCRIPCIÓN*')
-        .replace(/^💰 Medidas y precios:/m, '*MEDIDAS Y PRECIOS*')
-        .replace(/^🛒 ¿Te interesa este producto\?/m,
-                 '*¿TE INTERESA ESTE PRODUCTO?*')
-        .replace(/^🔗 Ver producto:/m, '*VER PRODUCTO:*')
-        .replace(/✨|🎁|📦|🔖|📝|💰|🛒|🔗|💖|🛍️|📏/gu, '');
+        .replace(/✨\s*VASORD CREACIONES Y MÁS\s*✨/g,
+            '━━━━━━━━━━━━━━━━━━\nVASORD CREACIONES Y MÁS\n━━━━━━━━━━━━━━━━━━')
+        .replace(/🎁\s*¡MIRA ESTE PRODUCTO!/g, '')
+        .replace(/📦\s*(?:Producto:\s*)?/g,
+            '\n● PRODUCTO:\n')
+        .replace(/🔖\s*C[oó]digo:/g,
+            '\n● CÓDIGO:')
+        .replace(/📝\s*DESCRIPCIÓN/g,
+            '\n● DESCRIPCIÓN')
+        .replace(/🛍️?\s*MEDIDAS Y PRECIOS/g,
+            '\n● MEDIDAS Y PRECIOS')
+        .replace(/📏\s*/g, '')
+        .replace(/💰\s*/g, '')
+        .replace(/🛒\s*¿Te interesa este producto\?/g,
+            '\n━━━━━━━━━━━━━━━━━━')
+        .replace(/Conoce más detalles aquí:/g, '')
+        .replace(/🔗\s*Ver producto:/g,
+            '\n◆ VER PRODUCTO:\n')
+        .replace(/💖\s*¡Gracias por preferir VASORD!?/g,
+            '\n━━━━━━━━━━━━━━━━━━\nVASORD CREACIONES Y MÁS')
+        .replace(/✨|🎁|📦|🔖|📝|💰|🛒|🔗|💖|🛍️|📏/gu, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
 
     const urlMessenger =
         'https://www.facebook.com/messages/new?text=' +
@@ -688,8 +699,6 @@ crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
     window.open(urlMessenger, '_blank', 'noopener');
 
 });
-
-
 
 
 
