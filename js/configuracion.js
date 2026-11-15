@@ -1,37 +1,16 @@
+ const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IJbLJ6pXWLn0c';
 
-const SPREADSHEET_ID = '1sjLsTiP0hmH1b5mhcw9M6fK3qOdSD-IbLJ6pXWLn0c';
-
-// ==========================================
-// CATEGORÍAS CORTAS
-// ==========================================
-
-const HOJAS_CORTAS = [
+const HOJAS_DISPONIBLES = [
     'Inicio',
     'Arreglos',
     'Escolares',
     'Flores',
     'Servicios',
     'Mobiliario',
-    'Eventos'
-];
-
-// ==========================================
-// CATEGORÍAS LARGAS
-// ==========================================
-
-const HOJAS_LARGAS = [
+    'Eventos',
     'Cajas y empaques',
     'Arte en papel y foamy',
-    'Proyectos creativos'
-];
-
-// ==========================================
-// UNIR TODAS LAS CATEGORÍAS
-// ==========================================
-
-const HOJAS_DISPONIBLES = [
-    ...HOJAS_CORTAS,
-    ...HOJAS_LARGAS
+    'Proyectos creativos',
 ];
 
 let hojaActualGlobal = 'Inicio';
