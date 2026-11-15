@@ -8,23 +8,18 @@ function obtenerIdDrive(url) {
 
 
 // ==========================================
-// CONSTRUIR MENU DE NAVEGACION
+// CONSTRUIR MENÚ DE CATEGORÍAS
 // ==========================================
 
 function construirMenu(hojaActiva) {
     const nav = document.getElementById('nav-categorias');
     nav.innerHTML = '';
 
-    // Contenedor de botones cortos
+    // GRUPO DE HOJAS CORTAS
     const filaCortos = document.createElement('div');
     filaCortos.className = 'nav-fila nav-fila-cortos';
 
-    // Contenedor de botones largos
-    const filaLargos = document.createElement('div');
-    filaLargos.className = 'nav-fila nav-fila-largos';
-
-    // Crear botones cortos
-    HOJAS_CORTAS.forEach(nombreHoja => {
+    HOJAS_CORTAS.forEach((nombreHoja) => {
         const btn = document.createElement('button');
 
         btn.className = `nav-btn ${nombreHoja === hojaActiva ? 'active' : ''}`;
@@ -34,8 +29,11 @@ function construirMenu(hojaActiva) {
         filaCortos.appendChild(btn);
     });
 
-    // Crear botones largos
-    HOJAS_LARGAS.forEach(nombreHoja => {
+    // GRUPO DE HOJAS LARGAS
+    const filaLargos = document.createElement('div');
+    filaLargos.className = 'nav-fila nav-fila-largos';
+
+    HOJAS_LARGAS.forEach((nombreHoja) => {
         const btn = document.createElement('button');
 
         btn.className = `nav-btn nav-btn-largo ${nombreHoja === hojaActiva ? 'active' : ''}`;
@@ -45,12 +43,11 @@ function construirMenu(hojaActiva) {
         filaLargos.appendChild(btn);
     });
 
-    // Agregar primero los botones cortos
+    // AGREGAR PRIMERO LAS CORTAS Y DESPUÉS LAS LARGAS
     if (HOJAS_CORTAS.length > 0) {
         nav.appendChild(filaCortos);
     }
 
-    // Agregar después los botones largos
     if (HOJAS_LARGAS.length > 0) {
         nav.appendChild(filaLargos);
     }
@@ -78,7 +75,7 @@ function cambiarHoja(nombreHoja) {
 
 
 // ==========================================
-// PAGINA DE INICIO
+// PANTALLA DE INICIO
 // ==========================================
 
 function renderizarInicio() {
@@ -107,7 +104,6 @@ function renderizarInicio() {
                         <li><em>y mucho más...</em></li>
                     </ul>
                 </div>
-
                 <div class="inicio-card-info">
                     <h3>🖨️ Servicios Secretariales</h3>
                     <ul>
@@ -207,7 +203,6 @@ function abrirFichaProducto(prod) {
     const cuerpo = document.getElementById('modalContainerBody');
 
     const imagenId = obtenerIdDrive(prod.imagen);
-
     const imagen = imagenId
         ? `https://lh3.googleusercontent.com/d/${imagenId}`
         : '';
@@ -376,9 +371,7 @@ async function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
     // Detectar celulares y tabletas
     const esCelular = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    // ==========================================
     // CELULAR: COMPARTIR FOTO + DATOS + ENLACE
-    // ==========================================
 
     if (esCelular && navigator.share) {
 
@@ -450,9 +443,7 @@ async function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
         return;
     }
 
-    // ==========================================
     // COMPUTADORA: CONSERVAR MENÚ ACTUAL
-    // ==========================================
 
     mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo);
 }
@@ -554,6 +545,7 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
     crearBoton('🟢 WhatsApp', '#25D366', () => {
 
+        // Crear ventana de selección
         const selector = document.createElement('div');
 
         selector.style.cssText = `
@@ -677,6 +669,7 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
                 if (seleccion === 'app') {
 
+                    // Abrir WhatsApp Aplicación
                     const urlWhatsAppApp =
                         'whatsapp://send?text=' +
                         encodeURIComponent(mensaje);
@@ -685,6 +678,7 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
                 } else {
 
+                    // Abrir WhatsApp Web
                     const urlWhatsAppWeb =
                         'https://web.whatsapp.com/send?text=' +
                         encodeURIComponent(mensaje);
@@ -704,7 +698,11 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
         cajaSelector.querySelector('#cancelarWhatsApp')
             .addEventListener('click', () => {
+
+                // Cierra solamente la ventana de selección
+                // y conserva abierto el menú principal.
                 selector.remove();
+
             });
 
     });
