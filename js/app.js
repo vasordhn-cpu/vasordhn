@@ -1,4 +1,3 @@
-
 function obtenerIdDrive(url) {
     if (!url) return '';
     let rawUrl = String(url).trim();
@@ -6,117 +5,36 @@ function obtenerIdDrive(url) {
     return match && match[1] ? match[1] : '';
 }
 
-
-// ==========================================
-// CONSTRUIR MENÚ DE CATEGORÍAS
-// ==========================================
-
 function construirMenu(hojaActiva) {
     const nav = document.getElementById('nav-categorias');
-
-    if (!nav) {
-        console.error('No se encontró el elemento nav-categorias.');
-        return;
-    }
-
     nav.innerHTML = '';
 
-    // OBTENER CATEGORÍAS DE CONFIGURACION.JS
-    const hojasDisponibles = typeof HOJAS_DISPONIBLES !== 'undefined'
-        ? HOJAS_DISPONIBLES
-        : [];
-
-    const hojasCortas = typeof HOJAS_CORTAS !== 'undefined'
-        ? HOJAS_CORTAS
-        : hojasDisponibles.filter(nombre => !HOJAS_LARGAS.includes(nombre));
-
-    const hojasLargas = typeof HOJAS_LARGAS !== 'undefined'
-        ? HOJAS_LARGAS
-        : [];
-
-    // GRUPO DE CATEGORÍAS CORTAS
-    const filaCortos = document.createElement('div');
-    filaCortos.className = 'nav-fila nav-fila-cortos';
-
-    hojasCortas.forEach(nombreHoja => {
-        const btn = document.createElement('button');
-
-        btn.type = 'button';
+    HOJAS_DISPONIBLES.forEach((nombreHoja) => {
+        let btn = document.createElement('button');
         btn.className = `nav-btn ${nombreHoja === hojaActiva ? 'active' : ''}`;
         btn.innerText = nombreHoja;
         btn.onclick = () => cambiarHoja(nombreHoja);
-
-        filaCortos.appendChild(btn);
+        nav.appendChild(btn);
     });
-
-    // GRUPO DE CATEGORÍAS LARGAS
-    const filaLargos = document.createElement('div');
-    filaLargos.className = 'nav-fila nav-fila-largos';
-
-    hojasLargas.forEach(nombreHoja => {
-        const btn = document.createElement('button');
-
-        btn.type = 'button';
-        btn.className = `nav-btn nav-btn-largo ${nombreHoja === hojaActiva ? 'active' : ''}`;
-        btn.innerText = nombreHoja;
-        btn.onclick = () => cambiarHoja(nombreHoja);
-
-        filaLargos.appendChild(btn);
-    });
-
-    // AGREGAR PRIMERO LAS CORTAS Y DESPUÉS LAS LARGAS
-    if (filaCortos.children.length > 0) {
-        nav.appendChild(filaCortos);
-    }
-
-    if (filaLargos.children.length > 0) {
-        nav.appendChild(filaLargos);
-    }
 }
-
-
-// ==========================================
-// CAMBIAR DE HOJA
-// ==========================================
 
 function cambiarHoja(nombreHoja) {
     hojaActualGlobal = nombreHoja;
-
     construirMenu(nombreHoja);
 
-    window.location.hash = encodeURIComponent(nombreHoja);
-
-    const titulo = document.getElementById('titulo-seccion');
+    window.location.hash = nombreHoja;
 
     if (nombreHoja === 'Inicio') {
-        if (titulo) {
-            titulo.innerText = 'Bienvenidos';
-        }
-
+        document.getElementById('titulo-seccion').innerText = 'Bienvenidos';
         renderizarInicio();
-
     } else {
-        if (titulo) {
-            titulo.innerText = `Catálogo - ${nombreHoja}`;
-        }
-
+        document.getElementById('titulo-seccion').innerText = `Catálogo - ${nombreHoja}`;
         cargarDatos(nombreHoja);
     }
 }
 
-
-// ==========================================
-// PANTALLA DE INICIO
-// ==========================================
-
 function renderizarInicio() {
     const contenedor = document.getElementById('contenedor-principal');
-
-    if (!contenedor) {
-        console.error('No se encontró el contenedor principal.');
-        return;
-    }
-
     contenedor.innerHTML = `
         <div class="inicio-container">
             <div class="inicio-banner-bienvenida">
@@ -157,11 +75,6 @@ function renderizarInicio() {
     `;
 }
 
-
-// ==========================================
-// ABRIR MODAL DE VIDEO
-// ==========================================
-
 function abrirModalVideo(videoUrl) {
     let videoId = obtenerIdDrive(videoUrl);
     if (!videoId) return;
@@ -169,20 +82,12 @@ function abrirModalVideo(videoUrl) {
     let modal = document.getElementById('videoModal');
     let containerBody = document.getElementById('modalContainerBody');
 
-    if (!modal || !containerBody) return;
-
     containerBody.innerHTML = `
         <button class="modal-close" onclick="cerrarModal()">×</button>
         <iframe src="https://drive.google.com/file/d/${videoId}/preview" allow="autoplay" allowfullscreen></iframe>
     `;
-
     modal.style.display = 'flex';
 }
-
-
-// ==========================================
-// ABRIR MODAL DE IMAGEN
-// ==========================================
 
 function abrirModalImagen(imageUrl) {
     if (!imageUrl) return;
@@ -190,34 +95,20 @@ function abrirModalImagen(imageUrl) {
     let modal = document.getElementById('videoModal');
     let containerBody = document.getElementById('modalContainerBody');
 
-    if (!modal || !containerBody) return;
-
     containerBody.innerHTML = `
         <button class="modal-close" onclick="cerrarModal()">×</button>
         <img src="${imageUrl}" alt="Imagen ampliada">
     `;
-
     modal.style.display = 'flex';
 }
-
-
-// ==========================================
-// CERRAR MODAL
-// ==========================================
 
 function cerrarModal() {
     let modal = document.getElementById('videoModal');
     let containerBody = document.getElementById('modalContainerBody');
 
-    if (containerBody) {
-        containerBody.innerHTML = '';
-    }
-
-    if (modal) {
-        modal.style.display = 'none';
-    }
+    containerBody.innerHTML = '';
+    modal.style.display = 'none';
 }
-
 
 let productoFichaActual = null;
 
@@ -246,8 +137,6 @@ function abrirFichaProducto(prod) {
 
     const modal = document.getElementById('videoModal');
     const cuerpo = document.getElementById('modalContainerBody');
-
-    if (!modal || !cuerpo) return;
 
     const imagenId = obtenerIdDrive(prod.imagen);
     const imagen = imagenId
@@ -415,12 +304,18 @@ async function descargarImagenProducto(imagenUrl, codigo) {
 
 async function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
+    // Detectar celulares y tabletas
     const esCelular = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // ==========================================
+    // CELULAR: COMPARTIR FOTO + DATOS + ENLACE
+    // ==========================================
 
     if (esCelular && navigator.share) {
 
         try {
 
+            // Si existe fotografía, intentar convertirla en archivo
             if (imagenUrl && navigator.canShare) {
 
                 const respuesta = await fetch(imagenUrl);
@@ -432,6 +327,7 @@ async function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
                 const blob = await respuesta.blob();
 
                 const tipoImagen = blob.type || 'image/jpeg';
+
                 const extension = tipoImagen.includes('png') ? 'png' : 'jpg';
 
                 const archivo = new File(
@@ -440,6 +336,7 @@ async function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
                     { type: tipoImagen }
                 );
 
+                // Comprobar si el celular permite compartir archivos
                 const archivos = [archivo];
 
                 if (navigator.canShare({ files: archivos })) {
@@ -454,6 +351,8 @@ async function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
                 }
             }
 
+            // Si no se puede compartir la fotografía,
+            // compartir al menos los datos y el enlace.
             await navigator.share({
                 title: 'VASORD Creacioness y Más',
                 text: mensaje
@@ -465,6 +364,7 @@ async function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
             console.error('Error al compartir desde celular:', error);
 
+            // Si falla la imagen, intentar compartir el texto
             try {
                 await navigator.share({
                     title: 'VASORD Creacioness y Más',
@@ -480,6 +380,10 @@ async function mostrarMenuCompartir(mensaje, enlace, imagenUrl, codigo) {
 
         return;
     }
+
+    // ==========================================
+    // COMPUTADORA: CONSERVAR MENÚ ACTUAL
+    // ==========================================
 
     mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo);
 }
@@ -575,10 +479,13 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
     }
 
 
-    // WHATSAPP
+    // ==========================================
+    // WHATSAPP: ELEGIR APLICACIÓN O VERSIÓN WEB
+    // ==========================================
 
     crearBoton('🟢 WhatsApp', '#25D366', () => {
 
+        // Crear ventana de selección
         const selector = document.createElement('div');
 
         selector.style.cssText = `
@@ -685,6 +592,11 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
         selector.appendChild(cajaSelector);
         document.body.appendChild(selector);
 
+
+        // ==========================================
+        // BOTÓN CONTINUAR
+        // ==========================================
+
         cajaSelector.querySelector('#continuarWhatsApp')
             .addEventListener('click', () => {
 
@@ -699,6 +611,7 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
                 if (seleccion === 'app') {
 
+                    // Abrir WhatsApp Aplicación
                     const urlWhatsAppApp =
                         'whatsapp://send?text=' +
                         encodeURIComponent(mensaje);
@@ -707,64 +620,91 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
                 } else {
 
+                    // Abrir WhatsApp Web
                     const urlWhatsAppWeb =
                         'https://web.whatsapp.com/send?text=' +
                         encodeURIComponent(mensaje);
 
-                    window.open(urlWhatsAppWeb, '_blank');
+                    window.open(
+                        urlWhatsAppWeb,
+                        '_blank'
+                    );
                 }
 
                 selector.remove();
                 fondo.remove();
             });
 
+
+        // ==========================================
+        // BOTÓN CANCELAR
+        // ==========================================
+
         cajaSelector.querySelector('#cancelarWhatsApp')
             .addEventListener('click', () => {
+
+                // Cierra solamente la ventana de selección
+                // y conserva abierto el menú principal.
                 selector.remove();
+
             });
 
     });
 
 
-    // FACEBOOK MESSENGER
-
-    crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
-
-        const mensajeMessenger = mensaje
-            .replace(/✨\s*VASORD CREACIONES Y MÁS\s*✨/g,
-                '━━━━━━━━━━━━━━━━━━\nVASORD CREACIONES Y MÁS\n━━━━━━━━━━━━━━━━━━')
-            .replace(/🎁\s*¡MIRA ESTE PRODUCTO!/g, '')
-            .replace(/📦\s*(?:Producto:\s*)?/g,
-                '\n● PRODUCTO:\n')
-            .replace(/🔖\s*C[oó]digo:/g,
-                '\n● CÓDIGO:')
-            .replace(/📝\s*DESCRIPCIÓN/g,
-                '\n● DESCRIPCIÓN')
-            .replace(/🛍️?\s*MEDIDAS Y PRECIOS/g,
-                '\n● MEDIDAS Y PRECIOS')
-            .replace(/📏\s*/g, '')
-            .replace(/💰\s*/g, '')
-            .replace(/🛒\s*¿Te interesa este producto\?/g,
-                '\n━━━━━━━━━━━━━━━━━━')
-            .replace(/Conoce más detalles aquí:/g, '')
-            .replace(/🔗\s*Ver producto:/g,
-                '\n◆ VER PRODUCTO:\n')
-            .replace(/💖\s*¡Gracias por preferir VASORD!?/g,
-                '\n━━━━━━━━━━━━━━━━━━\nVASORD CREACIONES Y MÁS')
-            .replace(/✨|🎁|📦|🔖|📝|💰|🛒|🔗|💖|🛍️|📏/gu, '')
-            .replace(/\n{3,}/g, '\n\n')
-            .trim();
-
-        const urlMessenger =
-            'https://www.facebook.com/messages/new?text=' +
-            encodeURIComponent(mensajeMessenger);
-
-        window.open(urlMessenger, '_blank', 'noopener');
-
-    });
+ 
+    
 
 
+ 
+   
+
+
+// ==========================================
+// FACEBOOK MESSENGER
+// ==========================================
+
+crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
+
+    const mensajeMessenger = mensaje
+        .replace(/✨\s*VASORD CREACIONES Y MÁS\s*✨/g,
+            '━━━━━━━━━━━━━━━━━━\nVASORD CREACIONES Y MÁS\n━━━━━━━━━━━━━━━━━━')
+        .replace(/🎁\s*¡MIRA ESTE PRODUCTO!/g, '')
+        .replace(/📦\s*(?:Producto:\s*)?/g,
+            '\n● PRODUCTO:\n')
+        .replace(/🔖\s*C[oó]digo:/g,
+            '\n● CÓDIGO:')
+        .replace(/📝\s*DESCRIPCIÓN/g,
+            '\n● DESCRIPCIÓN')
+        .replace(/🛍️?\s*MEDIDAS Y PRECIOS/g,
+            '\n● MEDIDAS Y PRECIOS')
+        .replace(/📏\s*/g, '')
+        .replace(/💰\s*/g, '')
+        .replace(/🛒\s*¿Te interesa este producto\?/g,
+            '\n━━━━━━━━━━━━━━━━━━')
+        .replace(/Conoce más detalles aquí:/g, '')
+        .replace(/🔗\s*Ver producto:/g,
+            '\n◆ VER PRODUCTO:\n')
+        .replace(/💖\s*¡Gracias por preferir VASORD!?/g,
+            '\n━━━━━━━━━━━━━━━━━━\nVASORD CREACIONES Y MÁS')
+        .replace(/✨|🎁|📦|🔖|📝|💰|🛒|🔗|💖|🛍️|📏/gu, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+
+    const urlMessenger =
+        'https://www.facebook.com/messages/new?text=' +
+        encodeURIComponent(mensajeMessenger);
+
+    window.open(urlMessenger, '_blank', 'noopener');
+
+});
+
+
+
+
+    // ==========================================
     // DESCARGAR FOTO
+    // ==========================================
 
     if (imagenUrl) {
         crearBoton('📸 Descargar foto del producto', '#64A9D9', () => {
@@ -773,7 +713,9 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
     }
 
 
+    // ==========================================
     // COPIAR ENLACE
+    // ==========================================
 
     crearBoton('📋 Copiar enlace', '#16834A', async () => {
         try {
@@ -785,7 +727,9 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
     });
 
 
+    // ==========================================
     // CERRAR MENÚ
+    // ==========================================
 
     crearBoton('✖ Cerrar', '#666666', () => {
         fondo.remove();
@@ -821,12 +765,6 @@ function abrirProductoDesdeEnlace() {
     const descripcion = parametros.get('descripcion');
 
     if (!codigo && !descripcion) return;
-
-    if (typeof datosActualesPaginacion === 'undefined' ||
-        !Array.isArray(datosActualesPaginacion)) {
-        console.error('Los datos del catálogo todavía no están disponibles.');
-        return;
-    }
 
     const indice = datosActualesPaginacion.findIndex(prod =>
         String(prod.codigo || '') === String(codigo || '') &&
@@ -874,36 +812,20 @@ function abrirProductoDesdeEnlace() {
 // INICIAR CATÁLOGO
 // ==========================================
 
-(function iniciarCatalogo() {
+const parametrosIniciales = new URLSearchParams(window.location.search);
 
-    if (typeof HOJAS_DISPONIBLES === 'undefined' ||
-        !Array.isArray(HOJAS_DISPONIBLES)) {
-        console.error('Error: HOJAS_DISPONIBLES no está definida. Revisa configuracion.js.');
-        return;
-    }
+const seccionCompartida = parametrosIniciales.get('seccion');
 
-    const parametrosIniciales = new URLSearchParams(window.location.search);
+let hashRuta = window.location.hash.replace('#', '').trim();
 
-    const seccionCompartida = parametrosIniciales.get('seccion');
+let seccionInicial = seccionCompartida || decodeURIComponent(hashRuta);
 
-    let hashRuta = window.location.hash.replace(/^#/, '').trim();
+let matchPestana = HOJAS_DISPONIBLES.find(
+    h => h.toLowerCase() === seccionInicial.toLowerCase()
+);
 
-    let seccionInicial = seccionCompartida || hashRuta;
-
-    try {
-        seccionInicial = decodeURIComponent(seccionInicial);
-    } catch (error) {
-        console.warn('No se pudo decodificar la sección de la URL.');
-    }
-
-    let matchPestana = HOJAS_DISPONIBLES.find(
-        h => h.toLowerCase() === seccionInicial.toLowerCase()
-    );
-
-    if (matchPestana) {
-        cambiarHoja(matchPestana);
-    } else {
-        cambiarHoja('Inicio');
-    }
-
-})();
+if (matchPestana) {
+    cambiarHoja(matchPestana);
+} else {
+    cambiarHoja('Inicio');
+}
