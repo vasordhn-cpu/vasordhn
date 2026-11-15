@@ -8,34 +8,23 @@ function obtenerIdDrive(url) {
 
 
 // ==========================================
-// CONSTRUIR MENÚ DE NAVEGACIÓN
+// CONSTRUIR MENU DE NAVEGACION
 // ==========================================
 
 function construirMenu(hojaActiva) {
     const nav = document.getElementById('nav-categorias');
     nav.innerHTML = '';
 
-    // Crear grupos separados para categorías cortas y largas
+    // Contenedor de botones cortos
     const filaCortos = document.createElement('div');
     filaCortos.className = 'nav-fila nav-fila-cortos';
 
+    // Contenedor de botones largos
     const filaLargos = document.createElement('div');
     filaLargos.className = 'nav-fila nav-fila-largos';
 
-    // Separar las categorías según la longitud de su nombre
-    const hojasCortas = [];
-    const hojasLargas = [];
-
-    HOJAS_DISPONIBLES.forEach(nombreHoja => {
-        if (nombreHoja.trim().length > 16) {
-            hojasLargas.push(nombreHoja);
-        } else {
-            hojasCortas.push(nombreHoja);
-        }
-    });
-
-    // Crear primero todos los botones cortos
-    hojasCortas.forEach(nombreHoja => {
+    // Crear botones cortos
+    HOJAS_CORTAS.forEach(nombreHoja => {
         const btn = document.createElement('button');
 
         btn.className = `nav-btn ${nombreHoja === hojaActiva ? 'active' : ''}`;
@@ -45,8 +34,8 @@ function construirMenu(hojaActiva) {
         filaCortos.appendChild(btn);
     });
 
-    // Crear después todos los botones largos
-    hojasLargas.forEach(nombreHoja => {
+    // Crear botones largos
+    HOJAS_LARGAS.forEach(nombreHoja => {
         const btn = document.createElement('button');
 
         btn.className = `nav-btn nav-btn-largo ${nombreHoja === hojaActiva ? 'active' : ''}`;
@@ -56,12 +45,13 @@ function construirMenu(hojaActiva) {
         filaLargos.appendChild(btn);
     });
 
-    // Mostrar primero los cortos y después los largos
-    if (hojasCortas.length > 0) {
+    // Agregar primero los botones cortos
+    if (HOJAS_CORTAS.length > 0) {
         nav.appendChild(filaCortos);
     }
 
-    if (hojasLargas.length > 0) {
+    // Agregar después los botones largos
+    if (HOJAS_LARGAS.length > 0) {
         nav.appendChild(filaLargos);
     }
 }
@@ -88,7 +78,7 @@ function cambiarHoja(nombreHoja) {
 
 
 // ==========================================
-// PÁGINA DE INICIO
+// PAGINA DE INICIO
 // ==========================================
 
 function renderizarInicio() {
@@ -564,7 +554,6 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
     crearBoton('🟢 WhatsApp', '#25D366', () => {
 
-        // Crear ventana de selección
         const selector = document.createElement('div');
 
         selector.style.cssText = `
@@ -672,9 +661,7 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
         document.body.appendChild(selector);
 
 
-        // ==========================================
         // BOTÓN CONTINUAR
-        // ==========================================
 
         cajaSelector.querySelector('#continuarWhatsApp')
             .addEventListener('click', () => {
@@ -690,7 +677,6 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
                 if (seleccion === 'app') {
 
-                    // Abrir WhatsApp Aplicación
                     const urlWhatsAppApp =
                         'whatsapp://send?text=' +
                         encodeURIComponent(mensaje);
@@ -699,7 +685,6 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
                 } else {
 
-                    // Abrir WhatsApp Web
                     const urlWhatsAppWeb =
                         'https://web.whatsapp.com/send?text=' +
                         encodeURIComponent(mensaje);
@@ -715,17 +700,11 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
             });
 
 
-        // ==========================================
         // BOTÓN CANCELAR
-        // ==========================================
 
         cajaSelector.querySelector('#cancelarWhatsApp')
             .addEventListener('click', () => {
-
-                // Cierra solamente la ventana de selección
-                // y conserva abierto el menú principal.
                 selector.remove();
-
             });
 
     });
