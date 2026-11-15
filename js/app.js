@@ -659,27 +659,27 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
  
    
+
 // ==========================================
 // FACEBOOK MESSENGER
 // ==========================================
 
 crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
 
+    // Preparar mensaje exclusivo para Messenger
     const mensajeMessenger = mensaje
-        .replace('✨ VASORD CREACIONES Y MÁS ✨',
-                 '*✨ VASORD CREACIONES Y MÁS ✨*')
-        .replace('🎁 ¡MIRA ESTE PRODUCTO!',
-                 '*🎁 ¡MIRA ESTE PRODUCTO!*')
-        .replace('📦 ', '*📦 PRODUCTO:* ')
-        .replace('🔖 Código:', '*🔖 CÓDIGO:*')
-        .replace('📝 DESCRIPCIÓN',
-                 '*📝 DESCRIPCIÓN*')
-        .replace('🛍️ MEDIDAS Y PRECIOS',
-                 '*🛍️ MEDIDAS Y PRECIOS*')
-        .replace('🛒 ¿Te interesa este producto?',
-                 '*🛒 ¿TE INTERESA ESTE PRODUCTO?*')
-        .replace('🔗 ',
-                 '*🔗 VER PRODUCTO:*\n');
+        .replace(/^✨ VASORD CREACIONES Y MÁS ✨/m,
+                 '*VASORD CREACIONES Y MÁS*')
+        .replace(/^🎁 ¡MIRA ESTE PRODUCTO!/m,
+                 '*PRESENTACIÓN DEL PRODUCTO*')
+        .replace(/^📦 /m, '*PRODUCTO:* ')
+        .replace(/^🔖 Código:/m, '*CÓDIGO:*')
+        .replace(/^📝 DESCRIPCIÓN/m, '*DESCRIPCIÓN*')
+        .replace(/^💰 Medidas y precios:/m, '*MEDIDAS Y PRECIOS*')
+        .replace(/^🛒 ¿Te interesa este producto\?/m,
+                 '*¿TE INTERESA ESTE PRODUCTO?*')
+        .replace(/^🔗 Ver producto:/m, '*VER PRODUCTO:*')
+        .replace(/✨|🎁|📦|🔖|📝|💰|🛒|🔗|💖|🛍️|📏/gu, '');
 
     const urlMessenger =
         'https://www.facebook.com/messages/new?text=' +
@@ -688,6 +688,7 @@ crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
     window.open(urlMessenger, '_blank', 'noopener');
 
 });
+
 
 
 
