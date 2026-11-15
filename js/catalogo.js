@@ -282,7 +282,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             let mediaHTML = `
                 <div class="media-container">
                     ${portadaSrc
-                        ? `<img src="${portadaSrc}" alt="${prod.descripcion}">`
+                        ? `<img src="${portadaSrc}" alt="${prod.descripcion}" loading="lazy" decoding="async">`
                         : '<div style="color:#aaa;">Sin portada</div>'}
                 </div>
             `;
