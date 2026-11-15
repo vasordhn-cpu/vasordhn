@@ -1,4 +1,4 @@
-
+const cacheDatosHojas = new Map();
 async function cargarDatos(nombreHoja) {
     const contenedor = document.getElementById('contenedor-principal');
 
