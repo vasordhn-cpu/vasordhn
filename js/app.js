@@ -658,21 +658,36 @@ function mostrarMenuCompartirWeb(mensaje, enlace, imagenUrl, codigo) {
 
 
  
-    // ==========================================
-    // FACEBOOK MESSENGER
-    // ==========================================
+   
+// ==========================================
+// FACEBOOK MESSENGER
+// ==========================================
 
-    crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
+crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
 
-        const mensajeMessenger = encodeURIComponent(mensaje);
+    const mensajeMessenger = mensaje
+        .replace('✨ VASORD CREACIONES Y MÁS ✨',
+                 '*✨ VASORD CREACIONES Y MÁS ✨*')
+        .replace('🎁 ¡MIRA ESTE PRODUCTO!',
+                 '*🎁 ¡MIRA ESTE PRODUCTO!*')
+        .replace('📦 ', '*📦 PRODUCTO:* ')
+        .replace('🔖 Código:', '*🔖 CÓDIGO:*')
+        .replace('📝 DESCRIPCIÓN',
+                 '*📝 DESCRIPCIÓN*')
+        .replace('🛍️ MEDIDAS Y PRECIOS',
+                 '*🛍️ MEDIDAS Y PRECIOS*')
+        .replace('🛒 ¿Te interesa este producto?',
+                 '*🛒 ¿TE INTERESA ESTE PRODUCTO?*')
+        .replace('🔗 ',
+                 '*🔗 VER PRODUCTO:*\n');
 
-        const urlMessenger =
-            'https://www.facebook.com/messages/new?text=' +
-            mensajeMessenger;
+    const urlMessenger =
+        'https://www.facebook.com/messages/new?text=' +
+        encodeURIComponent(mensajeMessenger);
 
-        window.open(urlMessenger, '_blank', 'noopener');
+    window.open(urlMessenger, '_blank', 'noopener');
 
-    });
+});
 
 
 
