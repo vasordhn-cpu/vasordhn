@@ -5,6 +5,9 @@
 
 const cacheDatosHojas = new Map();
 
+// CACHÉ DE PRODUCTOS YA AGRUPADOS
+const cacheProductosAgrupados = new Map();
+
 
 // ==========================================
 // CARGAR DATOS DE UNA HOJA
@@ -21,7 +24,15 @@ async function cargarDatos(nombreHoja) {
         if (claveHoja.toLowerCase() === 'servicios') {
             renderizarComoListaServiciosAgrupados(productos);
         } else {
-            renderizarPorCategorias(productos);
+            const productosAgrupados = cacheProductosAgrupados.get(claveHoja);
+
+            if (productosAgrupados) {
+                reiniciarPaginacionCatalogo();
+                renderizarPorCategorias(productosAgrupados, true);
+            } else {
+                renderizarPorCategorias(productos);
+            }
+
             abrirProductoDesdeEnlace();
         }
 
@@ -176,6 +187,37 @@ function renderizarComoListaServiciosAgrupados(items) {
 
 
 // ==========================================
+// AGRUPAR PRODUCTOS
+// ==========================================
+
+function agruparProductos(items) {
+    let productosGlobales = {};
+
+    items.forEach(item => {
+        if (!item.codigo && !item.descripcion) return;
+
+        let key = `${item.codigo}_${item.descripcion}`;
+
+        if (!productosGlobales[key]) {
+            productosGlobales[key] = {
+                codigo: item.codigo,
+                descripcion: item.descripcion,
+                otros: item.otros,
+                tipo: item.tipo || 'General',
+                imagen: item.imagen,
+                video: item.video,
+                filas: []
+            };
+        }
+
+        productosGlobales[key].filas.push(item);
+    });
+
+    return Object.values(productosGlobales);
+}
+
+
+// ==========================================
 // RENDERIZAR PRODUCTOS POR CATEGORÍAS
 // ==========================================
 
@@ -190,34 +232,22 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
         listaProductos = items;
 
     } else {
-        let productosGlobales = {};
+        // AGRUPAR PRODUCTOS
+        listaProductos = agruparProductos(items);
 
-        items.forEach(item => {
-            if (!item.codigo && !item.descripcion) return;
-
-            let key = `${item.codigo}_${item.descripcion}`;
-
-            if (!productosGlobales[key]) {
-                productosGlobales[key] = {
-                    codigo: item.codigo,
-                    descripcion: item.descripcion,
-                    otros: item.otros,
-                    tipo: item.tipo || 'General',
-                    imagen: item.imagen,
-                    video: item.video,
-                    filas: []
-                };
-            }
-
-            productosGlobales[key].filas.push(item);
-        });
-
-        listaProductos = Object.values(productosGlobales);
-
-        datosActualesPaginacion = listaProductos;
+        // GUARDAR LOS PRODUCTOS AGRUPADOS EN CACHÉ
+        if (hojaActualGlobal) {
+            cacheProductosAgrupados.set(
+                String(hojaActualGlobal).trim(),
+                listaProductos
+            );
+        }
 
         reiniciarPaginacionCatalogo();
     }
+
+    // MANTENER ACTUALIZADOS LOS DATOS DE PAGINACIÓN
+    datosActualesPaginacion = listaProductos;
 
     // OBTENER SOLAMENTE LOS PRODUCTOS DE LA PÁGINA ACTUAL
     const productosPagina = obtenerProductosPaginados(listaProductos);
@@ -244,6 +274,9 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
     let esSeccionEventos =
         hojaActualGlobal.toLowerCase().trim() === 'eventos';
 
+    // FRAGMENTO PARA AGRUPAR LAS CATEGORÍAS
+    const fragmentoPrincipal = document.createDocumentFragment();
+
     Object.keys(categoriasMap).forEach(categoria => {
         let productosCat = categoriasMap[categoria];
 
@@ -258,6 +291,9 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
 
         let gridDiv = document.createElement('div');
         gridDiv.className = 'grid-productos';
+
+        // FRAGMENTO PARA LAS TARJETAS
+        const fragmentoTarjetas = document.createDocumentFragment();
 
         productosCat.forEach(prod => {
             let card = document.createElement('div');
@@ -428,16 +464,24 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
 
             botonCompartir.onclick = () => compartirProducto(prod);
 
-            console.log('Producto seleccionado:', prod);
-
+            // AGREGAR BOTÓN DE COMPARTIR
             card.querySelector('.compartir-container').appendChild(botonCompartir);
 
-            gridDiv.appendChild(card);
+            // AGREGAR TARJETA AL FRAGMENTO
+            fragmentoTarjetas.appendChild(card);
         });
 
+        // INSERTAR TARJETAS EN SU CONTENEDOR
+        gridDiv.appendChild(fragmentoTarjetas);
+
         seccionDiv.appendChild(gridDiv);
-        contenedorPrincipal.appendChild(seccionDiv);
+
+        // AGREGAR CATEGORÍA AL FRAGMENTO PRINCIPAL
+        fragmentoPrincipal.appendChild(seccionDiv);
     });
+
+    // INSERTAR TODAS LAS CATEGORÍAS
+    contenedorPrincipal.appendChild(fragmentoPrincipal);
 
     // CONTROLES DE PAGINACIÓN
     contenedorPrincipal.appendChild(
