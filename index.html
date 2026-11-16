@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -637,16 +638,29 @@
         @media (max-width: 768px) {
             .nav-categorias {
                 display: grid;
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(4, minmax(0, 1fr));
                 gap: 6px;
                 padding: 0 10px;
             }
 
+            /* BOTONES DEL MENÚ: TEXTO COMPLETO EN VARIAS LÍNEAS */
             .nav-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 width: 100%;
-                padding: 8px 4px;
-                font-size: 11px;
-                border-radius: 15px;
+                min-width: 0;
+                min-height: 44px;
+                padding: 6px 4px;
+                font-size: 10px;
+                font-weight: 700;
+                line-height: 1.2;
+                border-radius: 10px;
+                white-space: normal;
+                overflow-wrap: break-word;
+                text-align: center;
+                overflow: visible;
+                text-overflow: clip;
             }
 
             .header-franja h1 {
