@@ -1,4 +1,5 @@
 
+
 // ==========================================
 // CACHÉ DE DATOS DE GOOGLE SHEETS
 // ==========================================
@@ -13,72 +14,140 @@ const cacheProductosAgrupados = new Map();
 // CARGAR DATOS DE UNA HOJA
 // ==========================================
 
+let solicitudCatalogo = 0;
+
+function esVisibleCatalogo(valor) {
+    return String(valor ?? '')
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase() === 'si';
+}
+
 async function cargarDatos(nombreHoja) {
     const contenedor = document.getElementById('contenedor-principal');
     const claveHoja = String(nombreHoja).trim();
 
-    // COMPROBAR SI LOS DATOS YA ESTÁN GUARDADOS
-    if (cacheDatosHojas.has(claveHoja)) {
-        const productos = cacheDatosHojas.get(claveHoja);
+    const solicitud = ++solicitudCatalogo;
 
-        if (claveHoja.toLowerCase() === 'servicios') {
-            renderizarComoListaServiciosAgrupados(productos);
-        } else {
-            const productosAgrupados = cacheProductosAgrupados.get(claveHoja);
+    const sigueActiva = () =>
+        solicitud === solicitudCatalogo &&
+        String(hojaActualGlobal).trim() === claveHoja;
 
-            if (productosAgrupados) {
-                reiniciarPaginacionCatalogo();
-                renderizarPorCategorias(productosAgrupados, true);
-            } else {
-                renderizarPorCategorias(productos);
-            }
+    const parametros = new URLSearchParams(window.location.search);
 
-            abrirProductoDesdeEnlace();
-        }
-
-        return;
-    }
-
-    contenedor.innerHTML =
-        '<p style="text-align:center; color: #666; padding: 40px 0;">Cargando datos de ' +
-        nombreHoja + '...</p>';
+    const esEnlace =
+        (parametros.has('codigo') || parametros.has('descripcion')) &&
+        String(parametros.get('seccion') || '')
+            .trim()
+            .toLowerCase() === claveHoja.toLowerCase();
 
     try {
-        const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nombreHoja)}`;
+        let productos;
 
-        const response = await fetch(url);
+        let desdeCache =
+            !esEnlace && cacheDatosHojas.has(claveHoja);
 
-        if (!response.ok) {
-            throw new Error('No se pudieron cargar los datos de Google Sheets.');
+        if (desdeCache) {
+            productos = cacheDatosHojas.get(claveHoja);
+        } else {
+            contenedor.innerHTML =
+                '<p style="text-align:center; color: #666; padding: 40px 0;">Cargando datos de ' +
+                nombreHoja + '...</p>';
+
+            const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nombreHoja)}`;
+
+            const response = await fetch(
+                url,
+                esEnlace ? { cache: 'no-store' } : {}
+            );
+
+            if (!response.ok) {
+                throw new Error('No se pudieron cargar los datos de Google Sheets.');
+            }
+
+            const text = await response.text();
+
+            const inicio = text.indexOf('{');
+            const fin = text.lastIndexOf('}');
+
+            const json = JSON.parse(
+                text.slice(inicio, fin + 1)
+            );
+
+            if (
+                json.status === 'error' ||
+                !Array.isArray(json.table?.rows)
+            ) {
+                throw new Error('Respuesta inválida de Google Sheets.');
+            }
+
+            const leer = (r, i) =>
+                String(r.c?.[i]?.v ?? '');
+
+            // FILTRAR PRODUCTOS SEGÚN COLUMNA MOSTRAR
+            productos = json.table.rows
+                .filter(r => esVisibleCatalogo(leer(r, 8)))
+                .map(r => ({
+                    codigo: leer(r, 0),
+                    descripcion: leer(r, 1),
+                    otros: leer(r, 2),
+                    tipo: leer(r, 3).trim() || 'General',
+                    medida: leer(r, 4),
+                    precio: leer(r, 5),
+                    imagen: leer(r, 6),
+                    video: leer(r, 7).trim(),
+                    mostrar: leer(r, 8)
+                }));
+
+            // EVITAR RESPUESTAS DE ÁREAS ANTERIORES
+            if (!sigueActiva()) return;
+
+            // GUARDAR DATOS VISIBLES EN MEMORIA
+            cacheDatosHojas.set(claveHoja, productos);
+
+            cacheProductosAgrupados.delete(claveHoja);
         }
 
-        const text = await response.text();
-        const json = JSON.parse(text.substr(47).slice(0, -2));
-        const rows = json.table.rows;
-
-        let productos = rows.map(r => ({
-            codigo: r.c[0] ? String(r.c[0].v) : '',
-            descripcion: r.c[1] ? String(r.c[1].v) : '',
-            otros: r.c[2] ? String(r.c[2].v) : '',
-            tipo: r.c[3] ? String(r.c[3].v).trim() : 'General',
-            medida: r.c[4] ? String(r.c[4].v) : '',
-            precio: r.c[5] ? String(r.c[5].v) : '',
-            imagen: r.c[6] ? String(r.c[6].v) : '',
-            video: r.c[7] && r.c[7].v ? String(r.c[7].v).trim() : ''
-        }));
-
-        // GUARDAR LOS DATOS EN MEMORIA
-        cacheDatosHojas.set(claveHoja, productos);
+        if (!sigueActiva()) return;
 
         if (claveHoja.toLowerCase() === 'servicios') {
+
+            datosActualesPaginacion = [];
+
+            reiniciarPaginacionCatalogo();
+
             renderizarComoListaServiciosAgrupados(productos);
+
         } else {
-            renderizarPorCategorias(productos);
-            abrirProductoDesdeEnlace();
+
+            const agrupados =
+                cacheProductosAgrupados.get(claveHoja);
+
+            if (agrupados) {
+
+                reiniciarPaginacionCatalogo();
+
+                renderizarPorCategorias(agrupados, true);
+
+            } else {
+
+                renderizarPorCategorias(productos);
+
+            }
+
+            if (esEnlace) {
+                abrirProductoDesdeEnlace();
+            }
         }
 
     } catch (error) {
+
+        if (!sigueActiva()) return;
+
         console.error('Error al cargar los datos:', error);
+
+        datosActualesPaginacion = [];
 
         contenedor.innerHTML =
             '<p style="text-align:center; color: red;">Error al cargar los datos de esta área.</p>';
@@ -91,11 +160,14 @@ async function cargarDatos(nombreHoja) {
 // ==========================================
 
 function renderizarComoListaServiciosAgrupados(items) {
-    const contenedorPrincipal = document.getElementById('contenedor-principal');
+    const contenedorPrincipal =
+        document.getElementById('contenedor-principal');
 
     contenedorPrincipal.innerHTML = '';
 
-    let serviciosValidos = items.filter(item => item.codigo || item.descripcion);
+    let serviciosValidos = items.filter(
+        item => item.codigo || item.descripcion
+    );
 
     if (serviciosValidos.length === 0) {
         contenedorPrincipal.innerHTML =
@@ -107,7 +179,10 @@ function renderizarComoListaServiciosAgrupados(items) {
     let gruposTipos = {};
 
     serviciosValidos.forEach(item => {
-        let tipo = item.tipo && item.tipo !== '' ? item.tipo : 'General';
+        let tipo =
+            item.tipo && item.tipo !== ''
+                ? item.tipo
+                : 'General';
 
         if (!gruposTipos[tipo]) {
             gruposTipos[tipo] = [];
@@ -116,22 +191,30 @@ function renderizarComoListaServiciosAgrupados(items) {
         gruposTipos[tipo].push(item);
     });
 
-    let tiposOrdenados = Object.keys(gruposTipos).sort((a, b) => a.localeCompare(b));
+    let tiposOrdenados =
+        Object.keys(gruposTipos).sort(
+            (a, b) => a.localeCompare(b)
+        );
 
     tiposOrdenados.forEach(tipo => {
         let wrapper = document.createElement('div');
+
         wrapper.className = 'categoria-section';
 
         let tituloDiv = document.createElement('div');
+
         tituloDiv.className = 'categoria-titulo';
+
         tituloDiv.innerText = tipo;
 
         wrapper.appendChild(tituloDiv);
 
         let listaDiv = document.createElement('div');
+
         listaDiv.className = 'servicios-container';
 
         let headerRow = document.createElement('div');
+
         headerRow.className = 'servicios-header-row';
 
         headerRow.innerHTML = `
@@ -151,6 +234,7 @@ function renderizarComoListaServiciosAgrupados(items) {
 
         listaServiciosTipo.forEach(item => {
             let row = document.createElement('div');
+
             row.className = 'servicio-row';
 
             let infoExtra = item.otros
@@ -181,6 +265,7 @@ function renderizarComoListaServiciosAgrupados(items) {
         });
 
         wrapper.appendChild(listaDiv);
+
         contenedorPrincipal.appendChild(wrapper);
     });
 }
@@ -194,11 +279,13 @@ function agruparProductos(items) {
     let productosGlobales = {};
 
     items.forEach(item => {
+
         if (!item.codigo && !item.descripcion) return;
 
         let key = `${item.codigo}_${item.descripcion}`;
 
         if (!productosGlobales[key]) {
+
             productosGlobales[key] = {
                 codigo: item.codigo,
                 descripcion: item.descripcion,
@@ -210,7 +297,26 @@ function agruparProductos(items) {
             };
         }
 
-        productosGlobales[key].filas.push(item);
+        // COMPLETAR MULTIMEDIA EXCLUSIVAMENTE
+        // CON VARIACIONES VISIBLES DEL PRODUCTO
+
+        const grupo = productosGlobales[key];
+
+        if (
+            !obtenerIdDrive(grupo.imagen) &&
+            obtenerIdDrive(item.imagen)
+        ) {
+            grupo.imagen = item.imagen;
+        }
+
+        if (
+            !obtenerIdDrive(grupo.video) &&
+            obtenerIdDrive(item.video)
+        ) {
+            grupo.video = item.video;
+        }
+
+        grupo.filas.push(item);
     });
 
     return Object.values(productosGlobales);
@@ -222,25 +328,31 @@ function agruparProductos(items) {
 // ==========================================
 
 function renderizarPorCategorias(items, yaAgrupados = false) {
-    const contenedorPrincipal = document.getElementById('contenedor-principal');
+
+    const contenedorPrincipal =
+        document.getElementById('contenedor-principal');
 
     contenedorPrincipal.innerHTML = '';
 
     let listaProductos = [];
 
     if (yaAgrupados) {
+
         listaProductos = items;
 
     } else {
+
         // AGRUPAR PRODUCTOS
         listaProductos = agruparProductos(items);
 
         // GUARDAR LOS PRODUCTOS AGRUPADOS EN CACHÉ
         if (hojaActualGlobal) {
+
             cacheProductosAgrupados.set(
                 String(hojaActualGlobal).trim(),
                 listaProductos
             );
+
         }
 
         reiniciarPaginacionCatalogo();
@@ -250,21 +362,26 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
     datosActualesPaginacion = listaProductos;
 
     // OBTENER SOLAMENTE LOS PRODUCTOS DE LA PÁGINA ACTUAL
-    const productosPagina = obtenerProductosPaginados(listaProductos);
+    const productosPagina =
+        obtenerProductosPaginados(listaProductos);
 
     let categoriasMap = {};
 
     productosPagina.forEach(prod => {
+
         let cat = prod.tipo || 'General';
 
         if (!categoriasMap[cat]) {
+
             categoriasMap[cat] = [];
+
         }
 
         categoriasMap[cat].push(prod);
     });
 
     if (productosPagina.length === 0) {
+
         contenedorPrincipal.innerHTML =
             '<p style="text-align:center; color: #888; padding: 40px 0;">No hay productos registrados en esta sección.</p>';
 
@@ -275,38 +392,54 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
         hojaActualGlobal.toLowerCase().trim() === 'eventos';
 
     // FRAGMENTO PARA AGRUPAR LAS CATEGORÍAS
-    const fragmentoPrincipal = document.createDocumentFragment();
+    const fragmentoPrincipal =
+        document.createDocumentFragment();
 
     Object.keys(categoriasMap).forEach(categoria => {
+
         let productosCat = categoriasMap[categoria];
 
         let seccionDiv = document.createElement('div');
+
         seccionDiv.className = 'categoria-section';
 
         let tituloDiv = document.createElement('div');
+
         tituloDiv.className = 'categoria-titulo';
+
         tituloDiv.innerText = categoria;
 
         seccionDiv.appendChild(tituloDiv);
 
         let gridDiv = document.createElement('div');
+
         gridDiv.className = 'grid-productos';
 
         // FRAGMENTO PARA LAS TARJETAS
-        const fragmentoTarjetas = document.createDocumentFragment();
+        const fragmentoTarjetas =
+            document.createDocumentFragment();
 
         productosCat.forEach(prod => {
+
             let card = document.createElement('div');
+
             card.className = 'card-producto';
 
-            card.dataset.codigo = String(prod.codigo || '');
-            card.dataset.descripcion = String(prod.descripcion || '');
+            card.dataset.codigo =
+                String(prod.codigo || '');
+
+            card.dataset.descripcion =
+                String(prod.descripcion || '');
 
             // COMPROBAR VIDEO
-            let videoUrl = prod.video ? String(prod.video).trim() : '';
+            let videoUrl = prod.video
+                ? String(prod.video).trim()
+                : '';
+
             let videoId = obtenerIdDrive(videoUrl);
 
-            let tieneVideoReal = videoUrl !== '' && videoId !== '';
+            let tieneVideoReal =
+                videoUrl !== '' && videoId !== '';
 
             // OBTENER IMAGEN
             let imagenId = obtenerIdDrive(prod.imagen);
@@ -319,6 +452,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             let botonesHTML = '';
 
             if (portadaSrc) {
+
                 botonesHTML += `
                     <button type="button"
                         class="boton-ver-media boton-ver-fotos"
@@ -341,6 +475,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             }
 
             if (tieneVideoReal) {
+
                 botonesHTML += `
                     <button type="button"
                         class="boton-ver-media boton-ver-video"
@@ -379,9 +514,12 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             let variacionesHTML = '';
 
             if (!esSeccionEventos) {
-                variacionesHTML = `<div class="variaciones-container">`;
+
+                variacionesHTML =
+                    `<div class="variaciones-container">`;
 
                 (prod.filas || []).forEach(f => {
+
                     let medidaHTML = f.medida
                         ? `<span class="variacion-medida">${f.medida}</span>`
                         : '';
@@ -391,6 +529,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                         : '';
 
                     if (medidaHTML || precioHTML) {
+
                         variacionesHTML += `
                             <div class="variacion-row-final">
                                 ${medidaHTML}
@@ -398,6 +537,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                             </div>
                         `;
                     }
+
                 });
 
                 variacionesHTML += `</div>`;
@@ -443,10 +583,13 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
             `;
 
             // BOTÓN PARA COMPARTIR PRODUCTO
-            const botonCompartir = document.createElement('button');
+            const botonCompartir =
+                document.createElement('button');
 
             botonCompartir.type = 'button';
-            botonCompartir.textContent = '↗ Compartir producto';
+
+            botonCompartir.textContent =
+                '↗ Compartir producto';
 
             botonCompartir.style.cssText = `
                 display: block;
@@ -462,13 +605,16 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
                 cursor: pointer;
             `;
 
-            botonCompartir.onclick = () => compartirProducto(prod);
+            botonCompartir.onclick = () =>
+                compartirProducto(prod);
 
             // AGREGAR BOTÓN DE COMPARTIR
-            card.querySelector('.compartir-container').appendChild(botonCompartir);
+            card.querySelector('.compartir-container')
+                .appendChild(botonCompartir);
 
             // AGREGAR TARJETA AL FRAGMENTO
             fragmentoTarjetas.appendChild(card);
+
         });
 
         // INSERTAR TARJETAS EN SU CONTENEDOR
@@ -478,6 +624,7 @@ function renderizarPorCategorias(items, yaAgrupados = false) {
 
         // AGREGAR CATEGORÍA AL FRAGMENTO PRINCIPAL
         fragmentoPrincipal.appendChild(seccionDiv);
+
     });
 
     // INSERTAR TODAS LAS CATEGORÍAS
