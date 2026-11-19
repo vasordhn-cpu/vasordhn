@@ -13,12 +13,20 @@ function construirMenu(hojaActiva) {
         let btn = document.createElement('button');
         btn.className = `nav-btn ${nombreHoja === hojaActiva ? 'active' : ''}`;
         btn.innerText = nombreHoja;
-        btn.onclick = () => cambiarHoja(nombreHoja);
+        btn.onclick = () => {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('codigo');
+            url.searchParams.delete('descripcion');
+            url.searchParams.delete('seccion');
+            window.history.replaceState({}, document.title, url.href);
+            cambiarHoja(nombreHoja);
+        };
         nav.appendChild(btn);
     });
 }
 
 function cambiarHoja(nombreHoja) {
+    ++solicitudCatalogo;
     hojaActualGlobal = nombreHoja;
     construirMenu(nombreHoja);
 
@@ -758,6 +766,29 @@ crearBoton('💬 Enviar por Messenger', '#0084FF', () => {
 // ABRIR PRODUCTO DESDE ENLACE COMPARTIDO
 // ==========================================
 
+let temporizadorAvisoCatalogo;
+
+function limpiarEnlaceCatalogo(seccion) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('codigo');
+    url.searchParams.delete('descripcion');
+    url.searchParams.set('seccion', seccion);
+    url.hash = '';
+    window.history.replaceState({}, document.title, url.href);
+}
+
+function avisarProductoNoDisponible() {
+    clearTimeout(temporizadorAvisoCatalogo);
+    document.getElementById('aviso-catalogo')?.remove();
+    const aviso = document.createElement('div');
+    aviso.id = 'aviso-catalogo';
+    aviso.className = 'aviso-catalogo';
+    aviso.setAttribute('role', 'status');
+    aviso.innerHTML = '<strong>Producto no disponible</strong><p>Este producto no está disponible en este momento. Te invitamos a explorar otras opciones de nuestra colección.</p>';
+    document.body.appendChild(aviso);
+    temporizadorAvisoCatalogo = setTimeout(() => aviso.remove(), 5000);
+}
+
 function abrirProductoDesdeEnlace() {
     const parametros = new URLSearchParams(window.location.search);
 
@@ -772,7 +803,8 @@ function abrirProductoDesdeEnlace() {
     );
 
     if (indice === -1) {
-        alert('No se encontró el producto solicitado.');
+        limpiarEnlaceCatalogo(hojaActualGlobal);
+        avisarProductoNoDisponible();
         return;
     }
 
@@ -818,14 +850,30 @@ const seccionCompartida = parametrosIniciales.get('seccion');
 
 let hashRuta = window.location.hash.replace('#', '').trim();
 
-let seccionInicial = seccionCompartida || decodeURIComponent(hashRuta);
+try { hashRuta = decodeURIComponent(hashRuta); } catch (_) { hashRuta = ''; }
+let seccionInicial = (seccionCompartida || hashRuta).trim();
 
 let matchPestana = HOJAS_DISPONIBLES.find(
     h => h.toLowerCase() === seccionInicial.toLowerCase()
 );
 
-if (matchPestana) {
+const enlaceIndividual = parametrosIniciales.has('codigo') || parametrosIniciales.has('descripcion');
+
+if (matchPestana && !(enlaceIndividual && matchPestana === 'Inicio')) {
+    if (enlaceIndividual) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('seccion', matchPestana);
+        window.history.replaceState({}, document.title, url.href);
+    }
     cambiarHoja(matchPestana);
+    if (enlaceIndividual && matchPestana === 'Servicios') {
+        limpiarEnlaceCatalogo('Servicios');
+        // Servicios no genera tarjetas ni enlaces individuales.
+    }
 } else {
     cambiarHoja('Inicio');
+    if (seccionCompartida || enlaceIndividual) {
+        limpiarEnlaceCatalogo('Inicio');
+        avisarProductoNoDisponible();
+    }
 }
